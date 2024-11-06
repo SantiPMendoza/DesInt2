@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="GestorArchivos_SantiagoPueblaMendoza.View.GestorMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.View"
+        mc:Ignorable="d"
+        d:DesignHeight="450" d:DesignWidth="450">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Info">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="File">
+                <TabItem.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Guardar"/>
+                        <MenuItem Header="Borrar"/>
+                        <MenuItem Header="Añadir"/>
+                    </ContextMenu>
+                </TabItem.ContextMenu>
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</UserControl>
