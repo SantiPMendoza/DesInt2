@@ -6,22 +6,37 @@
         xmlns:local="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.View"
         mc:Ignorable="d"
         d:DesignHeight="450" d:DesignWidth="450">
-    <Grid>
-        <TabControl>
-            <TabItem Header="Info">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-            <TabItem Header="File">
-                <TabItem.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Guardar"/>
-                        <MenuItem Header="Borrar"/>
-                        <MenuItem Header="Añadir"/>
-                    </ContextMenu>
-                </TabItem.ContextMenu>
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-        </TabControl>
 
+    <Grid>
+        <!-- Menú Principal -->
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="Archivo">
+                    <MenuItem Header="Abrir" Click="MenuAbrir_Click"/>
+                    <MenuItem Header="Salir" Click="MenuSalir_Click"/>
+                </MenuItem>
+                <MenuItem Header="Ayuda">
+                    <MenuItem Header="Acerca de" Click="MenuAcercaDe_Click"/>
+                </MenuItem>
+            </Menu>
+
+            <!-- TabControl principal -->
+            <TabControl DockPanel.Dock="Bottom">
+                <TabItem Header="Info">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+
+                <TabItem Header="File">
+                    <TabItem.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Guardar" Click="MenuGuardar_Click"/>
+                            <MenuItem Header="Borrar" Click="MenuBorrar_Click"/>
+                            <MenuItem Header="Añadir" Click="MenuAñadir_Click"/>
+                        </ContextMenu>
+                    </TabItem.ContextMenu>
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
     </Grid>
 </UserControl>
