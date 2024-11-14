@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using GestorArchivos_SantiagoPueblaMendoza.ViewModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +17,18 @@ namespace GestorArchivos_SantiagoPueblaMendoza
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly MainViewModel _viewModel;
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
+            _viewModel = viewModel;
+            DataContext = _viewModel;
+            Loaded += MainWindow_Loaded;
+        }
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.LoadAsync();
         }
     }
+
 }

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
 {
-    public class FileViewModel
+    public class GestorMainViewModel : ViewModelBase
     {
+        public GestorMainViewModel() {
+        
+        }
+
     }
 }

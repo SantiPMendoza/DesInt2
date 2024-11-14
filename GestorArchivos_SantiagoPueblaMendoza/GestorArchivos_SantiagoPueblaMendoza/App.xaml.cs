@@ -1,4 +1,5 @@
-﻿using GestorArchivos_SantiagoPueblaMendoza.ViewModel;
+﻿using GestorArchivos_SantiagoPueblaMendoza.View;
+using GestorArchivos_SantiagoPueblaMendoza.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
@@ -36,6 +37,7 @@ namespace GestorArchivos_SantiagoPueblaMendoza
             //view viewModels
             services.AddTransient<MainViewModel>();
             services.AddTransient<InfoViewModel>();
+            services.AddTransient<GestorMainViewModel>();
 
             return services.BuildServiceProvider();
         }

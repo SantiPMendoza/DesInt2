@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestorArchivos_SantiagoPueblaMendoza"
-        xmlns:view="clr-namespace:GestorMain.View"
+        xmlns:view="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.View" 
+        xmlns:viewmodel="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.ViewModel" 
+        d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid/>

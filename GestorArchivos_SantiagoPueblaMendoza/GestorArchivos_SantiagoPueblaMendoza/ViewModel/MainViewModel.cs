@@ -1,8 +1,10 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
 {
@@ -10,11 +12,11 @@ namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
     {
         private ViewModelBase? _selectedViewModel;
 
-        public MainViewModel(InfoViewModel infoViewModel, FileViewModel fileViewModel)
+        public MainViewModel(InfoViewModel infoViewModel, GestorMainViewModel gestorMainViewModel)
         {
-            _selectedViewModel = infoViewModel;
             InfoViewModel = infoViewModel;
-            FileViewModel = fileViewModel;
+            GestorMainViewModel = gestorMainViewModel;
+            SelectedViewModel = gestorMainViewModel;
         }
         public ViewModelBase? SelectedViewModel
         {
@@ -26,7 +28,7 @@ namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
         }
 
         public InfoViewModel InfoViewModel { get; }
-        public FileViewModel FileViewModel { get; }
+        public GestorMainViewModel GestorMainViewModel { get; }
 
         public async override Task LoadAsync()
         {
@@ -34,6 +36,19 @@ namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
             {
                 await SelectedViewModel.LoadAsync();
             }
+        }
+
+        [RelayCommand]
+        private async void SelectViewModel(object? parameter)
+        {
+            SelectedViewModel = parameter as ViewModelBase;
+            await LoadAsync();
+        }
+
+        [RelayCommand]
+        private void ExitApplication(object? obj)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

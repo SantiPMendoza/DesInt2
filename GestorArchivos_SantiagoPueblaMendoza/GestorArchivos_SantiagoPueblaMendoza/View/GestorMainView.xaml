@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.View"
-        mc:Ignorable="d"
+        xmlns:local="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.View" 
+             xmlns:viewmodel="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GestorMainViewModel}"
+             mc:Ignorable="d"
         d:DesignHeight="450" d:DesignWidth="450">
 
     <Grid>
@@ -12,11 +13,8 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="Archivo">
-                    <MenuItem Header="Abrir" Click="MenuAbrir_Click"/>
-                    <MenuItem Header="Salir" Click="MenuSalir_Click"/>
                 </MenuItem>
                 <MenuItem Header="Ayuda">
-                    <MenuItem Header="Acerca de" Click="MenuAcercaDe_Click"/>
                 </MenuItem>
             </Menu>
 
@@ -29,9 +27,6 @@
                 <TabItem Header="File">
                     <TabItem.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Guardar" Click="MenuGuardar_Click"/>
-                            <MenuItem Header="Borrar" Click="MenuBorrar_Click"/>
-                            <MenuItem Header="Añadir" Click="MenuAñadir_Click"/>
                         </ContextMenu>
                     </TabItem.ContextMenu>
                     <Grid Background="#FFE5E5E5"/>
