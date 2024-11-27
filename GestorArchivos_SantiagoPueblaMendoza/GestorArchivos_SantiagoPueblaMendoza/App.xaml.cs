@@ -37,7 +37,7 @@ namespace GestorArchivos_SantiagoPueblaMendoza
             //view viewModels
             services.AddTransient<MainViewModel>();
             services.AddTransient<InfoViewModel>();
-            services.AddTransient<GestorMainViewModel>();
+            services.AddTransient<OpenViewModel>();
 
             return services.BuildServiceProvider();
         }

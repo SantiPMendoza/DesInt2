@@ -17,7 +17,7 @@ namespace GestorArchivos_SantiagoPueblaMendoza.View
     /// <summary>
     /// Lógica de interacción para InfoView.xaml
     /// </summary>
-    public partial class InfoView : Window
+    public partial class InfoView : UserControl
     {
         public InfoView()
         {

@@ -10,13 +10,34 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewmodel:GestorMainViewModel}">
-            <view:GestorMain/>
+        <DataTemplate DataType="{x:Type viewmodel:InfoViewModel}">
+            <view:InfoView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodel:OpenViewModel}">
+            <view:OpenView/>
         </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid>
             <ContentControl Content="{Binding SelectedViewModel}"/>
+            <DockPanel>
+                    <Menu DockPanel.Dock="Top">
+                    <MenuItem Header="Info"                          
+                              Command="{Binding SelectViewModelCommand}"
+                              CommandParameter="{Binding InfoViewModel}"/>
+                    <MenuItem Header="File">
+                        <MenuItem Header="Abrir"
+                              Command="{Binding SelectViewModelCommand}"
+                              CommandParameter="{Binding OpenViewModel}"/>
+                        
+                    <MenuItem Header="Guardar"/>
+                    <MenuItem Header="Borrar"/>
+                    </MenuItem>
+                </Menu>
+                    <Image DockPanel.Dock="Bottom">
+
+                    </Image>
+                </DockPanel>
+            </Grid>
         </Grid>
-    </Grid>
 </Window>

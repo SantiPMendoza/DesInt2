@@ -17,7 +17,7 @@ namespace GestorArchivos_SantiagoPueblaMendoza.View
     /// <summary>
     /// Lógica de interacción para OpenView.xaml
     /// </summary>
-    public partial class OpenView : Window
+    public partial class OpenView : UserControl
     {
         public OpenView()
         {

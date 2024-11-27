@@ -12,11 +12,11 @@ namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
     {
         private ViewModelBase? _selectedViewModel;
 
-        public MainViewModel(InfoViewModel infoViewModel, GestorMainViewModel gestorMainViewModel)
+        public MainViewModel(InfoViewModel infoViewModel, OpenViewModel openViewModel)
         {
             InfoViewModel = infoViewModel;
-            GestorMainViewModel = gestorMainViewModel;
-            SelectedViewModel = gestorMainViewModel;
+            OpenViewModel = openViewModel;
+            //SelectedViewModel = infoViewModel;
         }
         public ViewModelBase? SelectedViewModel
         {
@@ -28,7 +28,7 @@ namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
         }
 
         public InfoViewModel InfoViewModel { get; }
-        public GestorMainViewModel GestorMainViewModel { get; }
+        public OpenViewModel OpenViewModel { get; }
 
         public async override Task LoadAsync()
         {
