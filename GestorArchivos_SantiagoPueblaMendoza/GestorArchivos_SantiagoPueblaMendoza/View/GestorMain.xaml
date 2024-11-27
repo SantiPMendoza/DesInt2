@@ -9,29 +9,16 @@
         d:DesignHeight="450" d:DesignWidth="450">
 
     <Grid>
-        <!-- Menú Principal -->
         <DockPanel>
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="Archivo">
+                <MenuItem Header="Info">
                 </MenuItem>
-                <MenuItem Header="Ayuda">
+                <MenuItem Header="File">
                 </MenuItem>
             </Menu>
-
-            <!-- TabControl principal -->
-            <TabControl DockPanel.Dock="Bottom">
-                <TabItem Header="Info">
-                    <Grid Background="#FFE5E5E5"/>
-                </TabItem>
-
-                <TabItem Header="File">
-                    <TabItem.ContextMenu>
-                        <ContextMenu>
-                        </ContextMenu>
-                    </TabItem.ContextMenu>
-                    <Grid Background="#FFE5E5E5"/>
-                </TabItem>
-            </TabControl>
+            <Image DockPanel.Dock="Bottom">
+                
+            </Image>
         </DockPanel>
     </Grid>
 </UserControl>

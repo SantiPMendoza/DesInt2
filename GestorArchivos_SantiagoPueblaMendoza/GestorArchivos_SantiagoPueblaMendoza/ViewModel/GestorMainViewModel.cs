@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
 {
@@ -11,6 +12,8 @@ namespace GestorArchivos_SantiagoPueblaMendoza.ViewModel
         public GestorMainViewModel() {
         
         }
+
+        public ICommand 
 
     }
 }

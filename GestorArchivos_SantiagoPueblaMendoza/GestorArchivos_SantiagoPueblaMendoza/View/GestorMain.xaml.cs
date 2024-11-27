@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,5 +22,13 @@ namespace GestorArchivos_SantiagoPueblaMendoza.View
         {
             InitializeComponent();
         }
+
+        [RelayCommand]
+        
+        private async Task Info_Click(object? parameter)
+        {
+
+        }
+
     }
 }

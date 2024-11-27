@@ -6,7 +6,11 @@
         xmlns:local="clr-namespace:GestorArchivos_SantiagoPueblaMendoza.View"
         mc:Ignorable="d"
         Title="InfoView" Height="450" Width="800">
-    <Grid>
-        
+    <Grid x:Name="___Sin_nombre_">
+        <Grid.Background>
+            <ImageBrush ImageSource="/Resources/134.png"/>
+        </Grid.Background>
+        <Label Content="Santiago Puebla Mendoza 2ºDAM" HorizontalAlignment="Left" Margin="46,30,0,0" VerticalAlignment="Top"/>
+
     </Grid>
 </Window>
