@@ -8,5 +8,6 @@ namespace GestorArchivos_SantiagoPueblaMendoza.Utils
 {
     class Constants
     {
+        public const string FILE_PATH = "/FILES";
     }
 }
