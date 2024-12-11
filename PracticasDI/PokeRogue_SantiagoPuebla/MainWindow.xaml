@@ -1,42 +1,55 @@
 ﻿<Window x:Class="PokeRogue_SantiagoPuebla.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:PokeRogue_SantiagoPuebla"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:PokeRogue_SantiagoPuebla.View"
+        xmlns:viewmodel="clr-namespace:PokeRogue_SantiagoPuebla.ViewModel"
+        d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
+        mc:Ignorable="d"
         Title="PokeRogue!" Height="450" Width="800">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewmodel:BattleViewModel}">
+            <view:BattleView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodel:TeamViewModel}">
+            <view:TeamView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodel:InfoViewModel}">
+            <view:InfoView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodel:HistoricViewModel}">
+            <view:HistoricView/>
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
-        <!-- Menú centrado en la parte superior -->
+        <ContentControl Content="{Binding SelectedViewModel}"/>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
             <Menu Height="45">
                 <MenuItem Header="Battle"                          
                           Command="{Binding SelectViewModelCommand}"
-                          CommandParameter="{Binding InfoViewModel}" 
+                          CommandParameter="{Binding BattleViewModel}" 
                           Width="144" Height="45"
                           HorizontalContentAlignment="Center" 
                           VerticalContentAlignment="Center" />
                 <MenuItem Header="Team" 
+                          Command="{Binding SelectViewModelCommand}"
+                          CommandParameter="{Binding TeamViewModel}"
                           Width="144" Height="45" 
                           HorizontalContentAlignment="Center" />
                 <MenuItem Header="Historic" 
+                          Command="{Binding SelectViewModelCommand}"
+                          CommandParameter="{Binding HistoricViewModel}"
                           Width="144" Height="45" 
                           HorizontalContentAlignment="Center" />
                 <MenuItem Header="Info" 
-                          Width="144" Height="45" 
+                          Width="144" Height="45"
+                          Command="{Binding SelectViewModelCommand}"
+                          CommandParameter="{Binding InfoViewModel}"
                           HorizontalContentAlignment="Center" />
             </Menu>
         </StackPanel>
-
-        <!-- Botones y Slider centrados en la parte inferior -->
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,30">
-            <!-- Botones -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                <Button Content="Escapar" Width="100" Height="40" Margin="5"/>
-                <Button Content="Atacar" Width="100" Height="40" Margin="5"/>
-                <Button Content="Capturar" Width="100" Height="40" Margin="5"/>
-            </StackPanel>
-
-            <!-- Slider -->
-            <Slider Width="300" Minimum="0" Maximum="100" Value="50" TickFrequency="10" IsSnapToTickEnabled="True" />
-        </StackPanel>
-        <Image HorizontalAlignment="Left" Height="150" Margin="325,120,0,0" VerticalAlignment="Top" Width="150"/>
-        <Label Content="Ataque" HorizontalAlignment="Left" Margin="270,190,0,0" VerticalAlignment="Top" Height="25" Width="50"/>
     </Grid>
 </Window>

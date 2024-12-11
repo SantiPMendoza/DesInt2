@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="PokeRogue_SantiagoPuebla.View.BattleView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokeRogue_SantiagoPuebla.View"
+        xmlns:viewmodel="clr-namespace:PokeRogue_SantiagoPuebla.ViewModel"
+        mc:Ignorable="d" 
+        d:DesignHeight="450" d:DesignWidth="800"
+        d:Background="Wheat"
+        d:DataContext="{d:DesignInstance Type=viewmodel:BattleViewModel}">
+
+    <Grid>
+        <!-- Botones y Slider centrados en la parte inferior -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,30">
+            <!-- Botones -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                <Button Content="Escapar" Width="100" Height="40" Margin="5"/>
+                <Button Content="Atacar" Width="100" Height="40" Margin="5"/>
+                <Button Content="Capturar" Width="100" Height="40" Margin="5"/>
+            </StackPanel>
+
+            <!-- Slider -->
+            <Slider Width="300" Minimum="0" Maximum="100" Value="50" TickFrequency="10" IsSnapToTickEnabled="True" />
+        </StackPanel>
+
+        <!-- Imagen centrada -->
+        <Image VerticalAlignment="Top" Height="161" Margin="312,102,312,0"/>
+
+    </Grid>
+</UserControl>
