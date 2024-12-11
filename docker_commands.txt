@@ -1,0 +1,42 @@
+
+# Comandos útiles e importantes de Docker
+
+## Configuración
+docker pull alpine  # Descarga la imagen del sistema operativo Alpine
+docker images       # Muestra una lista de todas las imágenes locales
+
+## Ejecutar contenedores
+docker run alpine ls -l                  # Ejecuta un comando en un contenedor Alpine
+docker run alpine echo "hello from alpine"  # Ejecuta un comando echo en Alpine
+docker run -it alpine /bin/sh            # Abre un shell interactivo en el contenedor
+
+## Gestión de contenedores
+docker ps                                # Lista los contenedores en ejecución
+docker ps -a                             # Lista todos los contenedores (en ejecución y detenidos)
+docker stop <container_id>               # Detiene un contenedor específico
+docker rm <container_id>                 # Elimina un contenedor específico
+
+## Crear un contenedor con opciones avanzadas
+docker run --name static-site -e AUTHOR="TuNombre" -d -P dockersamples/static-site
+# -d: modo detach (en segundo plano)
+# -P: publica los puertos expuestos en puertos aleatorios en el host
+# -e: establece variables de entorno
+
+## Ver puertos
+docker port static-site                   # Muestra los puertos expuestos por un contenedor
+
+## Gestión de imágenes
+docker pull ubuntu:12.04                  # Descarga una versión específica de Ubuntu
+docker pull ubuntu                        # Descarga la última versión de Ubuntu
+docker images                             # Lista imágenes locales disponibles
+
+## Buscar imágenes
+docker search <image_name>                # Busca imágenes en el registro de Docker
+
+## Construcción de imágenes
+docker build -t myfirstapp ./             # Crea una imagen Docker desde un Dockerfile
+
+## Ejecutar una imagen
+docker run -p 8888:5000 --name cats myfirstapp
+# -p: asigna el puerto 5000 del contenedor al 8888 del host
+# --name: asigna un nombre al contenedor
