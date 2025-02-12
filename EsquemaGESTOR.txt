@@ -1,0 +1,30 @@
+Esquema aplicacion GESTORPFC:
+	
+	FUNCIONES: Una aplicacion para gestionar los PFC de grado
+
+	- Usuarios PROFESOR (tutor, tribunal) y ALUMNO
+	- Los profesores podran ver de que proyectos estan a cargo o son tribunales
+	- Los usuarios podran ver que profesor es su tutor y cuales sus tribunales, a parte de poder
+		enviar la propuesta de su proyecto y revisar si ha sido aceptada, denegada o si tiene
+		revisiones para su propuesta.
+	- Ver un calendario en el que los profesores puedan ver y gestionar las fechas de los pfc y los alumnos
+		las fechas de revisiones y defensa.
+	- 
+
+	BASE DE DATOS:
+
+	-Entidades:
+		-Profesor
+		-Alumno
+		-Proyecto?
+
+	TECNOLOGIAS:
+
+	-Front-end:
+		- IDE: Visual Studio Community.
+		- Lenguaje: C#
+		- Framework: WPF UI
+
+	-BBDD: 
+		- Lenguaje: SQL
+		- SGBD:
