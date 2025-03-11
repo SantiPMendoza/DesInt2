@@ -1,0 +1,142 @@
+Paso 1: Crear el contenedor de SQL Server con Docker
+Ejecuta el siguiente comando para levantar un contenedor con SQL Server:
+
+bash
+Copiar
+Editar
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Abcd123!" -e "MSSQL_PID=Developer" -p 1433:1433 --name SQL_Server_DI -v SQL_Server_Volume:/var/opt/mssql -d mcr.microsoft.com/mssql/server:2022-latest
+Este contenedor estará disponible en el puerto 1433.
+
+✅ Paso 2: Crear la base de datos y usuario en SQL Server
+Dentro de Docker, conecta al contenedor SQL Server usando Azure Data Studio o desde el terminal:
+
+bash
+Copiar
+Editar
+docker exec -it SQL_Server_DI /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Abcd123!
+Luego ejecuta las siguientes consultas:
+
+sql
+Copiar
+Editar
+CREATE LOGIN AppUserLogin WITH PASSWORD = 'e.d_fwm2()~37hz?+LBT4V';
+CREATE DATABASE GestorPFC;
+USE GestorPFC;
+CREATE USER AppUser FOR LOGIN AppUserLogin;
+GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO AppUser;
+EXEC sp_addrolemember 'db_datareader', 'AppUser';
+EXEC sp_addrolemember 'db_datawriter', 'AppUser';
+GRANT ALTER, REFERENCES, EXECUTE ON SCHEMA::dbo TO AppUser;
+GRANT CREATE TABLE, CREATE PROCEDURE, CREATE VIEW TO AppUser;
+✅ Paso 3: Crear el proyecto .NET Core Web API
+bash
+Copiar
+Editar
+dotnet new webapi -n MiApiRest
+cd MiApiRest
+Instala los paquetes necesarios:
+
+bash
+Copiar
+Editar
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Swashbuckle.AspNetCore
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
+✅ Paso 4: Configuración del appsettings.json
+Agrega la cadena de conexión:
+
+json
+Copiar
+Editar
+"ConnectionStrings": {
+    "DefaultConnection": "Server=localhost,1433;Database=GestorPFC;User Id=AppUser;Password=e.d_fwm2()~37hz?+LBT4V;TrustServerCertificate=True;"
+}
+✅ Paso 5: Crear ApplicationDbContext.cs y configurar relaciones
+Crea una carpeta Data y agrega ApplicationDbContext.cs con todas las configuraciones OnModelCreating que escribí antes. Aquí se definen las relaciones One-to-One, One-to-Many y Many-to-Many.
+✅ Paso 6: Registrar DbContext y JWT en Program.cs
+csharp
+Copiar
+Editar
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<Usuario, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+var key = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("WpfUser", policy => policy.RequireRole("wpf_user"));
+    options.AddPolicy("AngularUser", policy => policy.RequireRole("angular_user"));
+});
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+✅ Paso 7: Crear las entidades (Usuario, Pedido, Producto)
+Asegúrate de tener las propiedades necesarias, como en los ejemplos anteriores.
+✅ Paso 8: Crear las DTOs (Usando CreateDTO)
+Separa tus DTOs como CreateUsuarioDTO, CreatePedidoDTO, etc., para diferenciar creación y lectura.
+✅ Paso 9: Crear el ApplicationMapper.cs para AutoMapper
+Ejemplo:
+
+csharp
+Copiar
+Editar
+public class ApplicationMapper : Profile
+{
+    public ApplicationMapper()
+    {
+        CreateMap<Producto, ProductoDTO>().ReverseMap();
+        CreateMap<Producto, CreateProductoDTO>().ReverseMap();
+        CreateMap<Pedido, PedidoDTO>().ReverseMap();
+        CreateMap<Pedido, CreatePedidoDTO>().ReverseMap();
+        CreateMap<Usuario, UsuarioDTO>().ReverseMap();
+        CreateMap<Usuario, CreateUsuarioDTO>().ReverseMap();
+    }
+}
+✅ Paso 10: Crear Repository e IRepository para cada entidad
+Implementa tus repositorios siguiendo la convención IEntityRepository y EntityRepository.
+✅ Paso 11: Crear los Controllers con autorización
+Crea controladores para cada entidad (PedidoController, ProductoController, UsuarioController) asegurándote de proteger tus rutas con [Authorize(Roles = "...")].
+✅ Paso 12: Aplicar Migraciones y Actualizar Base de Datos
+bash
+Copiar
+Editar
+dotnet ef migrations add InitialCreate
+dotnet ef database update

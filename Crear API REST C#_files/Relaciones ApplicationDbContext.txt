@@ -1,0 +1,84 @@
+Relaciones ApplicationDbContext:
+
+Uno a Muchos (One-to-Many):
+
+Un registro en una tabla se relaciona con múltiples registros en otra tabla.
+Ejemplo: Un Usuario puede tener muchos Pedido.
+Esquema:
+Usuarios
+--------
+Id (PK)
+Nombre
+
+Pedidos
+-------
+Id (PK)
+UsuarioId (FK)
+Fecha
+
+
+modelBuilder.Entity<Usuario>()
+    .HasMany(u => u.Pedidos)
+    .WithOne(p => p.Usuario)
+    .HasForeignKey(p => p.UsuarioId);
+
+
+
+
+
+Uno a Uno (One-to-One):
+
+Un registro en una tabla se relaciona con exactamente un registro en otra tabla.
+Ejemplo: Un Usuario puede tener un Perfil.
+Esquema:
+Usuarios
+--------
+Id (PK)
+Nombre
+
+Perfiles
+--------
+UsuarioId (PK, FK)
+Dirección
+
+
+modelBuilder.Entity<Usuario>()
+    .HasOne(u => u.Perfil)
+    .WithOne(p => p.Usuario)
+    .HasForeignKey<Perfil>(p => p.UsuarioId);
+
+
+
+
+Muchos a Muchos (Many-to-Many):
+
+Múltiples registros en una tabla se relacionan con múltiples registros en otra tabla.
+Ejemplo: Un Pedido puede tener muchos Productos, y un Producto puede estar en muchos Pedido.
+Esquema:
+Para modelar está relación se necesita una tabla intermedia.
+Pedidos
+-------
+Id (PK)
+Fecha
+
+Productos
+---------
+Id (PK)
+Nombre
+
+PedidoProductos (Tabla de unión)
+---------------
+PedidoId (PK, FK)
+ProductoId (PK, FK)
+
+
+
+
+modelBuilder.Entity<Pedido>()
+    .HasMany(p => p.Productos)
+    .WithMany(pr => pr.Pedidos)
+    .UsingEntity<Dictionary<string, object>>(
+        "PedidoProductos",
+        j => j.HasOne<Producto>().WithMany().HasForeignKey("ProductoId"),
+        j => j.HasOne<Pedido>().WithMany().HasForeignKey("PedidoId"),
+        j => j.HasKey("PedidoId", "ProductoId"));
