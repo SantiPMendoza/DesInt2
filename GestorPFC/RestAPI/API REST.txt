@@ -1,0 +1,346 @@
+Docker:
+	docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Abcd123!" -e "MSSQL_PID=Developer" -p 1433:1433 --name SQL_Server_DI -v SQL_Server_Volume:/var/opt/mssql -d mcr.microsoft.com/mssql/server:2022-latest
+DB:
+	CREATE LOGIN AppUserLogin WITH PASSWORD = 'e.d_fwm2()~37hz?+LBT4V';
+	CREATE DATABASE GestorPFC;
+	USE GestorPFC;
+	CREATE USER AppUser FOR LOGIN AppUserLogin;
+	GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO AppUser;
+	EXEC sp_addrolemember 'db_datareader', 'AppUser';
+	EXEC sp_addrolemember 'db_datawriter', 'AppUser';
+	GRANT ALTER ON SCHEMA::dbo TO AppUser;
+	GRANT REFERENCES ON SCHEMA::dbo TO AppUser;
+	GRANT CREATE TABLE TO AppUser;
+	GRANT CREATE PROCEDURE TO AppUser;
+	GRANT CREATE VIEW TO AppUser;
+	GRANT EXECUTE ON SCHEMA::dbo TO AppUser;
+
+
+Estructura carpetas:
+	Models: propósito definir el modelo de datos de la aplicación, tanto las entidades que representan la estructura de la base de datos como los Data Transfer Objects (DTOs) para la comunicación entre el cliente y la API
+		Entity:
+			AppUser.cs: 
+				define la entidad de usuario que extiende IdentityUser para la autenticación y autorización con ASP.NET Core Identity.
+			User.cs: 
+				una entidad para exponer información de usuario en la capa de dominio si se quiere separar la lógica de Identity de los datos expuestos a la API.
+			Alumno.cs, Curso.cs, Profesor.cs, Departamento.cs, Propuesta.cs, Proyecto.cs:
+				Representan las entidades del dominio (por ejemplo, un alumno, curso, profesor, departamento, propuesta y proyecto). Estas clases definen las propiedades y relaciones (como las relaciones muchos a muchos o las relaciones uno a muchos) que se traducen en tablas y claves en la base de datos.
+
+		DTOs: propósito contener clases que se usan para transferir datos entre el cliente y el servidor sin exponer directamente las entidades de la base de datos. Esto mejora la seguridad y permite la validación de datos.
+			AlumnoDTO:
+				CreateAlumnoDTO.cs: Define los campos necesarios para crear un alumno (por ejemplo, Nombre, Apellidos, Email, CursoId).
+				AlumnoDto.cs: Hereda de CreateAlumnoDTO y añade la propiedad Id para representar a un alumno existente.
+			CursoDTO:
+				CreateCursoDTO.cs: Define los campos para crear un curso (Nombre, DepartamentoId, TutorId).
+				CursoDto.cs: Incluye la propiedad Id para identificar un curso ya creado.
+			DepartamentoDTO, ProfesorDTO, PropuestaDTO, ProyectoDTO, UserDTO:
+				Cada uno sigue un patrón similar: un DTO para la creación (con las propiedades necesarias) y otro DTO que extiende el anterior para incluir el identificador (Id) y, en algunos casos, propiedades adicionales (como fechas o estados).
+			ResponseApi.cs:
+				Una clase que estandariza la estructura de las respuestas de la API (código de estado, indicador de éxito, mensajes de error y el resultado). Esto ayuda a mantener respuestas consistentes en todos los endpoints.
+
+	Data: propósito contener la configuración de acceso a la base de datos.	
+		ApplicationDbContext.cs:
+			Define el DbContext de EF Core, incluye los DbSets para cada entidad y configura las relaciones entre entidades mediante el método OnModelCreating. Aquí es donde se establecen las relaciones (por ejemplo, la relación muchos a muchos entre Curso y Profesor, y la relación para el Tutor del curso) y se especifica el comportamiento de eliminación (DeleteBehavior).
+
+	Repository: propósito abstraer y centralizar la lógica de acceso a datos.
+		IRepository (Interfaces):
+			IRepository.cs: Una interfaz genérica que define operaciones CRUD comunes para cualquier entidad.
+			IAlumnoRepository.cs, ICursoRepository.cs, IDepartamentoRepository.cs, IProfesorRepository.cs, IPropuestaRepository.cs, IProyectoRepository.cs, IUserRepository.cs:
+			Interfaces específicas para cada entidad, que pueden heredar de la interfaz genérica o definir métodos adicionales según sea necesario.
+		Implementaciones:
+			AlumnoRepository.cs, CursoRepository.cs, DepartamentoRepository.cs, ProfesorRepository.cs, PropuestaRepository.cs, ProyectoRepository.cs, UserRepository.cs:
+			Clases concretas que implementan las interfaces de repositorio. Estas clases usan el ApplicationDbContext y, en algunos casos, IMemoryCache para optimizar las consultas. Se encargan de ejecutar operaciones CRUD en la base de datos y de manejar la lógica de permisos, mapeo de datos, etc.
+
+	AutoMapper: ropósito facilitar el mapeo entre las entidades y los DTOs.
+		MappingProfile.cs:
+			Define los perfiles de mapeo (por ejemplo, cómo mapear Alumno a AlumnoDto y viceversa). Esto centraliza el mapeo y evita tener que escribir código repetitivo en los controladores.
+
+	Controllers: propósito exponer la API y orquestar las solicitudes HTTP.
+		AlumnoController.cs, CursoController.cs, DepartamentoController.cs, ProfesorController.cs, PropuestaController.cs, ProyectoController.cs, UserController.cs:
+			Cada controlador expone endpoints específicos para cada entidad. Algunos controladores (como AlumnoController o LibroController en el ejemplo del profesor) heredan de un BaseController genérico que implementa operaciones CRUD comunes, lo que reduce la duplicación de código.
+
+	Helper: propósito contener utilidades y atributos personalizados que ayudan a validar datos o a realizar tareas comunes.
+		PasswordValidationAttribute.cs:
+			Un ejemplo de atributo personalizado para validar contraseñas según reglas definidas (mínimo de caracteres, presencia de mayúsculas, minúsculas y dígitos).
+
+	Program.cs: propósito configurar la aplicación, registrar servicios y definir el pipeline HTTP.
+		Configura el DbContext, Identity, AutoMapper, MemoryCache, los repositorios, JWT, Swagger, CORS, Logging y finalmente mapea los controladores.
+
+	RestAPI/
+		├── Controllers/
+		│   ├── BaseController.cs    // Clase base genérica para operaciones CRUD
+		│   ├── AlumnoController.cs
+		│   ├── CursoController.cs
+		│   ├── DepartamentoController.cs
+		│   ├── ProfesorController.cs
+		│   ├── PropuestaController.cs
+		│   ├── ProyectoController.cs
+		│   └── UserController.cs
+		├── Data/
+		│   └── ApplicationDbContext.cs
+		├── Models/
+		│   ├── DTOs/
+		│   │   ├── AlumnoDTO/
+		│   │   │   ├── AlumnoDto.cs
+		│   │   │   └── CreateAlumnoDTO.cs
+		│   │   ├── CursoDTO/
+		│   │   │   ├── CursoDto.cs
+		│   │   │   └── CreateCursoDTO.cs
+		│   │   ├── DepartamentoDTO/
+		│   │   │   ├── DepartamentoDto.cs
+		│   │   │   └── CreateDepartamentoDTO.cs
+		│   │   ├── ProfesorDTO/
+		│   │   │   ├── ProfesorDto.cs
+		│   │   │   └── CreateProfesorDTO.cs
+		│   │   ├── PropuestaDTO/
+		│   │   │   ├── PropuestaDto.cs
+		│   │   │   └── CreatePropuestaDTO.cs
+		│   │   ├── ProyectoDTO/
+		│   │   │   ├── ProyectoDto.cs
+		│   │   │   └── CreateProyectoDTO.cs
+		│   │   └── UserDTO/
+		│   │       ├── UserDTO.cs
+		│   │       ├── UserLoginDTO.cs
+		│   │       ├── UserLoginResponseDTO.cs
+		│   │       └── UserRegistrationDTO.cs
+		│   └── Entity/
+		│       ├── Alumno.cs
+		│       ├── AppUser.cs
+		│       ├── Curso.cs
+		│       ├── Departamento.cs
+		│       ├── Profesor.cs
+		│       ├── Propuesta.cs
+		│       ├── Proyecto.cs
+		│       └── User.cs      // Definición propia, si se usa en paralelo a AppUser
+		├── Helpers/
+		│   └── PasswordValidationAttribute.cs
+		├── AutoMapper/
+		│   └── MappingProfile.cs
+		├── Repository/
+		│   ├── IRepository/
+		│   │   ├── IRepository.cs
+		│   │   ├── IAlumnoRepository.cs
+		│   │   ├── ICursoRepository.cs
+		│   │   ├── IDepartamentoRepository.cs
+		│   │   ├── IProfesorRepository.cs
+		│   │   ├── IPropuestaRepository.cs
+		│   │   ├── IProyectoRepository.cs
+		│   │   └── IUserRepository.cs
+		│   ├── AlumnoRepository.cs
+		│   ├── CursoRepository.cs
+		│   ├── DepartamentoRepository.cs
+		│   ├── ProfesorRepository.cs
+		│   ├── PropuestaRepository.cs
+		│   ├── ProyectoRepository.cs
+		│   └── UserRepository.cs
+		├── Program.cs
+		└── appsettings.json
+		
+API Configuracion inicial: 
+	ASP.NET Core Web API
+	Framework: .NET 8.0 (Compatibilidad a largo plazo)
+	Configuraciones:
+		Autenticación: Ninguna
+		Configurar para HTTPS: Habilitado (marcado)
+		Habilitar compatibilidad con contenedor: No habilitado (no marcado)
+		SO del contenedor: Linux (deshabilitado)
+		Tipo de compilación de contenedor: Dockerfile (deshabilitado)
+		Habilitar compatibilidad con OpenAPI: Habilitado (marcado)
+		No usar instrucciones de nivel superior: No habilitado (no marcado)
+		Utilizar controladores: Habilitado (marcado)
+		Inscribirse en la orquestación de .NET Aspire: No habilitado (no marcado)
+		Versión Aspire: 9.0 (deshabilitado)
+
+
+Nuguet:
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.0" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2" />
+	</ItemGroup>
+
+	dotnet add package AutoMapper --version 12.0.0
+	dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 12.0.0
+	dotnet add package Swashbuckle.AspNetCore --version 6.5.0
+	dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2
+	dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 8.0.2
+	dotnet add package Microsoft.AspNetCore.OpenApi --version 8.0.2
+	dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.2
+	dotnet add package Microsoft.EntityFrameworkCore.Tools --version 8.0.2
+
+Archivo de Configuración (appsettings.json)
+	Un ejemplo de appsettings.json para tu proyecto GestorPFC:
+
+	{
+	  "ApiSettings": {
+	    "SecretKey": "uE/!Wx9<t2{V73@reb^4]6c)N#TqgA;s&XHP_nf}d%+S>*"
+	  },
+	  "AllowedHosts": "*",
+	  "ConnectionStrings": {
+	    "SqlConnection": "Server=localhost,1433;Database=GestorPFC;User Id=AppUserLogin;Password=e.d_fwm2()~37hz?+LBT4V;TrustServerCertificate=True;"
+	  },
+	  "Logging": {
+	    "LogLevel": {
+	      "Default": "Information",
+	      "Microsoft.AspNetCore": "Warning",
+	      "GestorPFC": "Debug"
+	    }
+	  }
+	}
+	Notas:
+
+	La clave secreta se usa para firmar tokens JWT.
+	La cadena de conexión utiliza el login AppUserLogin y se conecta a la base de datos GestorPFC.
+	Se incluye TrustServerCertificate=True para entornos de desarrollo.
+
+Program.cs adaptado al proyecto:
+			
+	using GestorPFC.AutoMapper;
+	using GestorPFC.Data;	
+	using GestorPFC.Models.Entity;
+	using GestorPFC.Repository;
+	using GestorPFC.Repository.IRepository;
+	using Microsoft.AspNetCore.Authentication.JwtBearer;
+	using Microsoft.AspNetCore.Identity;
+	using Microsoft.EntityFrameworkCore;
+	using Microsoft.Extensions.Caching.Memory;
+	using Microsoft.IdentityModel.Tokens;
+	using Microsoft.OpenApi.Models;
+	using System.Text;
+
+	var builder = WebApplication.CreateBuilder(args);
+
+	// Configurar DbContext con SQL Server
+	builder.Services.AddDbContext<ApplicationDbContext>(options =>
+	    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+
+	// Configurar Identity
+	builder.Services.AddIdentity<AppUser, IdentityRole>()
+	    .AddEntityFrameworkStores<ApplicationDbContext>()
+	    .AddDefaultTokenProviders();
+	
+	// Registrar AutoMapper
+	builder.Services.AddAutoMapper(typeof(MappingProfile));
+	
+	// Registrar MemoryCache
+	builder.Services.AddMemoryCache();
+	
+	// Registrar repositorios
+	builder.Services.AddScoped<IAlumnoRepository, AlumnoRepository>();
+	builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+	builder.Services.AddScoped<IDepartamentoRepository, DepartamentoRepository>();
+	builder.Services.AddScoped<IProfesorRepository, ProfesorRepository>();
+	builder.Services.AddScoped<IPropuestaRepository, PropuestaRepository>();
+	builder.Services.AddScoped<IProyectoRepository, ProyectoRepository>();
+	builder.Services.AddScoped<IUserRepository, UserRepository>();
+	
+	// Configurar autenticación con JWT
+	var key = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
+	builder.Services.AddAuthentication(options =>
+	{
+	    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+	})
+	.AddJwtBearer(options =>
+	{
+	    options.RequireHttpsMetadata = false;
+	    options.SaveToken = true;
+	    options.TokenValidationParameters = new TokenValidationParameters
+	    {
+        	ValidateIssuerSigningKey = true,
+	        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+	        ValidateIssuer = false,
+	        ValidateAudience = false
+	    };
+	});
+	
+	// Agregar CORS
+	builder.Services.AddCors(options =>
+	{
+	    options.AddPolicy("CorsPolicy", policy =>
+	    {
+	        policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+	    });
+	});
+	
+	// Agregar controladores y Swagger
+	builder.Services.AddControllers();
+	builder.Services.AddEndpointsApiExplorer();
+	builder.Services.AddSwaggerGen(options =>
+	{
+	    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+	    {
+	        Description = "JWT Auth Bearer Token\r\n\r\nInsert the token as: Bearer {token}",
+	        Name = "Authorization",
+	        In = ParameterLocation.Header,
+	        Scheme = "Bearer"
+	    });
+	    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+	    {
+	        {
+	            new OpenApiSecurityScheme 
+	            {
+	                Reference = new OpenApiReference 
+	                {
+	                    Type = ReferenceType.SecurityScheme,
+	                    Id = "Bearer"
+	                },
+	                Scheme = "oauth2",
+	                Name = "Bearer"
+	            },
+	            new List<string>()
+	        }
+	    });
+	});
+	
+	// Configurar Logging y otros servicios
+	builder.Logging.ClearProviders();
+	builder.Logging.AddConsole();
+	
+	var app = builder.Build();
+	
+	if (app.Environment.IsDevelopment())
+	{
+	    app.UseSwagger();
+	    app.UseSwaggerUI();
+	}
+	
+	app.UseHttpsRedirection();
+	app.UseCors("CorsPolicy");
+	app.UseAuthentication();
+	app.UseAuthorization();
+	
+	app.MapControllers();
+	
+	app.Run();
+
+
+Aplicación de Migraciones y Actualización de la Base de Datos
+	Generar la Migración Inicial:
+		Abre una terminal en el directorio raíz (donde se encuentra el .csproj) y ejecuta:
+			dotnet ef migrations add InitialCreate
+			Este comando creará una migración que refleja tu modelo de datos.
+	
+	Actualizar la Base de Datos
+		Luego, aplica la migración a la base de datos con:
+		dotnet ef database update
+	Verifica en una herramienta de administración (DBeaver, SSMS, etc.) que se hayan creado las tablas (incluida la tabla __EFMigrationsHistory).
+	
+Probar la API
+	Ejecutar la Aplicación:
+		Usa dotnet run o inicia desde Visual Studio.
+	
+	Abrir Swagger:
+		Navega a la URL (por ejemplo, https://localhost:port/swagger) para ver la documentación interactiva.
+	
+	Probar Endpoints:
+		Verifica operaciones CRUD para Alumno, Curso, etc.
+		Prueba autenticación: registra un usuario y realiza login para obtener un token JWT.
+		Verificar Respuestas:
+		Asegúrate de que las respuestas se ajusten al formato ResponseApi con código de estado, éxito y mensajes de error en caso necesario.
+

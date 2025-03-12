@@ -1,0 +1,16 @@
+
+
+Actualmente, la API se centra en la implementación de operaciones CRUD básicas para las entidades:
+	(Alumnos, Cursos, Departamentos, Profesores, Propuestas y Proyectos)
+Los endpoints en los controladores (por ejemplo, en el BaseController) están protegidos para que solo puedan ser accedidos por usuarios con el rol de "admin"
+Esto significa que, en la configuración actual, solo el administrador tiene acceso completo para crear, mostrar, actualizar y eliminar datos.
+
+No se ha implementado lógica adicional de negocio
+como la transformación automática de una propuesta en proyecto cuando cambia de estado
+ni restricciones específicas basadas en relaciones (por ejemplo, que solo un profesor de un determinado departamento pueda ver ciertos proyectos).
+
+En resumen:
+
+Operaciones CRUD: Disponibles para todas las entidades, pero protegidas para que solo el admin pueda manipularlas.
+Autenticación y roles: Solo el admin tiene acceso a los endpoints de CRUD en la configuración actual.
+Lógica adicional: Aún no se ha incorporado lógica de negocio específica (como la creación automática de proyectos a partir de propuestas).

@@ -1,0 +1,1930 @@
+AutoMapper:
+using AutoMapper;
+
+using RestAPI.Models.DTOs.AlumnoDTO;
+using RestAPI.Models.DTOs.CursoDTO;
+using RestAPI.Models.DTOs.DepartamentoDTO;
+using RestAPI.Models.DTOs.ProfesorDTO;
+using RestAPI.Models.DTOs.PropuestaDTO;
+using RestAPI.Models.DTOs.ProyectoDTO;
+using RestAPI.Models.DTOs.UserDTO;
+using RestAPI.Models.Entity;
+
+namespace RestAPI.AutoMapper
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            // Mapeos para Alumno
+            CreateMap<Alumno, AlumnoDto>();
+            CreateMap<CreateAlumnoDTO, Alumno>();
+
+            // Mapeos para Curso
+            CreateMap<Curso, CursoDto>();
+            CreateMap<CreateCursoDTO, Curso>();
+
+            // Mapeos para Departamento
+            CreateMap<Departamento, DepartamentoDto>();
+            CreateMap<CreateDepartamentoDTO, Departamento>();
+
+            // Mapeos para Profesor
+            CreateMap<Profesor, ProfesorDto>();
+            CreateMap<CreateProfesorDTO, Profesor>();
+
+            // Mapeos para Propuesta
+            CreateMap<Propuesta, PropuestaDto>();
+            CreateMap<CreatePropuestaDTO, Propuesta>();
+
+            // Mapeos para Proyecto
+            CreateMap<Proyecto, ProyectoDto>();
+            CreateMap<CreateProyectoDTO, Proyecto>();
+
+            // Mapeos para User (AppUser)
+            CreateMap<AppUser, UserDTO>();
+        }
+    }
+}
+
+Controllers:
+using AutoMapper;
+using RestAPI.Models.Entity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Controllers;
+using RestAPI.Models.DTOs.AlumnoDTO;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AlumnoController : BaseController<Alumno, AlumnoDto, CreateAlumnoDTO>
+    {
+        public AlumnoController(IAlumnoRepository alumnoRepository, IMapper mapper, ILogger<AlumnoController> logger)
+            : base(alumnoRepository, mapper, logger)
+        {
+        }
+    }
+}
+
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestAPI.Models.DTOs;
+using RestAPI.Repository;
+using RestAPI.Repository.IRepository;
+using System.Net;
+
+namespace RestAPI.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public abstract class BaseController<TEntity, TDto, TCreateDto> : ControllerBase where TEntity : class
+    {
+        protected readonly IRepository<TEntity> _repository;
+        protected readonly IMapper _mapper;
+        protected readonly ILogger _logger;
+
+        protected BaseController(IRepository<TEntity> repository, IMapper mapper, ILogger logger)
+        {
+            _repository = repository;
+            _mapper = mapper;
+            _logger = logger;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public virtual async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var entities = await _repository.GetAllAsync();
+                var dtos = _mapper.Map<IEnumerable<TDto>>(entities);
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching all entities");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("{id:int}", Name = "[controller]_GetEntity")]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var entity = await _repository.GetAsync(id);
+                if (entity == null)
+                    return NotFound();
+
+                var dto = _mapper.Map<TDto>(entity);
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching entity");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public virtual async Task<IActionResult> Create([FromBody] TCreateDto createDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var entity = _mapper.Map<TEntity>(createDto);
+                if (!await _repository.CreateAsync(entity))
+                    return StatusCode((int)HttpStatusCode.InternalServerError, "Error creating entity");
+
+                var dto = _mapper.Map<TDto>(entity);
+                // Se utiliza CreatedAtRoute para retornar un 201 y la ubicación del recurso creado.
+                return CreatedAtRoute($"{ControllerContext.ActionDescriptor.ControllerName}_GetEntity", new { id = dto.GetType().GetProperty("Id")?.GetValue(dto) }, dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating entity");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<IActionResult> Update(int id, [FromBody] TDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var entity = await _repository.GetAsync(id);
+                if (entity == null)
+                    return NotFound();
+
+                // Mapea los cambios del DTO a la entidad existente
+                _mapper.Map(dto, entity);
+
+                if (!await _repository.UpdateAsync(entity))
+                    return StatusCode((int)HttpStatusCode.InternalServerError, "Error updating entity");
+
+                return Ok(_mapper.Map<TDto>(entity));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating entity");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var entity = await _repository.GetAsync(id);
+                if (entity == null)
+                    return NotFound();
+
+                if (!await _repository.DeleteAsync(id))
+                    return StatusCode((int)HttpStatusCode.InternalServerError, "Error deleting entity");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting entity");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+    }
+}
+
+
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using RestAPI.Models.Entity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Controllers;
+using RestAPI.Models.DTOs.CursoDTO;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CursoController : BaseController<Curso, CursoDto, CreateCursoDTO>
+    {
+        public CursoController(ICursoRepository cursoRepository, IMapper mapper, ILogger<CursoController> logger)
+            : base(cursoRepository, mapper, logger)
+        {
+        }
+    }
+}
+
+using AutoMapper;
+using RestAPI.Models.Entity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Controllers;
+using RestAPI.Models.DTOs.DepartamentoDTO;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DepartamentoController : BaseController<Departamento, DepartamentoDto, CreateDepartamentoDTO>
+    {
+        public DepartamentoController(IDepartamentoRepository departamentoRepository, IMapper mapper, ILogger<DepartamentoController> logger)
+            : base(departamentoRepository, mapper, logger)
+        {
+        }
+    }
+}
+
+using AutoMapper;
+using RestAPI.Models.Entity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Controllers;
+using RestAPI.Models.DTOs.ProfesorDTO;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProfesorController : BaseController<Profesor, ProfesorDto, CreateProfesorDTO>
+    {
+        public ProfesorController(IProfesorRepository profesorRepository, IMapper mapper, ILogger<ProfesorController> logger)
+            : base(profesorRepository, mapper, logger)
+        {
+        }
+    }
+}
+
+using AutoMapper;
+using RestAPI.Models.Entity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Controllers;
+using RestAPI.Models.DTOs.PropuestaDTO;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PropuestaController : BaseController<Propuesta, PropuestaDto, CreatePropuestaDTO>
+    {
+        public PropuestaController(IPropuestaRepository propuestaRepository, IMapper mapper, ILogger<PropuestaController> logger)
+            : base(propuestaRepository, mapper, logger)
+        {
+        }
+    }
+}
+
+using AutoMapper;
+using RestAPI.Models.DTOs.ProyectoDTO;
+using RestAPI.Models.Entity;  
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Controllers;
+
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProyectoController : BaseController<Proyecto, ProyectoDto, CreateProyectoDTO>
+    {
+        public ProyectoController(IProyectoRepository proyectoRepository, IMapper mapper, ILogger<ProyectoController> logger)
+            : base(proyectoRepository, mapper, logger)
+        {
+        }
+    }
+}
+
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestAPI.Models.DTOs.UserDTO;
+using RestAPI.Models.DTOs;
+using RestAPI.Repository.IRepository;
+using System.Net;
+using System.Threading.Tasks;
+
+namespace RestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+        protected ResponseApi _responseApi;
+
+        public UserController(IUserRepository userRepository, IMapper mapper)
+        {
+            _userRepository = userRepository;
+            _mapper = mapper;
+            _responseApi = new ResponseApi();
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult GetUsers()
+        {
+            var userList = _userRepository.GetUsers();
+            var userListDto = _mapper.Map<List<UserDTO>>(userList);
+            _responseApi.StatusCode = HttpStatusCode.OK;
+            _responseApi.IsSuccess = true;
+            _responseApi.Result = userListDto;
+            return Ok(_responseApi);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("{id}", Name = "GetUser")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetUser(string id)
+        {
+            var user = _userRepository.GetUser(id);
+            if (user == null)
+            {
+                _responseApi.StatusCode = HttpStatusCode.NotFound;
+                _responseApi.IsSuccess = false;
+                _responseApi.ErrorMessages.Add("User not found.");
+                return NotFound(_responseApi);
+            }
+            var userDto = _mapper.Map<UserDTO>(user);
+            _responseApi.StatusCode = HttpStatusCode.OK;
+            _responseApi.IsSuccess = true;
+            _responseApi.Result = userDto;
+            return Ok(_responseApi);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDTO registrationDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { error = "Incorrect Input", message = ModelState });
+
+            if (!_userRepository.IsUniqueUser(registrationDto.UserName))
+            {
+                _responseApi.StatusCode = HttpStatusCode.BadRequest;
+                _responseApi.IsSuccess = false;
+                _responseApi.ErrorMessages.Add("Username already exists");
+                return BadRequest(_responseApi);
+            }
+
+            var newUser = await _userRepository.Register(registrationDto);
+            if (newUser == null)
+            {
+                _responseApi.StatusCode = HttpStatusCode.BadRequest;
+                _responseApi.IsSuccess = false;
+                _responseApi.ErrorMessages.Add("Error registering the user");
+                return BadRequest(_responseApi);
+            }
+
+            _responseApi.StatusCode = HttpStatusCode.OK;
+            _responseApi.IsSuccess = true;
+            _responseApi.Result = newUser;
+            return Ok(_responseApi);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Login([FromBody] UserLoginDTO loginDto)
+        {
+            var responseLogin = await _userRepository.Login(loginDto);
+
+            if (responseLogin.User == null || string.IsNullOrEmpty(responseLogin.Token))
+            {
+                _responseApi.StatusCode = HttpStatusCode.BadRequest;
+                _responseApi.IsSuccess = false;
+                _responseApi.ErrorMessages.Add("Incorrect user and password");
+                return BadRequest(_responseApi);
+            }
+
+            _responseApi.StatusCode = HttpStatusCode.OK;
+            _responseApi.IsSuccess = true;
+            _responseApi.Result = responseLogin;
+            return Ok(_responseApi);
+        }
+    }
+}
+
+Data:
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using RestAPI.Models.Entity;
+
+namespace RestAPI.Data
+{
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        // DbSets para cada entidad
+        public DbSet<User> User { get; set; }
+        public DbSet<Curso> Cursos { get; set; }
+        public DbSet<Alumno> Alumnos { get; set; }
+        public DbSet<Profesor> Profesores { get; set; }
+        public DbSet<Departamento> Departamentos { get; set; }
+        public DbSet<Propuesta> Propuestas { get; set; }
+        public DbSet<Proyecto> Proyectos { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Relación muchos a muchos entre Curso y Profesor sin cascada en ninguno de los lados
+            modelBuilder.Entity<Curso>()
+                .HasMany(c => c.Profesores)
+                .WithMany(p => p.Cursos)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CursoProfesores",
+                    j => j
+                        .HasOne<Profesor>()
+                        .WithMany()
+                        .HasForeignKey("ProfesoresId")
+                        .OnDelete(DeleteBehavior.NoAction),
+                    j => j
+                        .HasOne<Curso>()
+                        .WithMany()
+                        .HasForeignKey("CursosId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                );
+
+            // Relación uno a muchos para el Tutor del curso
+            modelBuilder.Entity<Curso>()
+                .HasOne(c => c.Tutor)
+                .WithMany() // Sin navegación inversa para evitar ambigüedades
+                .HasForeignKey(c => c.TutorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configurar la relación entre Proyecto y Departamento para evitar cascadas múltiples.
+            modelBuilder.Entity<Proyecto>()
+                .HasOne(p => p.Departamento)
+                .WithMany() // Asumiendo que Departamento no tiene navegación inversa a Proyectos.
+                .HasForeignKey(p => p.DepartamentoId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Si es necesario, podrías configurar otras relaciones (por ejemplo, Proyecto con Alumno o TutorProyecto)
+        }
+    }
+}
+
+Helpers:
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+
+namespace RestAPI.Helpers
+{
+    public class PasswordValidationAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object? value)
+        {
+            if (value == null)
+                return false;
+
+            string password = value.ToString()!;
+
+            // Ejemplo: La contraseña debe tener al menos 8 caracteres, 
+            // una letra mayúscula, una minúscula y un dígito.
+            if (password.Length < 8)
+            {
+                ErrorMessage = "Password must be at least 8 characters long.";
+                return false;
+            }
+            if (!Regex.IsMatch(password, @"[A-Z]"))
+            {
+                ErrorMessage = "Password must contain at least one uppercase letter.";
+                return false;
+            }
+            if (!Regex.IsMatch(password, @"[a-z]"))
+            {
+                ErrorMessage = "Password must contain at least one lowercase letter.";
+                return false;
+            }
+            if (!Regex.IsMatch(password, @"\d"))
+            {
+                ErrorMessage = "Password must contain at least one digit.";
+                return false;
+            }
+            return true;
+        }
+    }
+}
+
+Models:
+DTOs:
+namespace RestAPI.Models.DTOs.AlumnoDTO
+{
+    public class AlumnoDto : CreateAlumnoDTO
+    {
+        public int Id { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.AlumnoDTO
+{
+    public class CreateAlumnoDTO
+    {
+        [Required(ErrorMessage = "Field required: Nombre")]
+        public string Nombre { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Apellidos")]
+        public string Apellidos { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Correo")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        public string Email { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: CursoId")]
+        public int CursoId { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.CursoDTO
+{
+    public class CreateCursoDTO
+    {
+        [Required(ErrorMessage = "Field required: Nombre")]
+        public string Nombre { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: DepartamentoId")]
+        public int DepartamentoId { get; set; }
+
+        [Required(ErrorMessage = "Field required: TutorId")]
+        public int TutorId { get; set; }
+    }
+}
+
+namespace RestAPI.Models.DTOs.CursoDTO
+{
+    public class CursoDto : CreateCursoDTO
+    {
+        public int Id { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.DepartamentoDTO
+{
+    public class CreateDepartamentoDTO
+    {
+        [Required(ErrorMessage = "Field required: Nombre")]
+        public string Nombre { get; set; } = null!;
+    }
+}
+
+namespace RestAPI.Models.DTOs.DepartamentoDTO
+{
+    public class DepartamentoDto : CreateDepartamentoDTO
+    {
+        public int Id { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.ProfesorDTO
+{
+    public class CreateProfesorDTO
+    {
+        [Required(ErrorMessage = "Field required: Nombre")]
+        public string Nombre { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Apellido")]
+        public string Apellido { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Correo")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        public string Email { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: DepartamentoId")]
+        public int DepartamentoId { get; set; }
+    }
+}
+
+namespace RestAPI.Models.DTOs.ProfesorDTO
+{
+    public class ProfesorDto : CreateProfesorDTO
+    {
+        public int Id { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.PropuestaDTO
+{
+    public class CreatePropuestaDTO
+    {
+        [Required(ErrorMessage = "Field required: Titulo")]
+        public string Titulo { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Descripcion")]
+        public string Descripcion { get; set; } = null!;
+
+        // El Departamento se asigna a partir del curso del alumno
+        [Required(ErrorMessage = "Field required: Departamento")]
+        public string Departamento { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: BooleanProyecto")]
+        public bool BooleanProyecto { get; set; }
+
+        [Required(ErrorMessage = "Field required: AlumnoId")]
+        public int AlumnoId { get; set; }
+    }
+}
+
+namespace RestAPI.Models.DTOs.PropuestaDTO
+{
+    public class PropuestaDto : CreatePropuestaDTO
+    {
+        public int Id { get; set; }
+        public DateTime FechaEnvio { get; set; }
+        public DateTime? FechaGestion { get; set; }
+        // Estado puede ser "StandBy", "Aceptada" o "Denegada"
+        public string Estado { get; set; } = null!;
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.ProyectoDTO
+{
+    public class CreateProyectoDTO
+    {
+        [Required(ErrorMessage = "Field required: Titulo")]
+        public string Titulo { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Descripcion")]
+        public string Descripcion { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: FechaEntrega")]
+        public DateTime FechaEntrega { get; set; }
+
+        [Required(ErrorMessage = "Field required: DepartamentoId")]
+        public int DepartamentoId { get; set; }
+
+        [Required(ErrorMessage = "Field required: AlumnoId")]
+        public int AlumnoId { get; set; }
+
+        // TutorProyectoId es opcional en la creación, se asigna posteriormente
+        public int? TutorProyectoId { get; set; }
+    }
+}
+
+namespace RestAPI.Models.DTOs.ProyectoDTO
+{
+    public class ProyectoDto : CreateProyectoDTO
+    {
+        public int Id { get; set; }
+        public string EstadoProyecto { get; set; } = null!;
+        // Lista de fechas para tutorías
+        public ICollection<DateTime> FechasTutoria { get; set; } = new List<DateTime>();
+    }
+}
+
+namespace RestAPI.Models.DTOs.UserDTO
+{
+    public class UserDTO
+    {
+        public string Id { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public string UserName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Role { get; set; } = null!;
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.Models.DTOs.UserDTO
+{
+    public class UserLoginDTO
+    {
+        [Required(ErrorMessage = "Field required: UserName")]
+        public string UserName { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Password")]
+        public string Password { get; set; } = null!;
+    }
+}
+
+using RestAPI.Models.Entity;
+
+namespace RestAPI.Models.DTOs.UserDTO
+{
+    public class UserLoginResponseDTO
+    {
+        public AppUser User { get; set; } = null!;
+        public string Token { get; set; } = string.Empty;
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+using RestAPI.Helpers;
+
+namespace RestAPI.Models.DTOs.UserDTO
+{
+    public class UserRegistrationDTO
+    {
+        [Required(ErrorMessage = "Field required: Name")]
+        public string Name { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: UserName")]
+        public string UserName { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Email")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        public string Email { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Password")]
+        [PasswordValidation] // Asegúrate de tener implementado este atributo en Helpers
+        public string Password { get; set; } = null!;
+
+        [Required(ErrorMessage = "Field required: Role")]
+        public string Role { get; set; } = null!;
+    }
+}
+
+using System.Net;
+
+namespace RestAPI.Models.DTOs
+{
+    public class ResponseApi
+    {
+        public HttpStatusCode StatusCode { get; set; }
+        public bool IsSuccess { get; set; } = true;
+        public List<string> ErrorMessages { get; set; }
+        public object Result { get; set; }
+
+        public ResponseApi()
+        {
+            ErrorMessages = new List<string>();
+        }
+    }
+}
+
+Entity:
+namespace RestAPI.Models.Entity
+{
+    public class Alumno
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = null!;
+        public string Apellidos { get; set; } = null!;
+        public string Email { get; set; } = null!;
+
+        public int CursoId { get; set; }
+        public Curso Curso { get; set; } = null!;
+    }
+}
+
+using Microsoft.AspNetCore.Identity;
+
+namespace RestAPI.Models.Entity
+{
+    public class AppUser : IdentityUser
+    {
+        // Propiedad adicional para el nombre completo del usuario.
+        public string Name { get; set; }
+
+        // Propiedad adicional para el email completo del usuario.
+        public string Email { get; set; }
+    }
+}
+
+namespace RestAPI.Models.Entity
+{
+    public class Curso
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = null!;
+
+        public virtual ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
+        // Relación muchos a muchos con Profesores
+        public virtual ICollection<Profesor> Profesores { get; set; } = new List<Profesor>();
+
+        public int DepartamentoId { get; set; }
+        public Departamento Departamento { get; set; } = null!;
+
+        // Tutor asignado al curso (un Profesor que pertenece al mismo departamento)
+        public int TutorId { get; set; }
+        public Profesor Tutor { get; set; } = null!;
+    }
+}
+
+namespace RestAPI.Models.Entity
+{
+    public class Departamento
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = null!;
+
+        public virtual ICollection<Profesor> Profesores { get; set; } = new List<Profesor>();
+    }
+}
+
+namespace RestAPI.Models.Entity
+{
+    public class Profesor
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = null!;
+        public string Apellido { get; set; } = null!;
+        public string Email { get; set; } = null!;
+
+        public int DepartamentoId { get; set; }
+        public Departamento Departamento { get; set; } = null!;
+
+        // Relación muchos a muchos con Cursos
+        public virtual ICollection<Curso> Cursos { get; set; } = new List<Curso>();
+    }
+}
+
+namespace RestAPI.Models.Entity
+{
+    public enum EstadoPropuesta
+    {
+        StandBy,
+        Aceptada,
+        Denegada
+    }
+
+    public class Propuesta
+    {
+        public int Id { get; set; }
+        public string Titulo { get; set; } = null!;
+        public string Descripcion { get; set; } = null!;
+
+        public DateTime FechaEnvio { get; set; }
+        public DateTime? FechaGestion { get; set; }
+
+        public EstadoPropuesta Estado { get; set; }
+        // Se determina en función del curso del alumno
+        public string Departamento { get; set; } = null!;
+        // Indica si, al cambiar de false a true, se creará un proyecto.
+        public bool BooleanProyecto { get; set; }
+
+        public int AlumnoId { get; set; }
+        public Alumno Alumno { get; set; } = null!;
+    }
+}
+
+namespace RestAPI.Models.Entity
+{
+    public enum EstadoProyecto
+    {
+        Desarrollo,
+        Aprobado,
+        Suspendido,
+        Revision
+    }
+
+    public class Proyecto
+    {
+        public int Id { get; set; }
+        public string Titulo { get; set; } = null!;
+        public string Descripcion { get; set; } = null!;
+
+        public DateTime FechaEntrega { get; set; }
+        public EstadoProyecto EstadoProyecto { get; set; }
+
+        public int DepartamentoId { get; set; }
+        public Departamento Departamento { get; set; } = null!;
+
+        // Colección de fechas para tutorías
+        public virtual ICollection<DateTime> FechasTutoria { get; set; } = new List<DateTime>();
+
+        public int AlumnoId { get; set; }
+        public Alumno Alumno { get; set; } = null!;
+
+        // Tutor asignado al proyecto (un Profesor)
+        public int? TutorProyectoId { get; set; }
+        public Profesor TutorProyecto { get; set; } = null!;
+
+        // Constructor basado en una propuesta aprobada.
+        public Proyecto(Propuesta propuesta)
+        {
+            if (propuesta == null || propuesta.Estado != EstadoPropuesta.Aceptada || !propuesta.BooleanProyecto)
+                throw new ArgumentException("La propuesta no es válida para crear un proyecto.");
+
+            Titulo = propuesta.Titulo;
+            Descripcion = propuesta.Descripcion;
+            AlumnoId = propuesta.AlumnoId;
+            // Se asume que el Departamento se obtiene a través del curso del alumno.
+            Departamento = propuesta.Alumno.Curso.Departamento;
+        }
+
+        // Constructor por defecto para EF Core.
+        public Proyecto() { }
+    }
+}
+
+namespace RestAPI.Models.Entity
+{
+    public class User
+    {
+        // Identificador del usuario (por ejemplo, generado por Identity)
+        public string Id { get; set; } = null!;
+
+        // Nombre completo del usuario
+        public string Name { get; set; } = null!;
+
+        // Nombre de usuario (usado para login)
+        public string UserName { get; set; } = null!;
+
+        // Correo electrónico del usuario
+        public string Email { get; set; } = null!;
+
+        // Rol asignado al usuario (Solo puede haber tres roles: admin, profesor, alumno")
+        public string Role { get; set; } = null!;
+    }
+}
+
+Repository:
+	Irepository:
+using RestAPI.Models.Entity;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+namespace RestAPI.Repository.IRepository
+{
+    public interface IAlumnoRepository : IRepository<Alumno>
+    {
+    }
+}
+
+using RestAPI.Models.Entity;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Repository.IRepository
+{
+    public interface ICursoRepository : IRepository<Curso>
+    {
+    }
+}
+
+using RestAPI.Models.Entity;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace RestAPI.Repository.IRepository
+{
+    public interface IDepartamentoRepository : IRepository<Departamento>
+    {
+    }
+}
+
+using RestAPI.Models.Entity;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace RestAPI.Repository.IRepository
+{
+    public interface IProfesorRepository : IRepository<Profesor>
+    {
+    }
+}
+
+using RestAPI.Models.Entity;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace RestAPI.Repository.IRepository
+{
+    public interface IPropuestaRepository : IRepository<Propuesta>
+    {
+    }
+}
+
+using RestAPI.Models.Entity;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace RestAPI.Repository.IRepository
+{
+    public interface IProyectoRepository : IRepository<Proyecto>
+    {
+    }
+}
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+namespace RestAPI.Repository.IRepository
+{
+    public interface IRepository<TEntity> where TEntity : class
+    {
+        Task<ICollection<TEntity>> GetAllAsync();
+        Task<TEntity> GetAsync(int id);
+        Task<bool> ExistsAsync(int id);
+        Task<bool> CreateAsync(TEntity entity);
+        Task<bool> UpdateAsync(TEntity entity);
+        Task<bool> DeleteAsync(int id);
+        Task<bool> Save();
+        void ClearCache();
+    }
+}
+
+using RestAPI.Models.Entity;
+using RestAPI.Models.DTOs.UserDTO;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository.IRepository
+{
+    public interface IUserRepository
+    {
+        ICollection<AppUser> GetUsers();
+        AppUser GetUser(string id);
+        bool IsUniqueUser(string userName);
+        Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDto);
+        Task<UserLoginResponseDTO> Register(UserRegistrationDTO userRegistrationDto);
+    }
+}
+
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using RestAPI.Models.Entity;
+using RestAPI.Data;
+using RestAPI.Repository.IRepository;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository
+{
+    public class AlumnoRepository : IAlumnoRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+
+        private readonly string _alumnoCacheKey = "AlumnoCacheKey";
+        private readonly int _cacheExpirationTime = 3600; // en segundos
+
+        public AlumnoRepository(ApplicationDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        public async Task<bool> Save()
+        {
+            var result = await _context.SaveChangesAsync() >= 0;
+            if (result)
+            {
+                ClearCache();
+            }
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(_alumnoCacheKey);
+        }
+
+        public async Task<ICollection<Alumno>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(_alumnoCacheKey, out ICollection<Alumno> alumnosCached))
+                return alumnosCached;
+
+            var alumnosFromDb = await _context.Alumnos
+                .OrderBy(a => a.Nombre)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(_cacheExpirationTime));
+
+            _cache.Set(_alumnoCacheKey, alumnosFromDb, cacheEntryOptions);
+            return alumnosFromDb;
+        }
+
+        public async Task<Alumno> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(_alumnoCacheKey, out ICollection<Alumno> alumnosCached))
+            {
+                var alumno = alumnosCached.FirstOrDefault(a => a.Id == id);
+                if (alumno != null)
+                    return alumno;
+            }
+            return await _context.Alumnos.FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Alumnos.AnyAsync(a => a.Id == id);
+        }
+
+        public async Task<bool> CreateAsync(Alumno alumno)
+        {
+            await _context.Alumnos.AddAsync(alumno);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateAsync(Alumno alumno)
+        {
+            _context.Alumnos.Update(alumno);
+            return await Save();
+        }
+
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var alumno = await GetAsync(id);
+            if (alumno == null)
+                return false;
+
+            _context.Alumnos.Remove(alumno);
+            return await Save();
+        }
+    }
+}
+
+using RestAPI.Data;
+using RestAPI.Models.Entity;
+using RestAPI.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository
+{
+    public class CursoRepository : ICursoRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+
+        private readonly string _cursoCacheKey = "CursoCacheKey";
+        private readonly int _cacheExpirationTime = 3600; // en segundos
+
+        public CursoRepository(ApplicationDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        public async Task<bool> Save()
+        {
+            var result = await _context.SaveChangesAsync() >= 0;
+            if (result)
+            {
+                ClearCache();
+            }
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(_cursoCacheKey);
+        }
+
+        public async Task<ICollection<Curso>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(_cursoCacheKey, out ICollection<Curso> cursosCached))
+                return cursosCached;
+
+            var cursosFromDb = await _context.Cursos
+                .OrderBy(c => c.Nombre)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(_cacheExpirationTime));
+
+            _cache.Set(_cursoCacheKey, cursosFromDb, cacheEntryOptions);
+            return cursosFromDb;
+        }
+
+        public async Task<Curso> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(_cursoCacheKey, out ICollection<Curso> cursosCached))
+            {
+                var curso = cursosCached.FirstOrDefault(c => c.Id == id);
+                if (curso != null)
+                    return curso;
+            }
+            return await _context.Cursos.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Cursos.AnyAsync(c => c.Id == id);
+        }
+
+        public async Task<bool> CreateAsync(Curso curso)
+        {
+            await _context.Cursos.AddAsync(curso);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateAsync(Curso curso)
+        {
+            _context.Cursos.Update(curso);
+            return await Save();
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var curso = await GetAsync(id);
+            if (curso == null)
+                return false;
+
+            _context.Cursos.Remove(curso);
+            return await Save();
+        }
+    }
+}
+
+using RestAPI.Data;
+using RestAPI.Models.Entity;
+using RestAPI.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository
+{
+    public class DepartamentoRepository : IDepartamentoRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+
+        private readonly string _departamentoCacheKey = "DepartamentoCacheKey";
+        private readonly int _cacheExpirationTime = 3600; // en segundos
+
+        public DepartamentoRepository(ApplicationDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        public async Task<bool> Save()
+        {
+            var result = await _context.SaveChangesAsync() >= 0;
+            if (result)
+            {
+                ClearCache();
+            }
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(_departamentoCacheKey);
+        }
+
+        public async Task<ICollection<Departamento>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(_departamentoCacheKey, out ICollection<Departamento> departamentosCached))
+                return departamentosCached;
+
+            var departamentosFromDb = await _context.Departamentos
+                .OrderBy(d => d.Nombre)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(_cacheExpirationTime));
+
+            _cache.Set(_departamentoCacheKey, departamentosFromDb, cacheEntryOptions);
+            return departamentosFromDb;
+        }
+
+        public async Task<Departamento> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(_departamentoCacheKey, out ICollection<Departamento> departamentosCached))
+            {
+                var departamento = departamentosCached.FirstOrDefault(d => d.Id == id);
+                if (departamento != null)
+                    return departamento;
+            }
+            return await _context.Departamentos.FirstOrDefaultAsync(d => d.Id == id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Departamentos.AnyAsync(d => d.Id == id);
+        }
+
+        public async Task<bool> CreateAsync(Departamento departamento)
+        {
+            await _context.Departamentos.AddAsync(departamento);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateAsync(Departamento departamento)
+        {
+            _context.Departamentos.Update(departamento);
+            return await Save();
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var departamento = await GetAsync(id);
+            if (departamento == null)
+                return false;
+
+            _context.Departamentos.Remove(departamento);
+            return await Save();
+        }
+    }
+}
+
+using RestAPI.Data;
+using RestAPI.Models.Entity;
+using RestAPI.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository
+{
+    public class ProfesorRepository : IProfesorRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+
+        private readonly string _profesorCacheKey = "ProfesorCacheKey";
+        private readonly int _cacheExpirationTime = 3600; // en segundos
+
+        public ProfesorRepository(ApplicationDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        public async Task<bool> Save()
+        {
+            var result = await _context.SaveChangesAsync() >= 0;
+            if (result)
+            {
+                ClearCache();
+            }
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(_profesorCacheKey);
+        }
+
+        public async Task<ICollection<Profesor>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(_profesorCacheKey, out ICollection<Profesor> profesoresCached))
+                return profesoresCached;
+
+            var profesoresFromDb = await _context.Profesores
+                .OrderBy(p => p.Nombre)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(_cacheExpirationTime));
+
+            _cache.Set(_profesorCacheKey, profesoresFromDb, cacheEntryOptions);
+            return profesoresFromDb;
+        }
+
+        public async Task<Profesor> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(_profesorCacheKey, out ICollection<Profesor> profesoresCached))
+            {
+                var profesor = profesoresCached.FirstOrDefault(p => p.Id == id);
+                if (profesor != null)
+                    return profesor;
+            }
+            return await _context.Profesores.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Profesores.AnyAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> CreateAsync(Profesor profesor)
+        {
+            await _context.Profesores.AddAsync(profesor);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateAsync(Profesor profesor)
+        {
+            _context.Profesores.Update(profesor);
+            return await Save();
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var profesor = await GetAsync(id);
+            if (profesor == null)
+                return false;
+
+            _context.Profesores.Remove(profesor);
+            return await Save();
+        }
+    }
+}
+
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using RestAPI.Data;
+using RestAPI.Repository.IRepository;
+using RestAPI.Models.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository
+{
+    public class PropuestaRepository : IPropuestaRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+        private readonly string _propuestaCacheKey = "PropuestaCacheKey";
+        private readonly int _cacheExpirationTime = 3600; // en segundos
+
+        public PropuestaRepository(ApplicationDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        public async Task<bool> Save()
+        {
+            var result = await _context.SaveChangesAsync() >= 0;
+            if (result)
+            {
+                ClearCache();
+            }
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(_propuestaCacheKey);
+        }
+
+        public async Task<ICollection<Propuesta>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(_propuestaCacheKey, out ICollection<Propuesta> propuestasCached))
+                return propuestasCached;
+
+            var propuestasFromDb = await _context.Propuestas
+                .OrderBy(p => p.Titulo)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(_cacheExpirationTime));
+
+            _cache.Set(_propuestaCacheKey, propuestasFromDb, cacheEntryOptions);
+            return propuestasFromDb;
+        }
+
+        public async Task<Propuesta> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(_propuestaCacheKey, out ICollection<Propuesta> propuestasCached))
+            {
+                var propuesta = propuestasCached.FirstOrDefault(p => p.Id == id);
+                if (propuesta != null)
+                    return propuesta;
+            }
+
+            return await _context.Propuestas.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Propuestas.AnyAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> CreateAsync(Propuesta propuesta)
+        {
+            await _context.Propuestas.AddAsync(propuesta);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateAsync(Propuesta propuesta)
+        {
+            _context.Propuestas.Update(propuesta);
+            return await Save();
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var propuesta = await GetAsync(id);
+            if (propuesta == null)
+                return false;
+            _context.Propuestas.Remove(propuesta);
+            return await Save();
+        }
+    }
+}
+
+using RestAPI.Data;
+using RestAPI.Models.Entity;
+using RestAPI.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RestAPI.Repository
+{
+    public class ProyectoRepository : IProyectoRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+
+        private readonly string _proyectoCacheKey = "ProyectoCacheKey";
+        private readonly int _cacheExpirationTime = 3600; // en segundos
+
+        public ProyectoRepository(ApplicationDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        public async Task<bool> Save()
+        {
+            var result = await _context.SaveChangesAsync() >= 0;
+            if (result)
+            {
+                ClearCache();
+            }
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(_proyectoCacheKey);
+        }
+
+        public async Task<ICollection<Proyecto>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(_proyectoCacheKey, out ICollection<Proyecto> proyectosCached))
+                return proyectosCached;
+
+            var proyectosFromDb = await _context.Proyectos
+                .OrderBy(p => p.Titulo)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(_cacheExpirationTime));
+
+            _cache.Set(_proyectoCacheKey, proyectosFromDb, cacheEntryOptions);
+            return proyectosFromDb;
+        }
+
+        public async Task<Proyecto> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(_proyectoCacheKey, out ICollection<Proyecto> proyectosCached))
+            {
+                var proyecto = proyectosCached.FirstOrDefault(p => p.Id == id);
+                if (proyecto != null)
+                    return proyecto;
+            }
+            return await _context.Proyectos.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Proyectos.AnyAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> CreateAsync(Proyecto proyecto)
+        {
+            await _context.Proyectos.AddAsync(proyecto);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateAsync(Proyecto proyecto)
+        {
+            _context.Proyectos.Update(proyecto);
+            return await Save();
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var proyecto = await GetAsync(id);
+            if (proyecto == null)
+                return false;
+
+            _context.Proyectos.Remove(proyecto);
+            return await Save();
+        }
+    }
+}
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using System.Linq;
+using AutoMapper;
+using RestAPI.Data;
+using RestAPI.Models.DTOs.UserDTO;
+using RestAPI.Models.Entity;
+using RestAPI.Repository.IRepository;
+
+namespace RestAPI.Repository
+{
+    public class UserRepository : IUserRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly string _secretKey;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
+        private readonly int TokenExpirationMinutes = 7; // Ajustable según necesidad
+
+        public UserRepository(ApplicationDbContext context, IConfiguration config,
+            UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
+        {
+            _context = context;
+            _secretKey = config.GetValue<string>("ApiSettings:SecretKey");
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _mapper = mapper;
+        }
+
+        public ICollection<AppUser> GetUsers()
+        {
+            return _context.Users.OrderBy(u => u.UserName).ToList();
+        }
+
+        public AppUser GetUser(string id)
+        {
+            return _context.Users.FirstOrDefault(u => u.Id == id);
+        }
+        public bool IsUniqueUser(string userName)
+        {
+            return !_context.Users.Any(u => u.UserName == userName);
+        }
+
+        public async Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDto)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserName.ToLower() == userLoginDto.UserName.ToLower());
+            if (user == null || !await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
+            {
+                return new UserLoginResponseDTO { Token = "", User = null };
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_secretKey);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, roles.FirstOrDefault() ?? "")
+                }),
+                Expires = System.DateTime.UtcNow.AddMinutes(TokenExpirationMinutes),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var jwtToken = tokenHandler.CreateToken(tokenDescriptor);
+
+            return new UserLoginResponseDTO
+            {
+                Token = tokenHandler.WriteToken(jwtToken),
+                User = user
+            };
+        }
+
+        public async Task<UserLoginResponseDTO> Register(UserRegistrationDTO userRegistrationDto)
+        {
+            AppUser user = new AppUser()
+            {
+                UserName = userRegistrationDto.UserName,
+                Name = userRegistrationDto.Name,
+                Email = userRegistrationDto.Email,
+                NormalizedEmail = userRegistrationDto.Email.ToUpper()
+            };
+
+            var result = await _userManager.CreateAsync(user, userRegistrationDto.Password);
+            if (!result.Succeeded)
+            {
+                return null!;
+            }
+
+            if (!await _roleManager.RoleExistsAsync("admin"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("admin"));
+                await _roleManager.CreateAsync(new IdentityRole("register"));
+            }
+
+            await _userManager.AddToRoleAsync(user, userRegistrationDto.Role);
+
+            AppUser? newUser = _context.Users.FirstOrDefault(u => u.UserName == userRegistrationDto.UserName);
+
+            return new UserLoginResponseDTO
+            {
+                User = newUser,
+                Token = ""
+            };
+        }
+    }
+}
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using RestAPI.AutoMapper;
+using RestAPI.Data;
+using RestAPI.Models.Entity;
+using RestAPI.Repository.IRepository;
+using RestAPI.Repository;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configurar el DbContext con SQL Server usando la cadena "SqlConnection" en appsettings.json
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+
+// Configurar Identity con AppUser y roles
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// Registrar AutoMapper (buscando perfiles en el ensamblado donde se encuentra MappingProfile)
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Registrar MemoryCache para los repositorios que lo utilizan
+builder.Services.AddMemoryCache();
+
+// Registrar los repositorios específicos de GestorPFC
+builder.Services.AddScoped<IAlumnoRepository, AlumnoRepository>();
+builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+builder.Services.AddScoped<IDepartamentoRepository, DepartamentoRepository>();
+builder.Services.AddScoped<IProfesorRepository, ProfesorRepository>();
+builder.Services.AddScoped<IPropuestaRepository, PropuestaRepository>();
+builder.Services.AddScoped<IProyectoRepository, ProyectoRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Configurar autenticación con JWT
+var key = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+// Agregar controladores y Swagger para la documentación de la API
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Auth Bearer Token\r\n\r\nInsert the token as: Bearer {token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Scheme = "Bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer"
+            },
+            new List<string>()
+        }
+    });
+});
+
+// Configurar CORS (en desarrollo se permite cualquier origen)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", build =>
+    {
+        build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+// Configurar Logging (opcional)
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+var app = builder.Build();
+
+// Configurar el pipeline HTTP
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
+{
+  "ApiSettings": {
+    "SecretKey": "uE/!Wx9<t2{V73@reb^4]6c)N#TqgA;s&XHP_nf}d%+S>*"
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "SqlConnection": "Server=localhost,1433;Database=GestorPFC;User Id=sa;Password=Abcd123!;TrustServerCertificate=True;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "GestorPFC": "Debug"
+    }
+  }
+}
