@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepasoExamen", "RepasoExamen\RepasoExamen.csproj", "{0FBF6746-B592-45FC-9EF7-56D24712CAC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepasoAPI", "RepasoAPI\RepasoAPI.csproj", "{4C0A5C4B-4E04-4AB9-963D-5B9D72C1BBAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0FBF6746-B592-45FC-9EF7-56D24712CAC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FBF6746-B592-45FC-9EF7-56D24712CAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FBF6746-B592-45FC-9EF7-56D24712CAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FBF6746-B592-45FC-9EF7-56D24712CAC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C0A5C4B-4E04-4AB9-963D-5B9D72C1BBAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C0A5C4B-4E04-4AB9-963D-5B9D72C1BBAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C0A5C4B-4E04-4AB9-963D-5B9D72C1BBAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C0A5C4B-4E04-4AB9-963D-5B9D72C1BBAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE3C4902-2F3B-46C9-8533-285C6F240749}
+	EndGlobalSection
+EndGlobal
