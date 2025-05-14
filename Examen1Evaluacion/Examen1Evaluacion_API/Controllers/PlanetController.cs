@@ -38,5 +38,6 @@ namespace Examen1Evaluacion_API.Controllers
             planets.Add(newPlanet);
             return CreatedAtAction(nameof(GetPlanets), new { id = newPlanet.Id }, newPlanet);
         }
+
     }
 }

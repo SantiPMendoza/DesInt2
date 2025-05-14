@@ -24,9 +24,6 @@ namespace Examen2Evaluacion.ViewModels
         [ObservableProperty]
         private ObservableCollection<object> _navigationFooter = [];
 
-        [ObservableProperty]
-        private Visibility navigationVisibility = Visibility.Hidden; // Oculto al inicio
-
         public MainViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
@@ -39,6 +36,34 @@ namespace Examen2Evaluacion.ViewModels
 
         private void InitializeViewModel()
         {
+            NavigationItems =
+            [
+                new NavigationViewItem()
+                {
+                    Content = "Productos",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.Add16 },
+                    TargetPageType = typeof(ProductosView)
+                },
+                new NavigationViewItem()
+                {
+                    Content = "Pedidos",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.Album20 },
+                    TargetPageType = typeof(PedidosView)
+                },
+
+            ];
+
+            NavigationFooter =
+[
+                new NavigationViewItem()
+                {
+                    Content = "Datos",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.CalendarDay24 },
+                    TargetPageType = typeof(DatosView)
+                },
+        ];
+
+            _isInitialized = true;
         }
 
     }

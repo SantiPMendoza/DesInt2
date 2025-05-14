@@ -9,5 +9,5 @@ global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
 global using Microsoft.Extensions.Hosting;
 global using Wpf.Ui.Abstractions.Controls;
-global using Examen2Evaluacion.Views;
+global using Examen2Evaluacion.Views.Pages;
 global using Examen2Evaluacion.ViewModels;

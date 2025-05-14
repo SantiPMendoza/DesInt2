@@ -29,7 +29,7 @@ namespace Examen2Evaluacion
                 _ = services.AddNavigationViewPageProvider();
 
                 // API Service
-                services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://localhost:7060/") });
+                services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://localhost:7228/") });
 
 
                 // App Host
@@ -45,12 +45,16 @@ namespace Examen2Evaluacion
 
 
                 // ViewModels
-                    //_ = services.AddSingleton<LoginViewModel>();
-
+                _ = services.AddSingleton<PedidosViewModel>();
+                _ = services.AddSingleton<ProductosViewModel>();
+                _ = services.AddSingleton<DatosViewModel>();
+                
 
 
                 // Views
-                    //_ = services.AddSingleton<LoginPage>();
+                _ = services.AddSingleton<DatosView>();
+                _ = services.AddSingleton<PedidosView>();
+                _ = services.AddSingleton<ProductosView>();
 
                 //_ = services.AddSingleton<Views.SplashScreen>();
 
