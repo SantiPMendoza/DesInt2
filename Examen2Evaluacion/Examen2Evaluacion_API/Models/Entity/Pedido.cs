@@ -9,6 +9,7 @@ namespace Examen2Evaluacion_API.Models.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int UsuarioId { get; set; }
+        public DateTime Fecha { get; set; }
         public Usuario Usuario { get; set; }
         public List<Producto> Productos { get; set; } = new List<Producto>();
     }

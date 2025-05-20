@@ -38,6 +38,10 @@ namespace Examen2Evaluacion
                 // Navigation service
                 _ = services.AddSingleton<INavigationService, NavigationService>();
 
+                // Services
+                services.AddSingleton<HttpJsonClient>();
+
+
 
                 // Main Window with Navigation
                 _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();

@@ -16,12 +16,32 @@ namespace Examen2Evaluacion_API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            // Configuración de la relación uno a muchos entre Usuario y Pedido
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Pedido>()
                 .HasOne(p => p.Usuario)
                 .WithMany(u => u.Pedidos)
                 .HasForeignKey(p => p.UsuarioId);
 
+
+            // Configuración de la relación muchos a muchos entre Usuario y Producto
+            modelBuilder.Entity<UsuarioProducto>()
+    .HasKey(up => new { up.UsuarioId, up.ProductoId });
+
+            modelBuilder.Entity<UsuarioProducto>()
+                .HasOne(up => up.Usuario)
+                .WithMany(u => u.UsuarioProductos)
+                .HasForeignKey(up => up.UsuarioId);
+
+            modelBuilder.Entity<UsuarioProducto>()
+                .HasOne(up => up.Producto)
+                .WithMany(p => p.UsuarioProductos)
+                .HasForeignKey(up => up.ProductoId);
+
+
         }
+
+
     }
 }

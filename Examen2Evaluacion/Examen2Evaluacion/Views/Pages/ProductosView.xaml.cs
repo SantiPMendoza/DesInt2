@@ -24,9 +24,11 @@ namespace Examen2Evaluacion.Views.Pages
         public ProductosView(ProductosViewModel viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             InitializeComponent();
+
+            viewModel.OnPageLoaded();
         }
     }
 }

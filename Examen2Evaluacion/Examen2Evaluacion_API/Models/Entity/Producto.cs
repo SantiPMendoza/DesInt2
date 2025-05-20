@@ -14,6 +14,8 @@ namespace Examen2Evaluacion_API.Models.Entity
 
         [Required]  
         public double Precio { get; set; }
+
+        public ICollection<UsuarioProducto> UsuarioProductos { get; set; } = new List<UsuarioProducto>();
     }
 
 }

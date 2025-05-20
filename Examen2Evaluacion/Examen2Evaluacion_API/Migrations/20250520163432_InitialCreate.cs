@@ -177,7 +177,8 @@ namespace Examen2Evaluacion_API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UsuarioId = table.Column<int>(type: "int", nullable: false)
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,6 +209,30 @@ namespace Examen2Evaluacion_API.Migrations
                         column: x => x.PedidoId,
                         principalTable: "Pedidos",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UsuarioProducto",
+                columns: table => new
+                {
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    ProductoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsuarioProducto", x => new { x.UsuarioId, x.ProductoId });
+                    table.ForeignKey(
+                        name: "FK_UsuarioProducto_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UsuarioProducto_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -258,6 +283,11 @@ namespace Examen2Evaluacion_API.Migrations
                 name: "IX_Productos_PedidoId",
                 table: "Productos",
                 column: "PedidoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsuarioProducto_ProductoId",
+                table: "UsuarioProducto",
+                column: "ProductoId");
         }
 
         /// <inheritdoc />
@@ -279,13 +309,16 @@ namespace Examen2Evaluacion_API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Productos");
+                name: "UsuarioProducto");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Productos");
 
             migrationBuilder.DropTable(
                 name: "Pedidos");

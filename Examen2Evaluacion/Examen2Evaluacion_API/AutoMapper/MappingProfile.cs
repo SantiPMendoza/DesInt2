@@ -25,6 +25,9 @@ namespace Examen2Evaluacion_API.AutoMapper
 
             // Mapeos para User (AppUser)
             CreateMap<AppUser, UserDTO>();
+
+
+
         }
     }
 }

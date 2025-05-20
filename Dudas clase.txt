@@ -1,0 +1,12 @@
+Dudas clase:
+
+	· Examen2Evaluacion (Tienda):
+
+		- Relación Usuarios-Productos N-N?
+		- Flujo de trabajo con token y autenticación sin UI de Login?
+
+
+
+	· Examen1Evaluacion (Planetas):
+
+		- Navegacion interfaz básica o uso de NavigationService?

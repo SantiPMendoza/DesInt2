@@ -7,7 +7,7 @@ using Examen2Evaluacion_API.Repository.IRepository;
 
 namespace Examen2Evaluacion_API.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [AllowAnonymous] // Cambiar a [Authorize(Roles = "admin")] si se requiere autenticación
     [Route("api/[controller]")]
     [ApiController]
     public class PedidoController : BaseController<Pedido, PedidoDTO, CreatePedidoDTO>

@@ -100,6 +100,9 @@ namespace Examen2Evaluacion_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
@@ -154,6 +157,21 @@ namespace Examen2Evaluacion_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.UsuarioProducto", b =>
+                {
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UsuarioId", "ProductoId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("UsuarioProducto");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -307,6 +325,25 @@ namespace Examen2Evaluacion_API.Migrations
                         .HasForeignKey("PedidoId");
                 });
 
+            modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.UsuarioProducto", b =>
+                {
+                    b.HasOne("Examen2Evaluacion_API.Models.Entity.Producto", "Producto")
+                        .WithMany("UsuarioProductos")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Examen2Evaluacion_API.Models.Entity.Usuario", "Usuario")
+                        .WithMany("UsuarioProductos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -363,9 +400,16 @@ namespace Examen2Evaluacion_API.Migrations
                     b.Navigation("Productos");
                 });
 
+            modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Producto", b =>
+                {
+                    b.Navigation("UsuarioProductos");
+                });
+
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Usuario", b =>
                 {
                     b.Navigation("Pedidos");
+
+                    b.Navigation("UsuarioProductos");
                 });
 #pragma warning restore 612, 618
         }

@@ -35,8 +35,8 @@ namespace Examen2Evaluacion_API.Repository
 
         public async Task<ICollection<Producto>> GetAllAsync()
         {
-            if (_cache.TryGetValue(ProductoCacheKey, out ICollection<Producto> EditorialsCached))
-                return EditorialsCached;
+            if (_cache.TryGetValue(ProductoCacheKey, out ICollection<Producto> ProductosCached))
+                return ProductosCached;
 
             var EditorialsFromDb = await _context.Productos.OrderBy(c => c.Nombre).ToListAsync();
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -48,9 +48,9 @@ namespace Examen2Evaluacion_API.Repository
 
         public async Task<Producto> GetAsync(int id)
         {
-            if (_cache.TryGetValue(ProductoCacheKey, out ICollection<Producto> EditorialsCached))
+            if (_cache.TryGetValue(ProductoCacheKey, out ICollection<Producto> ProductosCached))
             {
-                var EditorialEntity = EditorialsCached.FirstOrDefault(c => c.Id == id);
+                var EditorialEntity = ProductosCached.FirstOrDefault(c => c.Id == id);
                 if (EditorialEntity != null)
                     return EditorialEntity;
             }
