@@ -40,6 +40,8 @@ namespace Examen2Evaluacion
 
                 // Services
                 services.AddSingleton<HttpJsonClient>();
+                services.AddSingleton<IAuthService, AuthService>();
+
 
 
 
@@ -52,13 +54,16 @@ namespace Examen2Evaluacion
                 _ = services.AddSingleton<PedidosViewModel>();
                 _ = services.AddSingleton<ProductosViewModel>();
                 _ = services.AddSingleton<DatosViewModel>();
-                
+                _ = services.AddSingleton<LoginViewModel>();
+
 
 
                 // Views
                 _ = services.AddSingleton<DatosView>();
                 _ = services.AddSingleton<PedidosView>();
                 _ = services.AddSingleton<ProductosView>();
+                _ = services.AddSingleton<LoginView>();
+
 
                 //_ = services.AddSingleton<Views.SplashScreen>();
 

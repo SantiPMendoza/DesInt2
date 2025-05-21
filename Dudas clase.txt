@@ -1,5 +1,9 @@
 Dudas clase:
 
+	· General:
+
+		- Uso de clases internas, ejemplo: CreateDTO dentro de DTO y Interfaces 		dentro de la clase que la implementa.
+
 	· Examen2Evaluacion (Tienda):
 
 		- Relación Usuarios-Productos N-N?

@@ -11,3 +11,4 @@ global using Microsoft.Extensions.Hosting;
 global using Wpf.Ui.Abstractions.Controls;
 global using Examen2Evaluacion.Views.Pages;
 global using Examen2Evaluacion.ViewModels;
+global using Examen2Evaluacion.Models;

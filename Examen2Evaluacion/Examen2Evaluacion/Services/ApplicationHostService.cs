@@ -38,7 +38,7 @@ namespace Examen2Evaluacion.Services
                 _navigationWindow = (serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow)!;
                 _navigationWindow!.ShowWindow();
 
-                //_ = _navigationWindow.Navigate(typeof(Views.MainWindow));
+                _ = _navigationWindow.Navigate(typeof(LoginView));
             }
 
             await Task.CompletedTask;
