@@ -4,5 +4,6 @@ namespace Examen2Evaluacion_API.Repository.IRepository
 {
     public interface IPedidoRepository : IRepository<Pedido>
     {
+
     }
 }

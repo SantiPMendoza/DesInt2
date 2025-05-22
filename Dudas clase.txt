@@ -8,7 +8,7 @@ Dudas clase:
 
 		- Relación Usuarios-Productos N-N?
 		- Flujo de trabajo con token y autenticación sin UI de Login?
-
+		- Lista de productos en Pedidos? (solo int, mapeo a productos...)
 
 
 	· Examen1Evaluacion (Planetas):

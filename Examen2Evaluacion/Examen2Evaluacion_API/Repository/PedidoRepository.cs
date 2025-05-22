@@ -35,27 +35,29 @@ namespace Examen2Evaluacion_API.Repository
 
         public async Task<ICollection<Pedido>> GetAllAsync()
         {
-            if (_cache.TryGetValue(PedidoCacheKey, out ICollection<Pedido> EditorialsCached))
-                return EditorialsCached;
+            if (_cache.TryGetValue(PedidoCacheKey, out ICollection<Pedido> cached))
+                return cached;
 
-            var EditorialsFromDb = await _context.Pedidos.OrderBy(c => c.Id).ToListAsync();
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                  .SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheExpirationTime));
+            var pedidos = await _context.Pedidos
+                .Include(p => p.Productos)
+                .Include(p => p.Usuario)
+                .OrderBy(p => p.Id)
+                .ToListAsync();
 
-            _cache.Set(PedidoCacheKey, EditorialsFromDb, cacheEntryOptions);
-            return EditorialsFromDb;
+            _cache.Set(PedidoCacheKey, pedidos, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(CacheExpirationTime)
+            });
+
+            return pedidos;
         }
 
         public async Task<Pedido> GetAsync(int id)
         {
-            if (_cache.TryGetValue(PedidoCacheKey, out ICollection<Pedido> EditorialsCached))
-            {
-                var EditorialEntity = EditorialsCached.FirstOrDefault(c => c.Id == id);
-                if (EditorialEntity != null)
-                    return EditorialEntity;
-            }
-
-            return await _context.Pedidos.FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Pedidos
+                .Include(p => p.Productos)
+                .Include(p => p.Usuario)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<bool> ExistsAsync(int id)

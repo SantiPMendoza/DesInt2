@@ -11,7 +11,7 @@ namespace Examen2Evaluacion_API.Models.Entity
         public int UsuarioId { get; set; }
         public DateTime Fecha { get; set; }
         public Usuario Usuario { get; set; }
-        public List<Producto> Productos { get; set; } = new List<Producto>();
+        public List<Producto> Productos { get; set; } = [];
     }
 
 }

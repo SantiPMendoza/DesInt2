@@ -7,7 +7,7 @@ using Examen2Evaluacion_API.Repository.IRepository;
 
 namespace Examen2Evaluacion_API.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [AllowAnonymous] // Cambiar cuando eso bro
     [Route("api/[controller]")]
     [ApiController]
     public class UsuarioController : BaseController<Usuario, UsuarioDTO, CreateUsuarioDTO>
