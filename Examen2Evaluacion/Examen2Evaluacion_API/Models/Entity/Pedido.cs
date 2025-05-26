@@ -15,6 +15,7 @@ public class Pedido
     public Usuario Usuario { get; set; } = null!;
 
     public ICollection<PedidoProducto> PedidoProductos { get; set; } = [];
+
 }
 
 
