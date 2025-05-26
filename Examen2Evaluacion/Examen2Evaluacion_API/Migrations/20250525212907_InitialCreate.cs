@@ -52,6 +52,20 @@ namespace Examen2Evaluacion_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Productos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Precio = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Productos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Usuarios",
                 columns: table => new
                 {
@@ -177,8 +191,8 @@ namespace Examen2Evaluacion_API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,26 +203,6 @@ namespace Examen2Evaluacion_API.Migrations
                         principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Productos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Precio = table.Column<double>(type: "float", nullable: false),
-                    PedidoId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Productos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Productos_Pedidos_PedidoId",
-                        column: x => x.PedidoId,
-                        principalTable: "Pedidos",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -231,6 +225,30 @@ namespace Examen2Evaluacion_API.Migrations
                         name: "FK_UsuarioProducto_Usuarios_UsuarioId",
                         column: x => x.UsuarioId,
                         principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PedidoProducto",
+                columns: table => new
+                {
+                    PedidoId = table.Column<int>(type: "int", nullable: false),
+                    ProductoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PedidoProducto", x => new { x.PedidoId, x.ProductoId });
+                    table.ForeignKey(
+                        name: "FK_PedidoProducto_Pedidos_PedidoId",
+                        column: x => x.PedidoId,
+                        principalTable: "Pedidos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PedidoProducto_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -275,14 +293,14 @@ namespace Examen2Evaluacion_API.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PedidoProducto_ProductoId",
+                table: "PedidoProducto",
+                column: "ProductoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pedidos_UsuarioId",
                 table: "Pedidos",
                 column: "UsuarioId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Productos_PedidoId",
-                table: "Productos",
-                column: "PedidoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UsuarioProducto_ProductoId",
@@ -309,6 +327,9 @@ namespace Examen2Evaluacion_API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "PedidoProducto");
+
+            migrationBuilder.DropTable(
                 name: "UsuarioProducto");
 
             migrationBuilder.DropTable(
@@ -318,10 +339,10 @@ namespace Examen2Evaluacion_API.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Productos");
+                name: "Pedidos");
 
             migrationBuilder.DropTable(
-                name: "Pedidos");
+                name: "Productos");
 
             migrationBuilder.DropTable(
                 name: "Usuarios");

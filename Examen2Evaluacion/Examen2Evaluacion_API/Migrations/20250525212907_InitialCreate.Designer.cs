@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examen2Evaluacion_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250520163432_InitialCreate")]
+    [Migration("20250525212907_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -116,6 +116,21 @@ namespace Examen2Evaluacion_API.Migrations
                     b.ToTable("Pedidos");
                 });
 
+            modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.PedidoProducto", b =>
+                {
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PedidoId", "ProductoId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("PedidoProducto");
+                });
+
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -128,15 +143,10 @@ namespace Examen2Evaluacion_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PedidoId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Precio")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PedidoId");
 
                     b.ToTable("Productos");
                 });
@@ -313,7 +323,7 @@ namespace Examen2Evaluacion_API.Migrations
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Pedido", b =>
                 {
                     b.HasOne("Examen2Evaluacion_API.Models.Entity.Usuario", "Usuario")
-                        .WithMany("Pedidos")
+                        .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -321,11 +331,23 @@ namespace Examen2Evaluacion_API.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Producto", b =>
+            modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.PedidoProducto", b =>
                 {
-                    b.HasOne("Examen2Evaluacion_API.Models.Entity.Pedido", null)
-                        .WithMany("Productos")
-                        .HasForeignKey("PedidoId");
+                    b.HasOne("Examen2Evaluacion_API.Models.Entity.Pedido", "Pedido")
+                        .WithMany("PedidoProductos")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Examen2Evaluacion_API.Models.Entity.Producto", "Producto")
+                        .WithMany("PedidoProductos")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pedido");
+
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.UsuarioProducto", b =>
@@ -400,18 +422,18 @@ namespace Examen2Evaluacion_API.Migrations
 
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Pedido", b =>
                 {
-                    b.Navigation("Productos");
+                    b.Navigation("PedidoProductos");
                 });
 
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Producto", b =>
                 {
+                    b.Navigation("PedidoProductos");
+
                     b.Navigation("UsuarioProductos");
                 });
 
             modelBuilder.Entity("Examen2Evaluacion_API.Models.Entity.Usuario", b =>
                 {
-                    b.Navigation("Pedidos");
-
                     b.Navigation("UsuarioProductos");
                 });
 #pragma warning restore 612, 618

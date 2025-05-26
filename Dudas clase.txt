@@ -3,9 +3,11 @@ Dudas clase:
 	· General:
 
 		- Uso de clases internas, ejemplo: CreateDTO dentro de DTO y Interfaces 		dentro de la clase que la implementa.
+		- Apis>Repositories: Utilizar Entities o DTOs?
 
 	· Examen2Evaluacion (Tienda):
 
+		- Sin relación Usuario-Pedido?
 		- Relación Usuarios-Productos N-N?
 		- Flujo de trabajo con token y autenticación sin UI de Login?
 		- Lista de productos en Pedidos? (solo int, mapeo a productos...)

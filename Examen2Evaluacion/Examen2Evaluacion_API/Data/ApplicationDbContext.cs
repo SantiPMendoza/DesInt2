@@ -16,18 +16,45 @@ namespace Examen2Evaluacion_API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            // Configuración de la relación uno a muchos entre Usuario y Pedido
             base.OnModelCreating(modelBuilder);
+            /** Configuración de la relación uno a muchos entre Usuario y Pedido
+            
             modelBuilder.Entity<Pedido>()
                 .HasOne(p => p.Usuario)
                 .WithMany(u => u.Pedidos)
-                .HasForeignKey(p => p.UsuarioId);
+                .HasForeignKey(p => p.UsuarioId);*/
 
+
+            // Relación uno a muchos entre Pedido y Producto explicita
+            modelBuilder.Entity<PedidoProducto>()
+    .HasKey(pp => new { pp.PedidoId, pp.ProductoId });
+
+            modelBuilder.Entity<PedidoProducto>()
+                .HasOne(pp => pp.Pedido)
+                .WithMany(p => p.PedidoProductos)
+                .HasForeignKey(pp => pp.PedidoId);
+
+            modelBuilder.Entity<PedidoProducto>()
+                .HasOne(pp => pp.Producto)
+                .WithMany(p => p.PedidoProductos)
+                .HasForeignKey(pp => pp.ProductoId);
+
+            /**
+             * Relación muchos a muchos entre Pedido y Producto (implicita)
+             * 
+                modelBuilder.Entity<Pedido>()
+                .HasMany(p => p.Productos)
+                .WithMany(pr => pr.Pedidos)
+                .UsingEntity<Dictionary<string, object>>(
+                 "PedidoProductos",
+                    j => j.HasOne<Producto>().WithMany().HasForeignKey("ProductoId"),
+                    j => j.HasOne<Pedido>().WithMany().HasForeignKey("PedidoId"),
+                    j => j.HasKey("PedidoId", "ProductoId"));
+             * */
 
             // Configuración de la relación muchos a muchos entre Usuario y Producto
             modelBuilder.Entity<UsuarioProducto>()
-    .HasKey(up => new { up.UsuarioId, up.ProductoId });
+                .HasKey(up => new { up.UsuarioId, up.ProductoId });
 
             modelBuilder.Entity<UsuarioProducto>()
                 .HasOne(up => up.Usuario)

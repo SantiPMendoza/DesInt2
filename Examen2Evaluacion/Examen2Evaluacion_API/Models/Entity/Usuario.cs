@@ -16,7 +16,7 @@ namespace Examen2Evaluacion_API.Models.Entity
         [Required]
         public string Email { get; set; }
 
-        public List<Pedido> Pedidos { get; set; } = new List<Pedido>();
+        //public List<Pedido> Pedidos { get; set; } = new List<Pedido>();
 
         public ICollection<UsuarioProducto> UsuarioProductos { get; set; } = new List<UsuarioProducto>();
     }

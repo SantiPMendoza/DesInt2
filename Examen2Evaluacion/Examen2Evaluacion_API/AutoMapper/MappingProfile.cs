@@ -18,13 +18,24 @@ namespace Examen2Evaluacion_API.AutoMapper
             CreateMap<CreateUsuarioDTO, Usuario>();
 
             // Pedido
+            CreateMap<Pedido, PedidoDTO>();
+            CreateMap<CreatePedidoDTO, Pedido>();
+
+            CreateMap<Pedido, PedidoDTO>()
+                .ForMember(dest => dest.ProductosId, opt => opt.MapFrom(src => src.PedidoProductos.Select(pp => pp.ProductoId)));
+
+            CreateMap<CreatePedidoDTO, Pedido>()
+                .ForMember(dest => dest.PedidoProductos, opt => opt.Ignore()); // Lo asignarás manualmente
+
+
+            /**
             CreateMap<Pedido, PedidoDTO>()
                 .ForMember(dest => dest.Productos, opt => opt.MapFrom(src => src.Productos.Select(p => p.Id)));
 
             CreateMap<CreatePedidoDTO, Pedido>()
                 .ForMember(dest => dest.Productos, opt => opt.Ignore()); // Se asignan manualmente
 
-
+            */
             /** Para el posible mapeo de Usuario
              * 
                         CreateMap<Pedido, PedidoDTO>()

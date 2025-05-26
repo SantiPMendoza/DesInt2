@@ -32,7 +32,7 @@ namespace Examen2Evaluacion_API.Repository
         {
             _cache.Remove(PedidoCacheKey);
         }
-
+        /**
         public async Task<ICollection<Pedido>> GetAllAsync()
         {
             if (_cache.TryGetValue(PedidoCacheKey, out ICollection<Pedido> cached))
@@ -59,6 +59,44 @@ namespace Examen2Evaluacion_API.Repository
                 .Include(p => p.Usuario)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
+        */
+        public async Task<ICollection<Pedido>> GetAllAsync()
+        {
+            if (_cache.TryGetValue(PedidoCacheKey, out ICollection<Pedido> PedidosCached))
+                return PedidosCached;
+
+            var pedidosFromDb = await _context.Pedidos
+                .Include(p => p.PedidoProductos)
+                    .ThenInclude(pp => pp.Producto)
+                .Include(p => p.Usuario)
+                .OrderBy(p => p.Id)
+                .ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                  .SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheExpirationTime));
+
+            _cache.Set(PedidoCacheKey, pedidosFromDb, cacheEntryOptions);
+            return pedidosFromDb;
+        }
+
+
+
+        public async Task<Pedido> GetAsync(int id)
+        {
+            if (_cache.TryGetValue(PedidoCacheKey, out ICollection<Pedido> PedidosCached))
+            {
+                var pedidoEntity = PedidosCached.FirstOrDefault(c => c.Id == id);
+                if (pedidoEntity != null)
+                    return pedidoEntity;
+            }
+
+            return await _context.Pedidos
+                .Include(p => p.PedidoProductos)
+                    .ThenInclude(pp => pp.Producto)
+                .Include(p => p.Usuario)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
 
         public async Task<bool> ExistsAsync(int id)
         {

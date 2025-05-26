@@ -14,14 +14,13 @@ using System.Net;
 [ApiController]
 public class PedidoController : BaseController<Pedido, PedidoDTO, CreatePedidoDTO>
 {
-    private readonly ApplicationDbContext _context;
+    //private readonly ApplicationDbContext _context;
 
-    public PedidoController(IPedidoRepository pedidoRepository, ApplicationDbContext context, IMapper mapper, ILogger<PedidoController> logger)
+    public PedidoController(IPedidoRepository pedidoRepository, IMapper mapper, ILogger<PedidoController> logger)
         : base(pedidoRepository, mapper, logger)
     {
-        _context = context;
+        //_context = context;
     }
-
     [HttpPost]
     [Authorize(Roles = "admin")]
     public override async Task<IActionResult> Create([FromBody] CreatePedidoDTO createDto)
@@ -31,26 +30,31 @@ public class PedidoController : BaseController<Pedido, PedidoDTO, CreatePedidoDT
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var pedido = _mapper.Map<Pedido>(createDto);
+            // Creamos el Pedido básico (sin productos aún)
+            var pedido = new Pedido
+            {
+                Fecha = DateTime.UtcNow,
+                UsuarioId = createDto.UsuarioId
+            };
 
-            // Cargar los productos desde la base de datos
-            var productos = await _context.Productos
-                .Where(p => createDto.Productos.Contains(p.Id))
-                .ToListAsync();
-
-            pedido.Productos = productos;
+            // Crear las relaciones con los productos
+            pedido.PedidoProductos = createDto.ProductosId.Select(prodId => new PedidoProducto
+            {
+                ProductoId = prodId,
+                Pedido = pedido
+            }).ToList();
 
             if (!await _repository.CreateAsync(pedido))
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Error creating pedido");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error creando el pedido");
 
             var dto = _mapper.Map<PedidoDTO>(pedido);
             return CreatedAtRoute("Pedido_GetEntity", new { id = dto.Id }, dto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating pedido");
+            _logger.LogError(ex, "Error creando el pedido");
             return StatusCode((int)HttpStatusCode.InternalServerError, ex.InnerException?.Message ?? ex.Message);
         }
-
     }
+
 }
