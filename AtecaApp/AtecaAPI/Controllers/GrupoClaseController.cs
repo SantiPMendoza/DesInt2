@@ -11,10 +11,10 @@ namespace AtecaAPI.Controllers
     [AllowAnonymous] // Cambiar cuando eso bro
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservaController : BaseController<Reserva, ReservaDTO, CreateReservaDTO>
+    public class GrupoClaseController : BaseController<GrupoClase, GrupoClaseDTO, CreateGrupoClaseDTO>
     {
-        public ReservaController(IReservaRepository reservaRepository, IMapper mapper, ILogger<ReservaController> logger)
-            : base(reservaRepository, mapper, logger)
+        public GrupoClaseController(IGrupoClaseRepository grupoClaseRepository, IMapper mapper, ILogger<GrupoClaseController> logger)
+            : base(grupoClaseRepository, mapper, logger)
         {
         }
     }

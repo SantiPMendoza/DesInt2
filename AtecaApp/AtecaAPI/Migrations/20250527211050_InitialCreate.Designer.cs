@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AtecaAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250527173930_InitialCreate")]
+    [Migration("20250527211050_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -137,7 +137,7 @@ namespace AtecaAPI.Migrations
                     b.ToTable("DiasNoLectivos");
                 });
 
-            modelBuilder.Entity("AtecaAPI.Models.Entity.DisponibilidadAula", b =>
+            modelBuilder.Entity("AtecaAPI.Models.Entity.FranjaHoraria", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +162,7 @@ namespace AtecaAPI.Migrations
                     b.HasIndex("DiaSemana", "HoraInicio", "HoraFin")
                         .IsUnique();
 
-                    b.ToTable("DisponibilidadesAula");
+                    b.ToTable("FranjasHorarias");
                 });
 
             modelBuilder.Entity("AtecaAPI.Models.Entity.GrupoClase", b =>

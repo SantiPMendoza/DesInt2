@@ -60,7 +60,7 @@ namespace AtecaAPI.Repository
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Administradores.AnyAsync(c => c.Id == id);
+            return await _context.Profesores.AnyAsync(c => c.Id == id);
         }
 
         public async Task<bool> CreateAsync(Profesor profesor)

@@ -1,6 +1,6 @@
 ﻿using AtecaAPI.Models.DTOs;
-
 using AtecaAPI.Models.Entity;
+using AtecaAPI.Repository;
 using AtecaAPI.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +11,10 @@ namespace AtecaAPI.Controllers
     [AllowAnonymous] // Cambiar cuando eso bro
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservaController : BaseController<Reserva, ReservaDTO, CreateReservaDTO>
+    public class FranjaHorariaController : BaseController<FranjaHoraria, FranjaHorariaDTO, CreateFranjaHorariaDTO>
     {
-        public ReservaController(IReservaRepository reservaRepository, IMapper mapper, ILogger<ReservaController> logger)
-            : base(reservaRepository, mapper, logger)
+        public FranjaHorariaController(IFranjaHorariaRepository franjaHorariaRepository, IMapper mapper, ILogger<FranjaHorariaController> logger)
+            : base(franjaHorariaRepository, mapper, logger)
         {
         }
     }

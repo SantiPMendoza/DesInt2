@@ -17,12 +17,12 @@
 
                 await context.Database.MigrateAsync();
 
-                // 🔹 Crea rol "Administrador" si no existe
+                // Crea rol "Administrador" si no existe
                 var adminRole = "Administrador";
                 if (!await roleManager.RoleExistsAsync(adminRole))
                     await roleManager.CreateAsync(new IdentityRole(adminRole));
 
-                // 🔹 Crea usuario administrador
+                // Crea usuario administrador
                 var email = "admin@ateca.com";
                 var adminUser = await userManager.FindByEmailAsync(email);
                 if (adminUser == null)
@@ -42,7 +42,7 @@
                         AppUserId = adminUser.Id
                     });
                 }
-            // 🔹 Crea usuario profesor de ejemplo
+            // Crea usuario profesor de ejemplo
             if (!context.Profesores.Any())
             {
                 context.Profesores.Add(new Profesor
@@ -53,21 +53,20 @@
 
                 });
             }
-            // 🔹 Crea horario base si no existe
-            if (!context.DisponibilidadesAula.Any())
+            // Crea horario base si no existe
+            if (!context.FranjasHorarias.Any())
                 {
-                    var bloques = new List<DisponibilidadAula>
+                    var bloques = new List<FranjaHoraria>
                 {
                     new() { DiaSemana = DayOfWeek.Monday, HoraInicio = new(16, 00), HoraFin = new(16, 55) },
                     new() { DiaSemana = DayOfWeek.Monday, HoraInicio = new(17, 00), HoraFin = new(17, 55) },
                     new() { DiaSemana = DayOfWeek.Monday, HoraInicio = new(18, 00), HoraFin = new(18, 55) },
-                    // ... añade más días y bloques según tu horario
                 };
 
-                    context.DisponibilidadesAula.AddRange(bloques);
+                    context.FranjasHorarias.AddRange(bloques);
                 }
 
-                // 🔹 Grupo de ejemplo
+                // Grupo de ejemplo
                 if (!context.GruposClase.Any())
                 {
                     context.GruposClase.AddRange(
@@ -76,7 +75,7 @@
                     );
                 }
 
-                // 🔹 Día no lectivo de prueba
+                // Día no lectivo de prueba
                 if (!context.DiasNoLectivos.Any())
                 {
                     context.DiasNoLectivos.Add(new DiaNoLectivo

@@ -1,8 +1,8 @@
-﻿using AtecaAPI.Models.DTOs;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 
-namespace AtecaAPI.Models.DTOs.ReservaDTOs{
+namespace AtecaAPI.Models.DTOs{
 
 public class ReservaDTO : CreateReservaDTO
 {

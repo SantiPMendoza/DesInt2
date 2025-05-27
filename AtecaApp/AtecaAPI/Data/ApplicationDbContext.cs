@@ -15,7 +15,7 @@ namespace AtecaAPI.Data
         public DbSet<Administrador> Administradores { get; set; }
         public DbSet<GrupoClase> GruposClase { get; set; }
         public DbSet<Reserva> Reservas { get; set; }
-        public DbSet<DisponibilidadAula> DisponibilidadesAula { get; set; }
+        public DbSet<FranjaHoraria> FranjasHorarias { get; set; }
         public DbSet<DiaNoLectivo> DiasNoLectivos { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
 
@@ -50,7 +50,7 @@ namespace AtecaAPI.Data
                 .IsUnique();
 
             // Unique: No se pueden duplicar tramos de disponibilidad
-            modelBuilder.Entity<DisponibilidadAula>()
+            modelBuilder.Entity<FranjaHoraria>()
                 .HasIndex(d => new { d.DiaSemana, d.HoraInicio, d.HoraFin })
                 .IsUnique();
 

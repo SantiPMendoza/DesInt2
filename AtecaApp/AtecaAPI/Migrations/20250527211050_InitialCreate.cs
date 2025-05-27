@@ -65,7 +65,7 @@ namespace AtecaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DisponibilidadesAula",
+                name: "FranjasHorarias",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -77,7 +77,7 @@ namespace AtecaAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DisponibilidadesAula", x => x.Id);
+                    table.PrimaryKey("PK_FranjasHorarias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -318,8 +318,8 @@ namespace AtecaAPI.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DisponibilidadesAula_DiaSemana_HoraInicio_HoraFin",
-                table: "DisponibilidadesAula",
+                name: "IX_FranjasHorarias_DiaSemana_HoraInicio_HoraFin",
+                table: "FranjasHorarias",
                 columns: new[] { "DiaSemana", "HoraInicio", "HoraFin" },
                 unique: true);
 
@@ -365,7 +365,7 @@ namespace AtecaAPI.Migrations
                 name: "DiasNoLectivos");
 
             migrationBuilder.DropTable(
-                name: "DisponibilidadesAula");
+                name: "FranjasHorarias");
 
             migrationBuilder.DropTable(
                 name: "Reservas");

@@ -1,9 +1,12 @@
-﻿using AtecaAPI.Models.DTOs;
-using AtecaAPI.Models.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace AtecaAPI.Models.DTOs
+namespace AtecaWPF.Models
 {
-    public class ProfesorDTO : CreateProfesorDTO
+    public class ProfesorDTO
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = null!;
@@ -12,6 +15,4 @@ namespace AtecaAPI.Models.DTOs
 
         //public ICollection<ReservaDTO> Reservas { get; set; } = [];
     }
-
-    public class CreateProfesorDTO { }
 }

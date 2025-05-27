@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AtecaAPI.Models.Entity;
 using AtecaAPI.Models.DTOs;
-using AtecaAPI.Models.DTOs.ReservaDTOs;
 
 
 namespace AtecaAPI.AutoMapper
@@ -17,16 +16,22 @@ namespace AtecaAPI.AutoMapper
             // Profesor
             CreateMap<Profesor, ProfesorDTO>();
             CreateMap<CreateProfesorDTO, Profesor>();
-
-            
+         
             // Reserva
             CreateMap<Reserva, ReservaDTO>();
             CreateMap<CreateReservaDTO, Reserva>();
 
-            /**
+            // FranjaHoraria
+            CreateMap<FranjaHoraria, FranjaHorariaDTO>();
+            CreateMap<CreateFranjaHorariaDTO, FranjaHoraria>();
+
+            // DiaNoLectivo
+            CreateMap<DiaNoLectivo, DiaNoLectivoDTO>();
+            CreateMap<CreateDiaNoLectivoDTO, DiaNoLectivo>();
+
             // GrupoClase
             CreateMap<GrupoClase, GrupoClaseDTO>();
-            CreateMap<CreateGrupoClaseDTO, GrupoClase>();*/
+            CreateMap<CreateGrupoClaseDTO, GrupoClase>();
         }
     }
 

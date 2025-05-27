@@ -30,6 +30,9 @@ builder.Services.AddScoped<IAdministradorRepository, AdministradorRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProfesorRepository, ProfesorRepository>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
+builder.Services.AddScoped<IGrupoClaseRepository, GrupoClaseRepository>();
+builder.Services.AddScoped<IFranjaHorariaRepository, FranjaHorariaRepository>();
+builder.Services.AddScoped<IDiaNoLectivoRepository, DiaNoLectivoRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Configurar autenticación con JWT
