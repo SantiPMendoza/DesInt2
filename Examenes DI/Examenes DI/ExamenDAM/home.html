@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceExplorer Mock GUI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Fixed Menu -->
+    <nav>
+        <button class="menu-item active" id="back-to-list-btn">Galaxy Overview</button>
+        <button class="menu-item" id="switch-view-btn">Galaxy Grid View</button>
+        <button class="menu-item" id="import-btn">Import Data</button>
+        <button class="menu-item" id="export-btn">Export Data</button>
+    </nav>
+
+
+    <!-- Main Content -->
+    <div id="main-view" class="view">
+        <h1>Galaxy Overview</h1>
+
+        <div class="grid-container">
+            <div class="card">
+                <img src="/Planets/Planet_1.jpg" alt="Kepler-22b">
+                <p>Kepler-22b</p>
+            </div>
+            <div class="card">
+                <img src="/Planets/Planet_2.jpg" alt="Jupiter">
+                <p>Jupiter</p>
+            </div>
+        </div>
+        <div class="buttons">
+            <button class="btn" style="background-color: #007bff;" id="add-planet-btn">Add New Planet</button>
+        </div>
+    </div>
+    <div id="planet-grid-view" class="view hidden">
+        <h1>Galaxy Overview - Grid View</h1>
+        <table class="datagrid">
+            <thead>
+                <tr>
+                    <th>Planet Name</th>
+                    <th>Distance (Light-years)</th>
+                    <th>Type</th>
+                    <th>temperature</th>
+                    <th>atmosphere</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Kepler-22b</td>
+                    <td>620</td>
+                    <td>Terrestrial</td>
+                    <td>22°C</td>
+                    <td>Oxygen, Carbon Dioxide</td>
+                </tr>
+                <tr>
+                    <td>Jupiter</td>
+                    <td>778</td>
+                    <td>Gas Giant</td>
+                    <td>202°C</td>
+                    <td>Bimba</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="add-planet-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Add New Planet</h2>
+            <form id="add-planet-form">
+                <label for="planet-name">Planet Name:</label>
+                <input type="text" id="planet-name" name="planet-name" required>
+
+                <label for="distance">Distance (Light-years):</label>
+                <input type="number" id="distance" name="distance" required>
+
+                <label for="planet-type">Planet Type:</label>
+                <select id="planet-type" name="planet-type">
+                    <option value="Terrestrial">Terrestrial</option>
+                    <option value="Gas Giant">Gas Giant</option>
+                    <option value="Ice Giant">Ice Giant</option>
+                </select>
+
+                <label for="atmosphere">Atmosphere:</label>
+                <textarea id="atmosphere" name="atmosphere" rows="3"></textarea>
+
+                <label for="temperature">Surface Temperature (°C):</label>
+                <input type="number" id="temperature" name="temperature" required>
+
+                <label for="image-name">Image Name:</label>
+                <input type="url" id="image-name" name="image-url" required>
+
+                <div class="buttons">
+                    <button type="submit" class="btn">Save</button>
+                    <button type="button" class="btn btn-cancel" id="cancel-add">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="planet-view" class="view hidden">
+        <div style="display: flex; gap: 20px;">
+            <!-- Left section: Planet details -->
+            <div style="flex: 1;">
+                <h1>Explore Planet</h1>
+                <div class="planet-details">
+                    <img src="/Planets/Planet_9.jpg" height="200px" alt="Planet Image">
+                    <p><strong>Name:</strong> Kepler-22b</p>
+                    <p><strong>Type:</strong> Terrestrial</p>
+                    <p><strong>Distance:</strong> 620 light-years</p>
+                    <p><strong>Atmosphere:</strong> Oxygen, Carbon Dioxide</p>
+                    <p><strong>Surface Temperature:</strong> 22°C</p>
+                </div>
+                <div class="buttons">
+                    <button class="btn" id="save-planet-data">Save Data</button>
+                    <button class="btn" id="close-planet-view">Close</button>
+                </div>
+            </div>
+
+            <!-- Right section: Closest and Farthest planets -->
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+                <!-- Closest Planet Card -->
+                <div class="card">
+                    <h2>Closest</h2>
+                    <img src="/Planets/Planet_4.jpg" height="150px" alt="Closest Planet Image">
+                    <p><strong>Name:</strong> Jupiter</p>
+                    <p>300 light-years</p>
+                </div>
+
+                <!-- Farthest Planet Card -->
+                <div class="card">
+                    <h2>Farthest</h2>
+                    <img src="/Planets/Planet_7.jpg" height="150px" alt="Farthest Planet Image">
+                    <p><strong>Name:</strong> Bimbolio</p>
+                    <p>1000 light-years</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+
+</html>

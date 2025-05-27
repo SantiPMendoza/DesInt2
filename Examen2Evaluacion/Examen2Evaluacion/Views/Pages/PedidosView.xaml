@@ -10,45 +10,57 @@
 
     <Grid>
         <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <!-- Lista de pedidos -->
-        <ListBox ItemsSource="{Binding Pedidos}"
-         SelectedItem="{Binding PedidoSeleccionado, Mode=TwoWay}"
-         Margin="10">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding Id, StringFormat='ID: {0}'}"/>
-                        <TextBlock Text="{Binding Fecha, StringFormat='Fecha: {0:yyyy-MM-dd}'}"/>
-                        <TextBlock Text="{Binding UsuarioNombre, StringFormat='Usuario: {0}'}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <!-- Vista lateral de productos del pedido -->
-        <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock Text="Productos del Pedido" FontWeight="Bold" FontSize="16"/>
-            <ItemsControl ItemsSource="{Binding PedidoSeleccionado.Productos}">
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Lista de Pedidos -->
+        <ScrollViewer Grid.Column="0" Margin="10">
+            <ItemsControl ItemsSource="{Binding Pedidos}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}" />
-                            <Button Content="Eliminar" Command="{Binding DataContext.EliminarProductoCommand, RelativeSource={RelativeSource AncestorType=Page}}" CommandParameter="{Binding}" />
-                        </StackPanel>
+                        <Border Margin="5" Padding="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold" Text="{Binding Id, StringFormat='Pedido {0}'}" />
+                                <TextBlock Text="{Binding Fecha, StringFormat='Fecha: {0:yyyy-MM-dd}'}" />
+                                <TextBlock Text="{Binding UsuarioNombre, StringFormat='Usuario: {0}'}" />
+                                <TextBlock Text="{Binding Productos.Count, StringFormat='Productos: {0}'}" />
+                            </StackPanel>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+        </ScrollViewer>
 
-            <ComboBox ItemsSource="{Binding TodosLosProductos}"
-                  DisplayMemberPath="Nombre"
-                  SelectedItem="{Binding ProductoSeleccionado}"
-                  Margin="0,10"/>
-            <Button Content="Agregar Producto"
-                Command="{Binding AgregarProductoCommand}"
-                Margin="0,5"/>
-        </StackPanel>
+        <!-- Detalle del Pedido Seleccionado -->
+        <Border Grid.Column="1" Margin="10" Background="#F0F0F0" Visibility="{Binding DetalleVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel>
+                <TextBlock Text="Productos del Pedido" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                <ItemsControl ItemsSource="{Binding PedidoSeleccionado.Productos}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock Text="{Binding Nombre}" />
+                                <Button Content="🗑" Command="{Binding DataContext.EliminarProductoCommand, RelativeSource={RelativeSource AncestorType=Page}}" CommandParameter="{Binding}" Margin="10,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBox Width="150" Text="{Binding ProductoNombre}" />
+                    <Button Content="Añadir Producto" Command="{Binding AgregarProductoPorNombreCommand}" Margin="5,0"/>
+                </StackPanel>
+
+                <Button Content="Cerrar" Command="{Binding CerrarDetalleCommand}" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
     </Grid>
+
 
 </Page>

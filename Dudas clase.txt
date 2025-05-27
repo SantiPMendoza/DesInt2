@@ -17,3 +17,12 @@ Dudas clase:		[=>] Respuesta
 	· Examen1Evaluacion (Planetas):
 
 		- Navegacion interfaz básica o uso de NavigationService? => Pidele a Brisi
+
+
+	· Proyecto:
+
+		- Caché en todas los repositorys?
+		- Agregar DTOs anidados o utilizar únicamente los campos? 
+		(Ejemplo: Reserva con ProfesorNombre o ProfesorDTO?)
+		- Añadir Profesores a la API?
+		- DisponibilidadAula o Reserva+DiaNoLectivo suficiente?

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Reflejos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #gameGrid {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loginScreen">
+        <h2>Iniciar Sesión</h2>
+        <input type="text" id="username" placeholder="Usuario"><br><br>
+        <input type="password" id="password" placeholder="Contraseña"><br><br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+        <h2>Juego de Reflejos</h2>
+        <button id="startGameButton" onclick="startGame()">INICIAR PARTIDA</button>
+        <div id="gameGrid" class="hidden"></div>
+    </div>
+
+    <div id="modal">
+        <h2>¡Partida Terminada!</h2>
+        <p id="scoreText"></p>
+        <button onclick="restartGame()">INICIAR PARTIDA</button>
+    </div>
+
+    <script>
+        let user = null;
+        let startTime, totalGreens, hits, misses;
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                user = { username };
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('gameScreen').classList.remove('hidden');
+            } else {
+                alert('Usuario o contraseña incorrectos');
+            }
+        }
+
+        function startGame() {
+            document.getElementById('startGameButton').classList.add('hidden')
+            startTime = new Date();
+            hits = 0;
+            misses = 0;
+            totalGreens = 0;
+            document.getElementById('gameGrid').innerHTML = '';
+            document.getElementById('gameGrid').classList.remove('hidden');
+            generateGrid();
+        }
+
+        function generateGrid() {
+            totalGreens = Math.floor(Math.random() * 13) + 5; // Entre 5 y 17 verdes
+            let greenIndices = new Set();
+
+            // Generar posiciones aleatorias para los círculos verdes
+            while (greenIndices.size < totalGreens) {
+                greenIndices.add(Math.floor(Math.random() * 25));
+            }
+
+            for (let i = 0; i < 25; i++) {
+                let div = document.createElement('div');
+                let isGreen = greenIndices.has(i);
+                div.classList.add('circle');
+                div.style.backgroundColor = isGreen ? 'green' : 'red';
+
+                div.onclick = () => handleClick(div, isGreen);
+                document.getElementById('gameGrid').appendChild(div);
+            }
+        }
+
+        function handleClick(circle, isGreen) {
+            if (isGreen) {
+                hits++;
+                circle.style.visibility = 'hidden';
+                if (hits === totalGreens) endGame();
+            } else {
+                misses++;
+            }
+        }
+
+        function endGame() {
+            let timeElapsed = ((new Date() - startTime) / 1000).toFixed(2);
+            let score = Math.round((1000 / timeElapsed) + (hits * 10) - (misses * 5));
+
+            document.getElementById('scoreText').innerText = `Puntuación: ${score}, Tiempo: ${timeElapsed} segundos`;
+            document.getElementById('modal').style.display = 'block';
+
+            // Simulación de envío de datos a la API
+            console.log("Enviando resultado a la API...", { user, score, timeElapsed, hits, misses });
+        }
+
+        function restartGame() {
+            document.getElementById('modal').style.display = 'none';
+            startGame();
+        }
+    </script>
+</body>
+
+</html>

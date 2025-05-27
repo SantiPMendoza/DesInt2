@@ -1,0 +1,227 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    text-align: center;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.sidebar ul li:hover,
+.sidebar ul .active {
+    background-color: #34495e;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px gray;
+}
+
+.modal input,
+.modal select {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal button {
+    width: 48%;
+    margin-top: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.action-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.action-buttons .delete {
+    color: red;
+}
+
+.action-buttons .edit {
+    color: blue;
+}
+
+.stack-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    flex-direction: column;
+}
+
+.sidebar.hidden {
+    display: none;
+}
+
+.sidebar table {
+    width: 100%;
+}
+
+.sidebar button {
+    margin-top: 10px;
+}
+
+
+/* Añadir esta parte para fijar el header en la parte superior */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    /* Cambiar la dirección de los elementos para que el header esté encima */
+    height: 100vh;
+}
+
+.nav {
+    width: 100%;
+    /* Asegurarse de que el menú ocupe todo el ancho */
+    background-color: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    position: sticky;
+    /* Fijar el menú en la parte superior */
+    top: 0;
+    z-index: 1000;
+    /* Asegurar que se mantenga sobre el contenido */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    /* Para que el contenido ocupe el resto del espacio */
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.content {
+    flex: 1;
+    /* Esto hace que el contenido ocupe todo el espacio restante */
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.nav {
+    width: 100%;
+    background-color: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    /* Cambiar a flex para alinearlo en fila */
+    justify-content: flex-start;
+    align-items: left;
+}
+
+.menu-items {
+    display: flex;
+    /* Para que los elementos del menú estén en fila */
+    gap: 20px;
+    /* Espacio entre los elementos */
+}
+
+.menu-item {
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background 0.3s;
+    border-radius: 5px;
+    /* Añadir bordes redondeados */
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background-color: #34495e;
+}

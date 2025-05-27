@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Datos - WPF</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="nav">
+            <div class="menu-items">
+                <div onclick="showSection('usuarios')" class="menu-item active">Usuarios</div>
+                <div onclick="showSection('productos')" class="menu-item">Productos</div>
+                <div onclick="showSection('pedidos')" class="menu-item">Pedidos</div>
+                <div onclick="showSection('import-export')" class="menu-item">Importar/Exportar</div>
+            </div>
+        </header>
+
+        <main class="content">
+            <section id="usuarios" class="section active">
+                <h1>Usuarios</h1>
+                <button onclick="showUserForm()">Añadir Usuario</button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                </table>
+            </section>
+
+            <section id="productos" class="section">
+                <h1>Productos</h1>
+                <button onclick="showProductForm()">Añadir Producto</button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody"></tbody>
+                </table>
+            </section>
+
+            <section id="pedidos" class="section">
+                <h1>Pedidos</h1>
+                <button onclick="showOrderForm()">Añadir Pedido</button>
+                <div id="orderStackPanel" class="stack-panel"></div>
+            </section>
+
+            <!-- Menú lateral para ver productos del pedido -->
+            <aside id="orderSidebar" class="sidebar hidden">
+                <h2>Productos del Pedido</h2>
+                <p><strong>ID:</strong> <span id="orderId"></span></p>
+                <p><strong>Fecha:</strong> <span id="orderDate"></span></p>
+                <p><strong>Usuario:</strong> <span id="orderUser"></span></p>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderProductsTable"></tbody>
+                </table>
+
+                <button onclick="addProductToCurrentOrder()">Añadir Producto</button>
+                <button onclick="closeOrderSidebar()">Cerrar</button>
+            </aside>
+
+
+
+            <!-- Formularios Modales -->
+            <div id="userForm" class="modal">
+                <h2>Nuevo Usuario</h2>
+                <input type="text" id="userNameInput" placeholder="Nombre">
+                <input type="email" id="userEmailInput" placeholder="Email">
+                <button onclick="addUser()">Guardar</button>
+                <button onclick="closeModal('userForm')">Cancelar</button>
+            </div>
+
+            <div id="productForm" class="modal">
+                <h2>Nuevo Producto</h2>
+                <input type="text" id="productNameInput" placeholder="Nombre">
+                <input type="number" id="productPriceInput" placeholder="Precio">
+                <button onclick="addProduct()">Guardar</button>
+                <button onclick="closeModal('productForm')">Cancelar</button>
+            </div>
+
+            <div id="orderForm" class="modal">
+                <h2>Nuevo Pedido</h2>
+                <input type="date" id="orderDateInput">
+                <select id="orderUserInput"></select>
+                <button onclick="addOrder()">Guardar</button>
+                <button onclick="closeModal('orderForm')">Cancelar</button>
+            </div>
+            <section id="import-export" class="section">
+                <h1>Importar/Exportar usuarios </h1>
+                <button onclick="exportData()">Exportar Datos</button>
+                <input type="file" id="importFile" accept=".json">
+                <button onclick="importData()">Importar Datos</button>
+
+                <h1>Importar/Exportar productos </h1>
+                <button onclick="exportData()">Exportar Datos</button>
+                <input type="file" id="importFile" accept=".json">
+                <button onclick="importData()">Importar Datos</button>
+
+                <h1>Importar/Exportar pedidos </h1>
+                <button onclick="exportData()">Exportar Datos</button>
+                <input type="file" id="importFile" accept=".json">
+                <button onclick="importData()">Importar Datos</button>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

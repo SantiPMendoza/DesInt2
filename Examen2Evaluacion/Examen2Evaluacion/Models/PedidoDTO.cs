@@ -10,9 +10,12 @@ namespace Examen2Evaluacion.Models
     {
         public int Id { get; set; }
         public DateTime Fecha { get; set; }
+
         public int UsuarioId { get; set; }
-        //public UsuarioDTO Usuario { get; set; } = null!;
-        public List<int> Productos { get; set; } = [];
+        public UsuarioDTO Usuario { get; set; } = null!;
+
+        public List<ProductoDTO> Productos { get; set; } = [];
     }
+
 
 }

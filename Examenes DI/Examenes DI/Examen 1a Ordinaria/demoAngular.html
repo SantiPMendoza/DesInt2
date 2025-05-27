@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Partidas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .menu button {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .toggle-btn {
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Dashboard de Partidas</h1>
+
+    <div class="menu">
+        <button onclick="showTab('partidas')">Partidas</button>
+        <button onclick="showTab('ranking')">Ranking</button>
+    </div>
+
+    <!-- Pestaña Partidas -->
+    <div id="partidas" class="container">
+        <input type="text" id="filterUser" placeholder="Filtrar por usuario..." oninput="filterPartidas()">
+        <button id="btnToggle" class="toggle-btn" onclick="togglePartidas()">Mostrar solo activas</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Puntuación</th>
+                    <th>Fecha Inicio</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="partidasTable"></tbody>
+        </table>
+    </div>
+
+    <!-- Pestaña Ranking -->
+    <div id="ranking" class="container hidden">
+        <h2>Top 10 Puntuaciones</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Puntuación</th>
+                </tr>
+            </thead>
+            <tbody id="rankingTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = "https://api.ejemplo.com"; // Simulación de API
+        const API_USER = "AngularInfoUser"; // Credenciales hardcodeadas
+        let partidas = [];
+        let mostrarSoloActivas = false;
+
+        // Simulación de llamada a la API
+        function fetchPartidas() {
+            partidas = [
+                { usuario: "Juan", puntuacion: 1200, fecha: "2025-03-08", estado: "Finalizado" },
+                { usuario: "María", puntuacion: 1500, fecha: "2025-03-09", estado: "En curso" },
+                { usuario: "Carlos", puntuacion: 1800, fecha: "2025-03-10", estado: "Finalizado" }
+            ];
+            renderPartidas();
+        }
+
+        function fetchRanking() {
+            const ranking = partidas.sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 10);
+            const rankingTable = document.getElementById("rankingTable");
+            rankingTable.innerHTML = ranking.map(p => `
+                <tr>
+                    <td>${p.usuario}</td>
+                    <td>${p.puntuacion}</td>
+                </tr>
+            `).join("");
+        }
+
+        function renderPartidas() {
+            const partidasTable = document.getElementById("partidasTable");
+            const filterText = document.getElementById("filterUser").value.toLowerCase();
+
+            partidasTable.innerHTML = partidas
+                .filter(p => (!mostrarSoloActivas || p.estado === "En curso"))
+                .filter(p => p.usuario.toLowerCase().includes(filterText))
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+                .map(p => `
+                    <tr>
+                        <td>${p.usuario}</td>
+                        <td>${p.puntuacion}</td>
+                        <td>${p.fecha}</td>
+                        <td>${p.estado}</td>
+                    </tr>
+                `).join("");
+        }
+
+        function showTab(tab) {
+            document.getElementById("partidas").classList.toggle("hidden", tab !== "partidas");
+            document.getElementById("ranking").classList.toggle("hidden", tab !== "ranking");
+            if (tab === "ranking") fetchRanking();
+        }
+
+        function filterPartidas() {
+            renderPartidas();
+        }
+
+        function togglePartidas() {
+            mostrarSoloActivas = !mostrarSoloActivas;
+            const butnTogle = document.getElementById("btnToggle");
+            if (mostrarSoloActivas) {
+                butnTogle.textContent = "Mostrar Todas"
+            } else {
+                butnTogle.textContent = "Mostrar solo activas"
+            }
+            renderPartidas();
+        }
+
+        // Inicializar datos simulados
+        fetchPartidas();
+    </script>
+
+</body>
+
+</html>
