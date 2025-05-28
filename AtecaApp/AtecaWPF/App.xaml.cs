@@ -53,12 +53,16 @@ namespace AtecaWPF
                 // ViewModels
                 _ = services.AddSingleton<LoginViewModel>();
                 _ = services.AddSingleton<ReservasViewModel>();
+                _ = services.AddSingleton<ConfigViewModel>();
+                _ = services.AddSingleton<CalendarViewModel>();
 
 
 
                 // Views
                 _ = services.AddSingleton<LoginView>();
                 _ = services.AddSingleton<ReservasView>();
+                _ = services.AddSingleton<ConfigView>();
+                _ = services.AddSingleton<CalendarView>();
 
 
                 //_ = services.AddSingleton<Views.SplashScreen>();
