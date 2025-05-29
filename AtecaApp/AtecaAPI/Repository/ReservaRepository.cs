@@ -81,6 +81,28 @@ namespace AtecaAPI.Repository
             return await Save();
         }
 
+        public async Task<bool> AceptarReservaAsync(int id)
+        {
+            var reserva = await GetAsync(id);
+            if (reserva == null) return false;
+
+            reserva.Estado = "Aceptada";
+            reserva.FechaResolucion = DateTime.Now;
+            return await UpdateAsync(reserva);
+        }
+
+        public async Task<bool> RechazarReservaAsync(int id)
+        {
+            var reserva = await GetAsync(id);
+            if (reserva == null) return false;
+
+            reserva.Estado = "Rechazada";
+            reserva.FechaResolucion = DateTime.Now;
+            return await UpdateAsync(reserva);
+        }
+
+
+
         public async Task<bool> DeleteAsync(int id)
         {
             var reserva = await GetAsync(id);

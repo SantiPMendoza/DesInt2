@@ -60,7 +60,7 @@ namespace AtecaWPF.ViewModels
                 {
                     Content = "Perfil?",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.CalendarDay24 },
-                    //TargetPageType = typeof(DatosView)
+                    TargetPageType = typeof(ConfigView)
                 },
         ];
 

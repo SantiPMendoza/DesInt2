@@ -14,9 +14,9 @@
         public int GrupoClaseId { get; set; }
         public GrupoClase GrupoClase { get; set; } = null!;
 
-        public string Estado { get; set; } = "Pendiente"; // "Pendiente", "Aprobada", "Rechazada", "Cancelada"
+        public string Estado { get; set; } = "Pendiente"; // "Pendiente", "Aprobada", "Rechazada"
 
-        public DateTime FechaSolicitud { get; set; } = DateTime.UtcNow;
+        public DateTime FechaSolicitud { get; set; } = DateTime.Now;
         public DateTime? FechaResolucion { get; set; } // Cuando se aprueba/rechaza
     }
 

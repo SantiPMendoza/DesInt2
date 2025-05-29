@@ -1,5 +1,5 @@
-﻿using AtecaAPI.Models.DTOs;
-
+﻿using AtecaAPI.Controllers;
+using AtecaAPI.Models.DTOs;
 using AtecaAPI.Models.Entity;
 using AtecaAPI.Repository.IRepository;
 using AutoMapper;
@@ -8,14 +8,39 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AtecaAPI.Controllers
 {
-    [AllowAnonymous] // Cambiar cuando eso bro
+
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous] // Cambiar cuando eso mi pana
+
     public class ReservaController : BaseController<Reserva, ReservaDTO, CreateReservaDTO>
     {
+        private readonly IReservaRepository _reservaRepository;
+
         public ReservaController(IReservaRepository reservaRepository, IMapper mapper, ILogger<ReservaController> logger)
             : base(reservaRepository, mapper, logger)
         {
+            _reservaRepository = reservaRepository; // ← AQUÍ estaba el problema
+        }
+
+        [HttpPut("{id}/aceptar")]
+        public async Task<IActionResult> AceptarReserva(int id)
+        {
+            var result = await _reservaRepository.AceptarReservaAsync(id);
+            if (!result)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}/rechazar")]
+        public async Task<IActionResult> RechazarReserva(int id)
+        {
+            var result = await _reservaRepository.RechazarReservaAsync(id);
+            if (!result)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

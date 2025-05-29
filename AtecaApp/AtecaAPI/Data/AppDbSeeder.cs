@@ -66,6 +66,8 @@
                     context.FranjasHorarias.AddRange(bloques);
                 }
 
+
+
                 // Grupo de ejemplo
                 if (!context.GruposClase.Any())
                 {
@@ -84,7 +86,78 @@
                     });
                 }
 
-                await context.SaveChangesAsync();
+
+            // Añadir 5 reservas de ejemplo si no existen
+            if (!context.Reservas.Any())
+            {
+                var profesor = context.Profesores.First();
+                var grupo = context.GruposClase.First(g => g.Nombre == "MULWEB3");
+
+                var hoy = DateOnly.FromDateTime(DateTime.Today);
+                var fechas = Enumerable.Range(1, 5).Select(d => hoy.AddDays(d)).ToList();
+
+                var reservasEjemplo = new List<Reserva>
+    {
+        new Reserva
+        {
+            Fecha = fechas[0],
+            HoraInicio = new TimeOnly(16, 0),
+            HoraFin = new TimeOnly(16, 55),
+            ProfesorId = profesor.Id,
+            GrupoClaseId = grupo.Id,
+            Estado = "Pendiente",
+            FechaSolicitud = DateTime.UtcNow
+        },
+        new Reserva
+        {
+            Fecha = fechas[1],
+            HoraInicio = new TimeOnly(17, 0),
+            HoraFin = new TimeOnly(17, 55),
+            ProfesorId = profesor.Id,
+            GrupoClaseId = grupo.Id,
+            Estado = "Aprobada",
+            FechaSolicitud = DateTime.UtcNow.AddDays(-2),
+            FechaResolucion = DateTime.UtcNow.AddDays(-1)
+        },
+        new Reserva
+        {
+            Fecha = fechas[2],
+            HoraInicio = new TimeOnly(18, 0),
+            HoraFin = new TimeOnly(18, 55),
+            ProfesorId = profesor.Id,
+            GrupoClaseId = grupo.Id,
+            Estado = "Rechazada",
+            FechaSolicitud = DateTime.UtcNow.AddDays(-3),
+            FechaResolucion = DateTime.UtcNow.AddDays(-2)
+        },
+        new Reserva
+        {
+            Fecha = fechas[3],
+            HoraInicio = new TimeOnly(16, 0),
+            HoraFin = new TimeOnly(16, 55),
+            ProfesorId = profesor.Id,
+            GrupoClaseId = grupo.Id,
+            Estado = "Pendiente",
+            FechaSolicitud = DateTime.UtcNow
+        },
+        new Reserva
+        {
+            Fecha = fechas[4],
+            HoraInicio = new TimeOnly(17, 0),
+            HoraFin = new TimeOnly(17, 55),
+            ProfesorId = profesor.Id,
+            GrupoClaseId = grupo.Id,
+            Estado = "Cancelada",
+            FechaSolicitud = DateTime.UtcNow.AddDays(-5),
+            FechaResolucion = DateTime.UtcNow.AddDays(-4)
+        }
+    };
+
+                context.Reservas.AddRange(reservasEjemplo);
+            }
+
+
+            await context.SaveChangesAsync();
             }
         }
     }

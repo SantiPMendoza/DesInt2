@@ -38,6 +38,36 @@ namespace AtecaWPF.ViewModels
 
         }
 
+        [RelayCommand]
+        private async Task AceptarReserva(ReservaDTO reserva)
+        {
+            try
+            {
+                await _httpJsonClient.PutAsync($"api/Reserva/{reserva.Id}/aceptar");
+                await CargarReservas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al aceptar la reserva: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task RechazarReserva(ReservaDTO reserva)
+        {
+            try
+            {
+                await _httpJsonClient.PutAsync($"api/Reserva/{reserva.Id}/rechazar");
+                await CargarReservas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al rechazar la reserva: {ex.Message}");
+            }
+        }
+
+
+
         public void OnPageLoaded()
         {
             _ = CargarReservas();

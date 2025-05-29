@@ -67,6 +67,14 @@ namespace AtecaWPF.Services
             return await response.Content.ReadFromJsonAsync<TResponse>();
         }
 
+        public async Task PutAsync(string url)
+        {
+            AddAuthorizationHeader();
+            var response = await _httpClient.PutAsync(url, null);
+            response.EnsureSuccessStatusCode();
+        }
+
+
         public async Task PutAsync<T>(string url, T data)
         {
             AddAuthorizationHeader();

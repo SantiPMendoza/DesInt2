@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
         <!-- Title Bar -->
         <ui:TitleBar
-            
+            Background="#2C3E50"
             Title="{Binding ApplicationTitle, Mode=OneWay}"
             Grid.Row="0" FontSize="20" FontFamily="Impact" />
         <ui:NavigationView x:Name="RootNavigation"
