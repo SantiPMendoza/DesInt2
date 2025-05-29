@@ -11,11 +11,13 @@
                                      IsDesignTimeCreatable=True}"
         Title="{Binding ApplicationTitle, Mode=OneWay}"
         WindowStartupLocation="CenterScreen"
-        Height="600" Width="900"
+        Height="700" Width="1050"
         WindowStyle="SingleBorderWindow"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
+        d:DesignHeight="450"
+        d:DesignWidth="800"
         >
 
     <Grid>
@@ -33,7 +35,7 @@
                    Visibility="{Binding NavigationVisibility}"
                    FooterMenuItemsSource="{Binding NavigationFooter, Mode=OneWay}"
                    MenuItemsSource="{Binding NavigationItems, Mode=OneWay}"
-                           OpenPaneLength="150">
+                           OpenPaneLength="170">
 
         </ui:NavigationView>
     </Grid>

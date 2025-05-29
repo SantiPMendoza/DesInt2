@@ -24,6 +24,9 @@ namespace AtecaWPF.ViewModels
         [ObservableProperty]
         private ObservableCollection<object> _navigationFooter = [];
 
+        [ObservableProperty]
+        private Visibility navigationVisibility = Visibility.Hidden;
+
         public MainViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
@@ -31,6 +34,8 @@ namespace AtecaWPF.ViewModels
             if (!_isInitialized)
             {
                 InitializeViewModel();
+
+                _ = ShowNavigationAfterDelay();
             }
         }
 
@@ -49,7 +54,7 @@ namespace AtecaWPF.ViewModels
                 {
                     Content = "Placeholder :v",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.Album20 },
-                    //TargetPageType = typeof(PedidosView)
+                    TargetPageType = typeof(CalendarView)
                 },
 
             ];
@@ -67,6 +72,12 @@ namespace AtecaWPF.ViewModels
             _isInitialized = true;
             
         }
-            
+
+        public async Task ShowNavigationAfterDelay()
+        {
+            await Task.Delay(750);
+            NavigationVisibility = Visibility.Visible;
+        }
+
     }
 }

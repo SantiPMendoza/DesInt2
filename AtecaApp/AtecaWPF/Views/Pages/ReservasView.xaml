@@ -1,57 +1,71 @@
 ﻿<Page x:Class="AtecaWPF.Views.Pages.ReservasView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:AtecaWPF.Views.Pages"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" 
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="1000"
       Title="ReservasView">
 
     <Grid>
-    <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Button Content="Recargar Reservas"
-                Command="{Binding CargarReservasCommand}"
-                Margin="10"/>
+        <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <Button Content="Recargar Reservas"
+            Command="{Binding CargarReservasCommand}" Margin="0,0,100,0" />
+
+            <Label Content="Fecha:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+
+            <DatePicker SelectedDate="{Binding FechaSeleccionadaDateTime, Mode=TwoWay}"
+                Width="150" Margin="10,0" />
+
+            <Label Content="Estado:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+
+            <ComboBox Width="150" Margin="10,0"
+              ItemsSource="{Binding EstadosDisponibles}"
+              SelectedItem="{Binding EstadoSeleccionado, Mode=TwoWay}" Text="Estado"/>
+
+            <Button Content="Filtrar"
+            Command="{Binding FiltrarCommand}"
+            Width="100" Margin="10,0"/>
+        </StackPanel>
+
 
         <ListView Grid.Row="1"
-          ItemsSource="{Binding Reservas}"
-          Margin="10"
-          HorizontalContentAlignment="Stretch">
+                  ItemsSource="{Binding Reservas}"
+                  Margin="10"
+                  HorizontalContentAlignment="Stretch">
 
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Id}" />
+                    <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Id}"/>
                     <GridViewColumn Header="Profesor" Width="120" DisplayMemberBinding="{Binding ProfesorNombre}" />
                     <GridViewColumn Header="Grupo" Width="120" DisplayMemberBinding="{Binding GrupoClaseNombre}" />
                     <GridViewColumn Header="Estado" Width="100" DisplayMemberBinding="{Binding Estado}" />
-                    <GridViewColumn Header="Fecha" Width="100" DisplayMemberBinding="{Binding Fecha, StringFormat={}{0:dd/MM/yyyy}}" />
-                    <GridViewColumn Header="Día Semana" Width="80" DisplayMemberBinding="{Binding DiaSemanaString}"/>
+                    <GridViewColumn Header="Fecha" Width="100" DisplayMemberBinding="{Binding Fecha}" />
+                    <GridViewColumn Header="Día Semana" Width="100" DisplayMemberBinding="{Binding DiaSemanaString}" />
                     <GridViewColumn Header="Franja Horaria" Width="130" DisplayMemberBinding="{Binding FranjaHoraria}" />
-                    <GridViewColumn Header="Fecha Solicitud" Width="140" DisplayMemberBinding="{Binding FechaSolicitud, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
-                    <GridViewColumn Header="Fecha Resolución" Width="140" DisplayMemberBinding="{Binding FechaResolucion, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
+                    <GridViewColumn Header="Fecha Solicitud" Width="160" DisplayMemberBinding="{Binding FechaSolicitud, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
+                    <GridViewColumn Header="Fecha Resolución" Width="160" DisplayMemberBinding="{Binding FechaResolucion, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
 
-                    
                     <GridViewColumn Header="Acciones" Width="180">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Content="Aceptar"
-                                    Command="{Binding DataContext.AceptarReservaCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                    CommandParameter="{Binding}"
-                                    Margin="2"
-                                    Background="LightGreen" Width="80"/>
-
+                                            Command="{Binding DataContext.AceptarReservaCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="2"
+                                            Background="LightGreen" Width="80"/>
                                     <Button Content="Rechazar"
-                                    Command="{Binding DataContext.RechazarReservaCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                    CommandParameter="{Binding}"
-                                    Margin="2"
-                                    Background="LightCoral" Width="80"/>
+                                            Command="{Binding DataContext.RechazarReservaCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="2"
+                                            Background="LightCoral" Width="80"/>
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -59,7 +73,5 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
-
     </Grid>
 </Page>

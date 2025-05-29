@@ -6,11 +6,77 @@
       xmlns:local="clr-namespace:AtecaWPF.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" 
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="900"
       Title="CalendarView">
 
-    <Grid>
-        <Calendar HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid x:Name="CalendarGrid" Margin="10">
+            <!-- Define Column Definitions: 1 for horas + 7 días -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <!-- Franja horaria -->
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
 
-    </Grid>
+            <!-- Define Row Definitions: 1 (fechas), 1 (días), + franjas horarias (por ejemplo 8:00–14:00) -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Fechas -->
+                <RowDefinition Height="Auto"/>
+                <!-- Nombres días -->
+
+                <!-- Ejemplo con 7 franjas -->
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <!-- Cabecera: Fechas por día -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Fecha" 
+                       FontWeight="Bold" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Hora" 
+                       FontWeight="Bold" HorizontalAlignment="Center"/>
+
+            <!-- Días y fechas (puedes llenar dinámicamente desde el code-behind o ViewModel) -->
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="27/05" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="28/05" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="3" Text="29/05" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="30/05" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="5" Text="31/05" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="6" Text="01/06" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="7" Text="02/06" HorizontalAlignment="Center"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="Lunes" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="Martes" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" Text="Miércoles" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="4" Text="Jueves" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="5" Text="Viernes" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="6" Text="Sábado" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="7" Text="Domingo" HorizontalAlignment="Center"/>
+
+            <!-- Horas en columna 0 -->
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="08:00 - 09:00" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="09:00 - 10:00" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="10:00 - 11:00" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="11:00 - 12:00" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="12:00 - 13:00" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="13:00 - 14:00" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="14:00 - 15:00" HorizontalAlignment="Center"/>
+
+            <!-- Ejemplo de celda para colocar contenido -->
+            <Border Grid.Row="3" Grid.Column="2" Background="#DDEEFF" Margin="2">
+                <TextBlock Text="Reserva 1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </Page>
