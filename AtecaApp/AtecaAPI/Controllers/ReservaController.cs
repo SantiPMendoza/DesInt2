@@ -20,7 +20,7 @@ namespace AtecaAPI.Controllers
         public ReservaController(IReservaRepository reservaRepository, IMapper mapper, ILogger<ReservaController> logger)
             : base(reservaRepository, mapper, logger)
         {
-            _reservaRepository = reservaRepository; // ← AQUÍ estaba el problema
+            _reservaRepository = reservaRepository;
         }
 
         [HttpPut("{id}/aceptar")]

@@ -48,7 +48,7 @@
                     <GridViewColumn Header="Estado" Width="100" DisplayMemberBinding="{Binding Estado}" />
                     <GridViewColumn Header="Fecha" Width="100" DisplayMemberBinding="{Binding Fecha}" />
                     <GridViewColumn Header="Día Semana" Width="100" DisplayMemberBinding="{Binding DiaSemanaString}" />
-                    <GridViewColumn Header="Franja Horaria" Width="130" DisplayMemberBinding="{Binding FranjaHoraria}" />
+                    <GridViewColumn Header="Franja Horaria" Width="130" DisplayMemberBinding="{Binding Franja}" />
                     <GridViewColumn Header="Fecha Solicitud" Width="160" DisplayMemberBinding="{Binding FechaSolicitud, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
                     <GridViewColumn Header="Fecha Resolución" Width="160" DisplayMemberBinding="{Binding FechaResolucion, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
 

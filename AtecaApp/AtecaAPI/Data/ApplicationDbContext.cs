@@ -46,12 +46,13 @@ namespace AtecaAPI.Data
 
             // Unique: Un profesor no puede tener dos reservas iguales
             modelBuilder.Entity<Reserva>()
-                .HasIndex(r => new { r.Fecha, r.HoraInicio, r.ProfesorId })
+                .HasIndex(r => new { r.Fecha, r.FranjaHorariaId, r.ProfesorId })
                 .IsUnique();
+
 
             // Unique: No se pueden duplicar tramos de disponibilidad
             modelBuilder.Entity<FranjaHoraria>()
-                .HasIndex(d => new { d.DiaSemana, d.HoraInicio, d.HoraFin })
+                .HasIndex(d => new { d.HoraInicio, d.HoraFin })
                 .IsUnique();
 
             // Unique: evitar duplicar días no lectivos

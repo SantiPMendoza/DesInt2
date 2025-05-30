@@ -70,7 +70,6 @@ namespace AtecaAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DiaSemana = table.Column<int>(type: "int", nullable: false),
                     HoraInicio = table.Column<TimeOnly>(type: "time", nullable: false),
                     HoraFin = table.Column<TimeOnly>(type: "time", nullable: false),
                     Activo = table.Column<bool>(type: "bit", nullable: false)
@@ -241,8 +240,7 @@ namespace AtecaAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Fecha = table.Column<DateOnly>(type: "date", nullable: false),
-                    HoraInicio = table.Column<TimeOnly>(type: "time", nullable: false),
-                    HoraFin = table.Column<TimeOnly>(type: "time", nullable: false),
+                    FranjaHorariaId = table.Column<int>(type: "int", nullable: false),
                     ProfesorId = table.Column<int>(type: "int", nullable: false),
                     GrupoClaseId = table.Column<int>(type: "int", nullable: false),
                     Estado = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -252,6 +250,12 @@ namespace AtecaAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reservas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservas_FranjasHorarias_FranjaHorariaId",
+                        column: x => x.FranjaHorariaId,
+                        principalTable: "FranjasHorarias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Reservas_GruposClase_GrupoClaseId",
                         column: x => x.GrupoClaseId,
@@ -318,16 +322,21 @@ namespace AtecaAPI.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FranjasHorarias_DiaSemana_HoraInicio_HoraFin",
+                name: "IX_FranjasHorarias_HoraInicio_HoraFin",
                 table: "FranjasHorarias",
-                columns: new[] { "DiaSemana", "HoraInicio", "HoraFin" },
+                columns: new[] { "HoraInicio", "HoraFin" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservas_Fecha_HoraInicio_ProfesorId",
+                name: "IX_Reservas_Fecha_FranjaHorariaId_ProfesorId",
                 table: "Reservas",
-                columns: new[] { "Fecha", "HoraInicio", "ProfesorId" },
+                columns: new[] { "Fecha", "FranjaHorariaId", "ProfesorId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservas_FranjaHorariaId",
+                table: "Reservas",
+                column: "FranjaHorariaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservas_GrupoClaseId",
@@ -365,9 +374,6 @@ namespace AtecaAPI.Migrations
                 name: "DiasNoLectivos");
 
             migrationBuilder.DropTable(
-                name: "FranjasHorarias");
-
-            migrationBuilder.DropTable(
                 name: "Reservas");
 
             migrationBuilder.DropTable(
@@ -375,6 +381,9 @@ namespace AtecaAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "FranjasHorarias");
 
             migrationBuilder.DropTable(
                 name: "GruposClase");

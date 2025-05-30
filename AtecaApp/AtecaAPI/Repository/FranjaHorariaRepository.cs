@@ -45,13 +45,7 @@ namespace AtecaAPI.Repository
             return await _context.FranjasHorarias.FirstOrDefaultAsync(f => f.Id == id);
         }
 
-        public async Task<ICollection<FranjaHoraria>> GetByDiaSemanaAsync(DayOfWeek diaSemana)
-        {
-            return await _context.FranjasHorarias
-                .Where(f => f.DiaSemana == diaSemana)
-                .OrderBy(f => f.HoraInicio)
-                .ToListAsync();
-        }
+
 
         public async Task<bool> ExistsAsync(int id)
         {

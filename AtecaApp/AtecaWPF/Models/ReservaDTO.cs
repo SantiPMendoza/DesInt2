@@ -18,11 +18,11 @@ namespace AtecaWPF.Models
 
 
         public DateOnly Fecha { get; set; }
-        public TimeOnly HoraInicio { get; set; }
-        public TimeOnly HoraFin { get; set; }
+
+        public FranjaHorariaDTO FranjaHoraria { get; set; } = null!;
 
         // Propiedad para mostrar la franja horaria como string
         public string DiaSemanaString => Fecha.DayOfWeek.ToString();
-        public string FranjaHoraria => $"{HoraInicio:HH:mm} - {HoraFin:HH:mm}";
+        public string Franja => $"{FranjaHoraria.HoraInicio} - {FranjaHoraria.HoraFin}";
     }
 }

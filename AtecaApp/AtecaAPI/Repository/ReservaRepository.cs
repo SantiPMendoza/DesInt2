@@ -27,6 +27,7 @@ namespace AtecaAPI.Repository
             var reservasFromDb = await _context.Reservas
                 .Include(r => r.Profesor)
                 .Include(r => r.GrupoClase)
+                .Include(r => r.FranjaHoraria)
                 .ToListAsync();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -49,6 +50,7 @@ namespace AtecaAPI.Repository
             return await _context.Reservas
                 .Include(r => r.Profesor)
                 .Include(r => r.GrupoClase)
+                .Include(r => r.FranjaHoraria)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
@@ -56,6 +58,7 @@ namespace AtecaAPI.Repository
             => await _context.Reservas
                 .Include(r => r.Profesor)
                 .Include(r => r.GrupoClase)
+                .Include(r => r.FranjaHoraria)
                 .Where(r => r.ProfesorId == profesorId)
                 .ToListAsync();
 
@@ -63,6 +66,7 @@ namespace AtecaAPI.Repository
             => await _context.Reservas
                 .Include(r => r.Profesor)
                 .Include(r => r.GrupoClase)
+                .Include(r => r.FranjaHoraria)
                 .Where(r => r.Estado == "Pendiente")
                 .ToListAsync();
 

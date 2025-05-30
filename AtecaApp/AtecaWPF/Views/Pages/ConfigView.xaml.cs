@@ -18,11 +18,16 @@ namespace AtecaWPF.Views.Pages
     /// <summary>
     /// Lógica de interacción para ConfigView.xaml
     /// </summary>
-    public partial class ConfigView : Page
+    public partial class ConfigView : INavigableView<ConfigViewModel>
     {
-        public ConfigView()
+        public ConfigViewModel ViewModel { get; }
+        public ConfigView(ConfigViewModel viewModel)
         {
+            ViewModel = viewModel;
+            DataContext = this;
+
             InitializeComponent();
         }
+
     }
 }

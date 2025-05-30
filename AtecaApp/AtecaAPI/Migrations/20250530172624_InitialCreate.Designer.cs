@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AtecaAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250527211050_InitialCreate")]
+    [Migration("20250530172624_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -148,9 +148,6 @@ namespace AtecaAPI.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
-                    b.Property<int>("DiaSemana")
-                        .HasColumnType("int");
-
                     b.Property<TimeOnly>("HoraFin")
                         .HasColumnType("time");
 
@@ -159,7 +156,7 @@ namespace AtecaAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DiaSemana", "HoraInicio", "HoraFin")
+                    b.HasIndex("HoraInicio", "HoraFin")
                         .IsUnique();
 
                     b.ToTable("FranjasHorarias");
@@ -228,25 +225,24 @@ namespace AtecaAPI.Migrations
                     b.Property<DateTime>("FechaSolicitud")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GrupoClaseId")
+                    b.Property<int>("FranjaHorariaId")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("HoraFin")
-                        .HasColumnType("time");
-
-                    b.Property<TimeOnly>("HoraInicio")
-                        .HasColumnType("time");
+                    b.Property<int>("GrupoClaseId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProfesorId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FranjaHorariaId");
+
                     b.HasIndex("GrupoClaseId");
 
                     b.HasIndex("ProfesorId");
 
-                    b.HasIndex("Fecha", "HoraInicio", "ProfesorId")
+                    b.HasIndex("Fecha", "FranjaHorariaId", "ProfesorId")
                         .IsUnique();
 
                     b.ToTable("Reservas");
@@ -398,6 +394,12 @@ namespace AtecaAPI.Migrations
 
             modelBuilder.Entity("AtecaAPI.Models.Entity.Reserva", b =>
                 {
+                    b.HasOne("AtecaAPI.Models.Entity.FranjaHoraria", "FranjaHoraria")
+                        .WithMany()
+                        .HasForeignKey("FranjaHorariaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AtecaAPI.Models.Entity.GrupoClase", "GrupoClase")
                         .WithMany("Reservas")
                         .HasForeignKey("GrupoClaseId")
@@ -409,6 +411,8 @@ namespace AtecaAPI.Migrations
                         .HasForeignKey("ProfesorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("FranjaHoraria");
 
                     b.Navigation("GrupoClase");
 

@@ -10,7 +10,7 @@ public class ReservaDTO : CreateReservaDTO
 
     public ProfesorDTO Profesor { get; set; } = null!;
     public GrupoClaseDTO GrupoClase { get; set; } = null!;
-
+    public FranjaHorariaDTO FranjaHoraria { get; set; } = null!;
     public string Estado { get; set; } = "Pendiente";
     public DateTime FechaSolicitud { get; set; }
     public DateTime? FechaResolucion { get; set; }
@@ -22,10 +22,7 @@ public class CreateReservaDTO
     public DateOnly Fecha { get; set; }
 
     [Required]
-    public TimeOnly HoraInicio { get; set; }
-
-    [Required]
-    public TimeOnly HoraFin { get; set; }
+    public int FranjaHorariaId { get; set; }
 
     [Required]
     public int ProfesorId { get; set; }
