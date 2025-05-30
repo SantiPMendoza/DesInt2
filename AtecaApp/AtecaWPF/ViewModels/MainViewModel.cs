@@ -56,15 +56,22 @@ namespace AtecaWPF.ViewModels
                     TargetPageType = typeof(CalendarView)
                 },
 
+                new NavigationViewItem()
+                {
+                    Content = "Configuración",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.Clock12 },
+                    TargetPageType = typeof(ConfigView)
+                },
+
             ];
 
             NavigationFooter =
 [
                 new NavigationViewItem()
                 {
-                    Content = "Configuración",
-                    Icon = new SymbolIcon { Symbol = SymbolRegular.Clock12 },
-                    TargetPageType = typeof(ConfigView)
+                    Content = "Logout",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.ArrowExit20 },
+                    //TargetPageType = typeof(ConfigView)
                 },
         ];
 

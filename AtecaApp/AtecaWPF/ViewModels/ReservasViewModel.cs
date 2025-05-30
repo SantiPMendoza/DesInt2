@@ -34,6 +34,20 @@ namespace AtecaWPF.ViewModels
 
         private List<ReservaDTO> todasLasReservas = [];
 
+
+        // Propiedades FlyOut NuevaReserva:
+
+        [ObservableProperty] private bool isFlyoutOpen;
+        [ObservableProperty] private DateTime? nuevaReservaFecha = DateTime.Today;
+
+        [ObservableProperty] private ObservableCollection<FranjaHorariaDTO> franjas = [];
+        [ObservableProperty] private ObservableCollection<ProfesorDTO> profesores = [];
+        [ObservableProperty] private ObservableCollection<GrupoClaseDTO> grupos = [];
+
+        [ObservableProperty] private FranjaHorariaDTO? franjaSeleccionada;
+        [ObservableProperty] private ProfesorDTO? profesorSeleccionado;
+        [ObservableProperty] private GrupoClaseDTO? grupoSeleccionado;
+
         public ReservasViewModel(HttpJsonClient httpJsonClient, INavigationService navigationService)
         {
             _httpJsonClient = httpJsonClient;
@@ -112,6 +126,57 @@ namespace AtecaWPF.ViewModels
             {
                 MessageBox.Show($"Error al rechazar la reserva: {ex.Message}");
             }
+        }
+
+        [RelayCommand]
+        private async Task AbrirFlyout()
+        {
+            await CargarDatosParaFormulario();
+            IsFlyoutOpen = true;
+        }
+
+        private async Task CargarDatosParaFormulario()
+        {
+            Franjas = new(await _httpJsonClient.GetListAsync<FranjaHorariaDTO>("api/FranjaHoraria"));
+            Profesores = new(await _httpJsonClient.GetListAsync<ProfesorDTO>("api/Profesor"));
+            Grupos = new(await _httpJsonClient.GetListAsync<GrupoClaseDTO>("api/GrupoClase"));
+        }
+
+
+        [RelayCommand]
+        private async Task GuardarReserva()
+        {
+            if (NuevaReservaFecha == null || FranjaSeleccionada == null || ProfesorSeleccionado == null || GrupoSeleccionado == null)
+            {
+                MessageBox.Show("Rellene todos los campos.");
+                return;
+            }
+
+            var nueva = new CreateReservaDTO
+            {
+                Fecha = DateOnly.FromDateTime(NuevaReservaFecha.Value),
+                FranjaHorariaId = FranjaSeleccionada.Id,
+                ProfesorId = ProfesorSeleccionado.Id,
+                GrupoClaseId = GrupoSeleccionado.Id
+            };
+
+            try
+            {
+                await _httpJsonClient.PostAsync<CreateReservaDTO, ReservaDTO>("api/Reserva", nueva);
+                MessageBox.Show("Reserva añadida correctamente.");
+                IsFlyoutOpen = false;
+                await CargarReservas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar la reserva: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private void CerrarFlyout()
+        {
+            IsFlyoutOpen = false;
         }
 
         public void OnPageLoaded()

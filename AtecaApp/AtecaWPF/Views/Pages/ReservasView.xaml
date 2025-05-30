@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:AtecaWPF.Views.Pages"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="1000"
       Title="ReservasView">
@@ -12,33 +13,37 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <!-- Para botón Añadir Reserva -->
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <!-- Filtros y botón recargar arriba -->
+        <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="0">
             <Button Content="Recargar Reservas"
-            Command="{Binding CargarReservasCommand}" Margin="0,0,100,0" />
+                    Command="{Binding CargarReservasCommand}" Margin="0,0,20,0" />
 
             <Label Content="Fecha:" VerticalAlignment="Center" Margin="10,0,0,0"/>
 
             <DatePicker SelectedDate="{Binding FechaSeleccionadaDateTime, Mode=TwoWay}"
-                Width="150" Margin="10,0" />
+                        Width="150" Margin="10,0" />
 
             <Label Content="Estado:" VerticalAlignment="Center" Margin="10,0,0,0"/>
 
             <ComboBox Width="150" Margin="10,0"
-              ItemsSource="{Binding EstadosDisponibles}"
-              SelectedItem="{Binding EstadoSeleccionado, Mode=TwoWay}" Text="Estado"/>
+                      ItemsSource="{Binding EstadosDisponibles}"
+                      SelectedItem="{Binding EstadoSeleccionado, Mode=TwoWay}" Text="Estado"/>
 
             <Button Content="Filtrar"
-            Command="{Binding FiltrarCommand}"
-            Width="100" Margin="10,0"/>
+                    Command="{Binding FiltrarCommand}"
+                    Width="100" Margin="10,0"/>
         </StackPanel>
 
-
+        <!-- ListView con reservas -->
         <ListView Grid.Row="1"
-                  ItemsSource="{Binding Reservas}"
                   Margin="10"
-                  HorizontalContentAlignment="Stretch">
+                  HorizontalContentAlignment="Stretch"
+                  MaxHeight="600"
+                  ItemsSource="{Binding Reservas}">
 
             <ListView.View>
                 <GridView>
@@ -49,8 +54,8 @@
                     <GridViewColumn Header="Fecha" Width="100" DisplayMemberBinding="{Binding Fecha}" />
                     <GridViewColumn Header="Día Semana" Width="100" DisplayMemberBinding="{Binding DiaSemanaString}" />
                     <GridViewColumn Header="Franja Horaria" Width="130" DisplayMemberBinding="{Binding Franja}" />
-                    <GridViewColumn Header="Fecha Solicitud" Width="160" DisplayMemberBinding="{Binding FechaSolicitud, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
-                    <GridViewColumn Header="Fecha Resolución" Width="160" DisplayMemberBinding="{Binding FechaResolucion, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
+                    <GridViewColumn Header="Fecha Solicitud" Width="160" DisplayMemberBinding="{Binding FechaSolicitud, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" />
+                    <GridViewColumn Header="Fecha Resolución" Width="160" DisplayMemberBinding="{Binding FechaResolucion, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" />
 
                     <GridViewColumn Header="Acciones" Width="180">
                         <GridViewColumn.CellTemplate>
@@ -73,5 +78,57 @@
                 </GridView>
             </ListView.View>
         </ListView>
+
+        <!-- Botón Añadir Reserva debajo del ListView -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10">
+            <Button Content="Añadir Reserva"
+                    Command="{Binding AbrirFlyoutCommand}"
+                    Width="120" />
+        </StackPanel>
+
+        <!-- Popup para añadir reserva -->
+        <Popup IsOpen="{Binding IsFlyoutOpen}" StaysOpen="False" AllowsTransparency="True"
+       Placement="Center"
+       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+            <Grid Background="#80000000">
+                <!-- Fondo semitransparente -->
+                <Border Background="White" BorderBrush="Gray" BorderThickness="1" Padding="20" Width="400" MinHeight="350" CornerRadius="5" >
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                        <TextBlock Text="Añadir Nueva Reserva" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
+
+                        <Label Content="Fecha:"/>
+                        <DatePicker SelectedDate="{Binding NuevaReservaFecha, Mode=TwoWay}" Width="200" />
+
+                        <Label Content="Franja Horaria:" Margin="0,10,0,0"/>
+                        <ComboBox ItemsSource="{Binding Franjas}" SelectedItem="{Binding FranjaSeleccionada}" Width="200">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding HoraInicio, StringFormat={}{0:HH\\:mm}}" />
+                                        <TextBlock Text=" - " />
+                                        <TextBlock Text="{Binding HoraFin, StringFormat={}{0:HH\\:mm}}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Label Content="Profesor:" Margin="0,10,0,0"/>
+                        <ComboBox ItemsSource="{Binding Profesores}" SelectedItem="{Binding ProfesorSeleccionado}" Width="200" DisplayMemberPath="Nombre"/>
+
+                        <Label Content="Grupo:" Margin="0,10,0,0"/>
+                        <ComboBox ItemsSource="{Binding Grupos}" SelectedItem="{Binding GrupoSeleccionado}" Width="200" DisplayMemberPath="Nombre"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0" >
+                            <Button Content="Cancelar" Command="{Binding CerrarFlyoutCommand}" Width="80" Margin="0,0,10,0"/>
+                            <Button Content="Guardar" Command="{Binding GuardarReservaCommand}" Width="80" />
+                        </StackPanel>
+                    </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Popup>
+
+
     </Grid>
 </Page>
