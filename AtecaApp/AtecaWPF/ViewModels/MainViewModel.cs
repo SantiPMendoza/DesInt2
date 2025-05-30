@@ -41,7 +41,6 @@ namespace AtecaWPF.ViewModels
 
         private void InitializeViewModel()
         {
-            
             NavigationItems =
             [
                 new NavigationViewItem()

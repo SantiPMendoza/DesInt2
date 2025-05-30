@@ -6,6 +6,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:local="clr-namespace:AtecaWPF.Views"
         xmlns:tray="http://schemas.lepo.co/wpfui/2022/xaml/tray"
+        xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainWindow,
                                      IsDesignTimeCreatable=True}"
@@ -28,6 +29,7 @@
         <!-- Title Bar -->
         <ui:TitleBar
             Background="#2C3E50"
+            Icon="Assets/logo.jpg"
             Title="{Binding ApplicationTitle, Mode=OneWay}"
             Grid.Row="0" FontSize="20" FontFamily="Impact" />
         <ui:NavigationView x:Name="RootNavigation"
