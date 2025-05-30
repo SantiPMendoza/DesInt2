@@ -16,7 +16,7 @@ namespace AtecaWPF.ViewModels
         private bool _isInitialized = false;
 
         [ObservableProperty]
-        private string _applicationTitle = "Ateca";
+        private string _applicationTitle = "AtecApp";
 
         [ObservableProperty]
         private ObservableCollection<object> _navigationItems = [];
@@ -51,7 +51,7 @@ namespace AtecaWPF.ViewModels
                 },
                 new NavigationViewItem()
                 {
-                    Content = "Placeholder :v",
+                    Content = "Calendario?",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.Album20 },
                     TargetPageType = typeof(CalendarView)
                 },
@@ -62,8 +62,8 @@ namespace AtecaWPF.ViewModels
 [
                 new NavigationViewItem()
                 {
-                    Content = "Perfil?",
-                    Icon = new SymbolIcon { Symbol = SymbolRegular.CalendarDay24 },
+                    Content = "Configuración",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.Clock12 },
                     TargetPageType = typeof(ConfigView)
                 },
         ];

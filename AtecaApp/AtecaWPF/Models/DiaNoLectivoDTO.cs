@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace AtecaWPF.Models
 {
-    public class DiaNoLectivoDTO
+    public class DiaNoLectivoDTO : CreateDiaNoLectivoDTO
     {
         public int Id { get; set; }
+
+    }
+
+    public class CreateDiaNoLectivoDTO
+    {
 
         public DateOnly Fecha { get; set; }
     }

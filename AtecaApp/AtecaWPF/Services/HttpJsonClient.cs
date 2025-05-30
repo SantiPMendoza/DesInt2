@@ -38,13 +38,23 @@ namespace AtecaWPF.Services
             try
             {
                 AddAuthorizationHeader();
-                return await _httpClient.GetFromJsonAsync<List<T>>(url);
+
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadFromJsonAsync<List<T>>();
+
+                if (result == null)
+                    throw new ApplicationException("Respuesta vacía o mal formateada.");
+
+                return result;
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
                 throw new ApplicationException($"Error al obtener la lista de {typeof(T).Name}: {ex.Message}", ex);
             }
         }
+
 
         public async Task<T> GetAsync<T>(string url)
         {
@@ -52,6 +62,8 @@ namespace AtecaWPF.Services
             {
                 AddAuthorizationHeader();
                 return await _httpClient.GetFromJsonAsync<T>(url);
+
+
             }
             catch (HttpRequestException ex)
             {

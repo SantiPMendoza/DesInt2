@@ -24,10 +24,16 @@ namespace AtecaWPF.Views.Pages
         public ConfigView(ConfigViewModel viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             InitializeComponent();
+
+            viewModel.OnPageLoaded();
         }
 
+        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+
+        }
     }
 }
