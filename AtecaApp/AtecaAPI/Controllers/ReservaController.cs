@@ -42,5 +42,30 @@ namespace AtecaAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpPost]
+        public override async Task<IActionResult> Create([FromBody] CreateReservaDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Datos de reserva inválidos.");
+
+            var reserva = _mapper.Map<Reserva>(dto);
+            reserva.FechaSolicitud = DateTime.Now;
+            reserva.Estado = "Pendiente";
+
+            var error = await _reservaRepository.ValidarReservaAsync(reserva);
+            if (error != null)
+                return Conflict(new { mensaje = error });   // ⬅️ Devuelve error específico
+
+            var result = await _reservaRepository.CreateAsync(reserva);
+            if (!result)
+                return StatusCode(500, "Error interno al guardar la reserva.");
+
+            var dtoFinal = _mapper.Map<ReservaDTO>(reserva);
+
+            return CreatedAtRoute($"{ControllerContext.ActionDescriptor.ControllerName}_GetEntity", new { id = dtoFinal.Id }, dtoFinal);
+        }
+
+
     }
 }

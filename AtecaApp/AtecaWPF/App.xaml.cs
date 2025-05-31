@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Wpf.Ui.DependencyInjection;
 using Wpf.Ui;
+using AtecaWPF.ViewModels.Config;
 
 namespace AtecaWPF
 {

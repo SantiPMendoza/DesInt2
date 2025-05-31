@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using Wpf.Ui;
@@ -163,14 +165,22 @@ namespace AtecaWPF.ViewModels
             try
             {
                 await _httpJsonClient.PostAsync<CreateReservaDTO, ReservaDTO>("api/Reserva", nueva);
-                MessageBox.Show("Reserva añadida correctamente.");
-                IsFlyoutOpen = false;
-                await CargarReservas();
+                MessageBox.Show("Reserva creada correctamente");
+            }
+            catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                MessageBox.Show(ex.Message); // Muestra el mensaje de error 409
+            }
+            catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+            {
+                MessageBox.Show(ex.Message); // Muestra el mensaje de error 400
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar la reserva: {ex.Message}");
+                MessageBox.Show($"Error inesperado: {ex.Message}");
             }
+
+
         }
 
         [RelayCommand]

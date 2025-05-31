@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using AtecaWPF.Services;
 
 namespace AtecaWPF.Services
 {
@@ -22,7 +22,6 @@ namespace AtecaWPF.Services
         private void AddAuthorizationHeader()
         {
             var token = _authService.GetToken();
-
             _httpClient.DefaultRequestHeaders.Authorization = null;
 
             if (!string.IsNullOrEmpty(token))
@@ -32,21 +31,34 @@ namespace AtecaWPF.Services
             }
         }
 
+        private async Task<string> ExtractErrorMessage(HttpResponseMessage response)
+        {
+            try
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+                return parsed != null && parsed.TryGetValue("mensaje", out var mensaje)
+                    ? mensaje
+                    : json; // fallback: return raw JSON
+            }
+            catch
+            {
+                return response.ReasonPhrase ?? "Error desconocido";
+            }
+        }
+
         public async Task<List<T>> GetListAsync<T>(string url)
         {
             try
             {
                 AddAuthorizationHeader();
-
                 var response = await _httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(await ExtractErrorMessage(response), response.StatusCode);
 
                 var result = await response.Content.ReadFromJsonAsync<List<T>>();
-
-                if (result == null)
-                    throw new ApplicationException("La respuesta fue nula o no se pudo deserializar correctamente.");
-
-                return result;
+                return result ?? throw new ApplicationException("La respuesta fue nula o no se pudo deserializar correctamente.");
             }
             catch (Exception ex)
             {
@@ -59,20 +71,17 @@ namespace AtecaWPF.Services
             try
             {
                 AddAuthorizationHeader();
-
                 var response = await _httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(await ExtractErrorMessage(response), response.StatusCode);
 
                 var result = await response.Content.ReadFromJsonAsync<T>();
-
-                if (result == null)
-                    throw new ApplicationException($"La respuesta para {typeof(T).Name} fue nula o mal formateada.");
-
-                return result;
+                return result ?? throw new ApplicationException($"La respuesta fue nula para tipo {typeof(T).Name}.");
             }
             catch (Exception ex)
             {
-                throw new ApplicationException($"Error al obtener el objeto de tipo {typeof(T).Name}: {ex.Message}", ex);
+                throw new ApplicationException($"Error al obtener objeto de tipo {typeof(T).Name}: {ex.Message}", ex);
             }
         }
 
@@ -81,16 +90,13 @@ namespace AtecaWPF.Services
             try
             {
                 AddAuthorizationHeader();
-
                 var response = await _httpClient.PostAsJsonAsync(url, data);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(await ExtractErrorMessage(response), response.StatusCode);
 
                 var result = await response.Content.ReadFromJsonAsync<TResponse>();
-
-                if (result == null)
-                    throw new ApplicationException("La respuesta al POST fue nula o no se pudo deserializar.");
-
-                return result;
+                return result ?? throw new ApplicationException("La respuesta fue nula tras el POST.");
             }
             catch (Exception ex)
             {
@@ -103,9 +109,10 @@ namespace AtecaWPF.Services
             try
             {
                 AddAuthorizationHeader();
-
                 var response = await _httpClient.PutAsync(url, null);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(await ExtractErrorMessage(response), response.StatusCode);
             }
             catch (Exception ex)
             {
@@ -118,9 +125,10 @@ namespace AtecaWPF.Services
             try
             {
                 AddAuthorizationHeader();
-
                 var response = await _httpClient.PutAsJsonAsync(url, data);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(await ExtractErrorMessage(response), response.StatusCode);
             }
             catch (Exception ex)
             {
@@ -133,9 +141,10 @@ namespace AtecaWPF.Services
             try
             {
                 AddAuthorizationHeader();
-
                 var response = await _httpClient.DeleteAsync(url);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(await ExtractErrorMessage(response), response.StatusCode);
             }
             catch (Exception ex)
             {

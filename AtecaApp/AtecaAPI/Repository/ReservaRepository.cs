@@ -124,6 +124,36 @@ namespace AtecaAPI.Repository
             return result;
         }
 
+        public async Task<string?> ValidarReservaAsync(Reserva reserva)
+        {
+            // 1. Fecha en el pasado
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            if (reserva.Fecha < today)
+                return "No se puede hacer una reserva para una fecha pasada.";
+
+            // 2. Misma fecha y franja ya reservada por el mismo profesor
+            var yaExiste = await _context.Reservas.AnyAsync(r =>
+                r.Fecha == reserva.Fecha &&
+                r.FranjaHorariaId == reserva.FranjaHorariaId &&
+                r.ProfesorId == reserva.ProfesorId &&
+                r.Estado != "Rechazada" &&
+                r.Id != reserva.Id);
+
+            if (yaExiste)
+                return "Ya existe una reserva para ese profesor en la fecha y franja horaria seleccionada.";
+
+            // 3. Si es para hoy, que la franja no esté vencida
+            if (reserva.Fecha == today)
+            {
+                var franja = await _context.FranjasHorarias.FindAsync(reserva.FranjaHorariaId);
+                if (franja != null && franja.HoraInicio <= TimeOnly.FromDateTime(DateTime.Now))
+                    return "No se puede hacer una reserva en una franja horaria ya vencida.";
+            }
+
+            return null; // Validación correcta
+        }
+
+
         public void ClearCache()
         {
             _cache.Remove(ReservaCacheKey);

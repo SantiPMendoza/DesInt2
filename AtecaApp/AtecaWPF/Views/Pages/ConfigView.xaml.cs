@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AtecaWPF.ViewModels.Config;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,11 +30,6 @@ namespace AtecaWPF.Views.Pages
             InitializeComponent();
 
             viewModel.OnPageLoaded();
-        }
-
-        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
-
         }
     }
 }

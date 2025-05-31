@@ -5,8 +5,7 @@ public interface IReservaRepository : IRepository<Reserva>
 {
     Task<ICollection<Reserva>> GetByProfesorIdAsync(int profesorId);
     Task<ICollection<Reserva>> GetPendientesAsync();
-
-    // Añade esto:
     Task<bool> AceptarReservaAsync(int id);
     Task<bool> RechazarReservaAsync(int id);
+    Task<string> ValidarReservaAsync(Reserva reserva);
 }
