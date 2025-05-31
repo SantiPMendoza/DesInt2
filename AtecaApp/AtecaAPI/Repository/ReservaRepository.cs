@@ -12,12 +12,18 @@ namespace AtecaAPI.Repository
         private readonly IMemoryCache _cache;
         private readonly string ReservaCacheKey = "ReservaCacheKey";
         private readonly int CacheExpirationTime = 3600; // en segundos => posiblemente reducir en un futuro
+        private readonly IDiaNoLectivoRepository _diaNoLectivoRepository;
 
-        public ReservaRepository(ApplicationDbContext context, IMemoryCache cache)
+        public ReservaRepository(
+            ApplicationDbContext context,
+            IMemoryCache cache,
+            IDiaNoLectivoRepository diaNoLectivoRepository)
         {
             _context = context;
             _cache = cache;
+            _diaNoLectivoRepository = diaNoLectivoRepository;
         }
+
 
         public async Task<ICollection<Reserva>> GetAllAsync()
         {
@@ -126,12 +132,18 @@ namespace AtecaAPI.Repository
 
         public async Task<string?> ValidarReservaAsync(Reserva reserva)
         {
-            // 1. Fecha en el pasado
             var today = DateOnly.FromDateTime(DateTime.Today);
+
+            //  1. No se puede reservar en días no lectivos
+            var esNoLectivo = await _diaNoLectivoRepository.ExistsByFechaAsync(reserva.Fecha);
+            if (esNoLectivo)
+                return "No se puede realizar una reserva en un día no lectivo.";
+
+            //  2. Fecha en el pasado
             if (reserva.Fecha < today)
                 return "No se puede hacer una reserva para una fecha pasada.";
 
-            // 2. Misma fecha y franja ya reservada por el mismo profesor
+            //  3. Ya existe reserva en misma fecha, franja y profesor
             var yaExiste = await _context.Reservas.AnyAsync(r =>
                 r.Fecha == reserva.Fecha &&
                 r.FranjaHorariaId == reserva.FranjaHorariaId &&
@@ -142,7 +154,7 @@ namespace AtecaAPI.Repository
             if (yaExiste)
                 return "Ya existe una reserva para ese profesor en la fecha y franja horaria seleccionada.";
 
-            // 3. Si es para hoy, que la franja no esté vencida
+            //  4. Si es para hoy, la franja debe ser futura
             if (reserva.Fecha == today)
             {
                 var franja = await _context.FranjasHorarias.FindAsync(reserva.FranjaHorariaId);
@@ -150,7 +162,7 @@ namespace AtecaAPI.Repository
                     return "No se puede hacer una reserva en una franja horaria ya vencida.";
             }
 
-            return null; // Validación correcta
+            return null;
         }
 
 

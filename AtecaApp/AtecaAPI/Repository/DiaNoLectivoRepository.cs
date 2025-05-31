@@ -80,6 +80,15 @@ namespace AtecaAPI.Repository
             return result;
         }
 
+
+        public async Task<bool> ExistsByFechaAsync(DateOnly fecha)
+        {
+            if (_cache.TryGetValue(CacheKey, out ICollection<DiaNoLectivo> cachedList))
+                return cachedList.Any(d => d.Fecha == fecha);
+
+            return await _context.DiasNoLectivos.AnyAsync(d => d.Fecha == fecha);
+        }
+
         public void ClearCache()
         {
             _cache.Remove(CacheKey);
