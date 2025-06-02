@@ -9,12 +9,17 @@ import { Reserva } from '../models/reserva';
 })
 export class ReservaService {
 
-private apiUrl = 'https://localhost:7228/api/Reserva/aprobadas';
+private apiUrl = 'https://localhost:7228/api/Reserva/';
 
 
   constructor(private http: HttpClient) {}
 
   getReservasAprobadas(): Observable<Reserva[]> {
-    return this.http.get<Reserva[]>(this.apiUrl);
+    return this.http.get<Reserva[]>(this.apiUrl+'aprobadas');
   }
+
+  createReserva(reserva: any) {
+  return this.http.post(this.apiUrl, reserva);
+}
+
 }

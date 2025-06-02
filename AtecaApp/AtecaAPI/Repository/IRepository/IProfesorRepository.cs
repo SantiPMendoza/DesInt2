@@ -6,6 +6,6 @@ namespace AtecaAPI.Repository.IRepository
     {
         Task<Profesor?> GetByGoogleIdAsync(string googleId);
 
-        Task<bool> CreateIfNotExistsAsync(Profesor profesor)
+        Task<bool> CreateIfNotExistsAsync(Profesor profesor);
     }
 }

@@ -17,27 +17,45 @@ export class RegisterComponent {
   constructor(private router: Router) {}
 
   async submit() {
-    if (this.isSubmitting) return; // prevenir múltiples envíos simultáneos
+    if (this.isSubmitting) return;
     this.isSubmitting = true;
 
     const googleId = localStorage.getItem('googleId');
     const email = localStorage.getItem('userEmail');
 
-    const body = { nombre: this.nombre, email, googleId };
+    if (!googleId || !email) {
+      alert('No se encontró tu sesión de Google. Por favor, inicia sesión nuevamente.');
+      this.isSubmitting = false;
+      return;
+    }
+
+    if (!this.nombre.trim()) {
+      alert('Por favor, introduce tu nombre completo.');
+      this.isSubmitting = false;
+      return;
+    }
+
+    const body = { nombre: this.nombre.trim(), email, googleId };
 
     try {
-      // Primero verifica si el profesor ya existe por googleId
-      const existsResponse = await fetch(`https://localhost:7228/api/Profesor/${googleId}`);
+      // Verificar existencia
+      const existsResponse = await fetch(`https://localhost:7228/api/Profesor/google/${googleId}`);
+
       if (existsResponse.ok) {
-        // Profesor ya existe, solo redirige
         const profesor = await existsResponse.json();
         localStorage.setItem('profesorId', profesor.id);
         this.router.navigate(['/list']);
         return;
+      } else if (existsResponse.status !== 404) {
+        // Error distinto a "no encontrado"
+        const errorText = await existsResponse.text();
+        alert(`Error consultando tu usuario: ${errorText}`);
+        this.isSubmitting = false;
+        return;
       }
 
-      // Si no existe, crear nuevo profesor
-      const res = await fetch('https://localhost:7228/api/Profesor', {
+      // Crear profesor si no existe
+      const res = await fetch('https://localhost:7228/api/Profesor/create-if-not-exists', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -48,7 +66,8 @@ export class RegisterComponent {
         localStorage.setItem('profesorId', profesor.id);
         this.router.navigate(['/list']);
       } else {
-        alert('Error creando el profesor');
+        const errorText = await res.text();
+        alert(`Error creando el profesor: ${errorText}`);
       }
     } catch (error) {
       alert('Error en la conexión. Intenta más tarde.');
@@ -58,4 +77,3 @@ export class RegisterComponent {
     }
   }
 }
-

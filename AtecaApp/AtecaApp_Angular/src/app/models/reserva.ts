@@ -1,23 +1,9 @@
 // src/app/models/reserva.ts
+import { FranjaHoraria } from './franjaHoraria';
+import { GrupoClase } from './grupoClase';
+import { Profesor } from './profesor';
 
-export interface Profesor {
-  id: number;
-  nombre: string;
-  // agrega más propiedades según tu DTO ProfesorDTO
-}
 
-export interface GrupoClase {
-  id: number;
-  nombre: string;
-  // más propiedades si las tienes en GrupoClaseDTO
-}
-
-export interface FranjaHoraria {
-  id: number;
-  horaInicio: string;  // o Date si parseas
-  horaFin: string;     // o Date si parseas
-  // otras propiedades si existen
-}
 
 export interface Reserva {
   id: number;

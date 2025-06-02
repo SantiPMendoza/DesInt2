@@ -29,6 +29,7 @@ namespace AtecaAPI.Controllers
             return Ok(_mapper.Map<ProfesorDTO>(profesor));
         }
 
+
         [AllowAnonymous]
         [HttpPost("create-if-not-exists")]
         public async Task<IActionResult> CreateIfNotExists([FromBody] CreateProfesorDTO dto)
@@ -54,7 +55,7 @@ namespace AtecaAPI.Controllers
             var profesorCreado = await ((IProfesorRepository)_repository).GetByGoogleIdAsync(nuevoProfesor.GoogleId);
             var profesorCreadoDto = _mapper.Map<ProfesorDTO>(profesorCreado);
 
-            return CreatedAtRoute("[controller]_GetEntity", new { id = profesorCreadoDto.Id }, profesorCreadoDto);
+            return CreatedAtRoute($"{ControllerContext.ActionDescriptor.ControllerName}_GetEntity", new { id = profesorCreadoDto.Id }, profesorCreadoDto);
         }
 
 

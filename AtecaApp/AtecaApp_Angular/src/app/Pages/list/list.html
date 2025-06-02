@@ -2,21 +2,26 @@
   <div class="reservas-container">
     <h1 class="app-header">Ateca-App</h1>
 
-    
-
-    <!-- Selector de fecha -->
+    <!-- Filtro y botón de nueva reserva -->
     <div class="filter-date">
       <label for="fechaFiltro">Filtrar por fecha:</label>
       <input id="fechaFiltro" type="date" [(ngModel)]="fechaFiltro" (change)="filtrarReservas()" />
       <button *ngIf="fechaFiltro" (click)="limpiarFiltro()">Limpiar filtro</button>
+
+      <!-- Botón Nueva Reserva -->
+      <button class="nueva-reserva-btn" (click)="showModal = true">
+        ➕ Nueva Reserva
+      </button>
     </div>
 
+    <!-- Spinner y error -->
     <div *ngIf="loading" class="loading">Cargando reservas...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
 
+    <!-- Listado de reservas agrupadas -->
     <div *ngIf="!loading && !error">
       <div *ngFor="let group of groupedReservas | keyvalue">
-        <h2 class="fecha-header">{{ group.key | date: 'fullDate' }}</h2>
+        <h2 class="fecha-header">{{ group.key | date: 'dd/MM/yyyy' }}</h2>
 
         <div
           class="reserva-card"
@@ -32,13 +37,46 @@
 
           <div class="reserva-details" *ngIf="expandedIndexMap[reserva.id]">
             <div><strong>Estado:</strong> {{ reserva.estado }}</div>
-            <div><strong>Fecha de solicitud:</strong> {{ reserva.fechaSolicitud | date:'short' }}</div>
-            <div *ngIf="reserva.fechaResolucion"><strong>Fecha de resolución:</strong> {{ reserva.fechaResolucion | date:'short' }}</div>
+            <div><strong>Fecha de solicitud:</strong> {{ reserva.fechaSolicitud | date:'dd/MM/yyyy HH:mm' }}</div>
+            <div *ngIf="reserva.fechaResolucion"><strong>Fecha de resolución:</strong> {{ reserva.fechaResolucion | date:'dd/MM/yyyy HH:mm' }}</div>
           </div>
-
-          
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE NUEVA RESERVA -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal">
+      <h2>Crear Nueva Reserva</h2>
+
+      <form (ngSubmit)="crearReserva()">
+        <!-- Fecha -->
+        <label for="fechaNueva">Fecha:</label>
+        <input id="fechaNueva" type="date" [(ngModel)]="fechaNuevaReserva" name="fechaNueva" required />
+
+        <!-- Franja Horaria -->
+        <label for="franja">Franja Horaria:</label>
+        <select id="franja" [(ngModel)]="selectedFranjaId" name="franja" required>
+          <option *ngFor="let franja of franjasHorarias" [value]="franja.id">
+            {{ franja.horaInicio }} - {{ franja.horaFin }}
+          </option>
+        </select>
+
+        <!-- Grupo -->
+        <label for="grupo">Grupo:</label>
+        <select id="grupo" [(ngModel)]="selectedGrupoId" name="grupo" required>
+          <option *ngFor="let grupo of grupos" [value]="grupo.id">
+            {{ grupo.nombre }}
+          </option>
+        </select>
+
+        <!-- Botones -->
+        <div class="modal-actions">
+          <button type="button" (click)="showModal = false">Cancelar</button>
+          <button type="submit" class="guardar-btn">Guardar</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
