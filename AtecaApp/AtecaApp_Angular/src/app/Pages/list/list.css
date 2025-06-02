@@ -1,0 +1,130 @@
+/* Contenedor padre que ocupa toda la pantalla con fondo degradado azul */
+.app-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 1rem; /* un poco de espacio para que no pegue en los bordes */
+  box-sizing: border-box;
+}
+
+/* Contenedor del contenido con fondo blanco, centrado y tamaño máximo */
+.reservas-container {
+  background: white;
+  padding: 2rem 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+  color: #333;
+}
+
+/* Cabecera fija y centrada dentro del card */
+.app-header {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Ajustar fecha header */
+.fecha-header {
+  font-size: 1.25rem;
+  color: #2c3e50;
+  margin-top: 1.5rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.25rem;
+}
+
+/* Cards más cuadradas dentro del card blanco */
+.reserva-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin: 0.7rem 0;
+  padding: 1rem 1.2rem;
+  min-height: 100px;
+  box-shadow: none;
+  transition: box-shadow 0.3s, transform 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Hover con sombra y leve zoom */
+.reserva-card:hover {
+  box-shadow: 0 8px 20px rgba(26, 115, 232, 0.25);
+  transform: translateY(-3px);
+}
+
+/* Resumen layout */
+.reserva-summary {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  color: #1a1a1a;
+}
+
+.reserva-time {
+  font-family: monospace;
+  background: #eef6fc;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  color: #1a73e8;
+}
+
+.reserva-profesor, .reserva-grupo {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+}
+
+/* Detalles con menos tamaño */
+.reserva-details {
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.3;
+}
+
+
+.filter-date {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.filter-date input[type="date"] {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.filter-date button {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.filter-date button:hover {
+  background-color: #0c4db0;
+}

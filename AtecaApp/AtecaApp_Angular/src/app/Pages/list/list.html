@@ -1,0 +1,44 @@
+<div class="app-container">
+  <div class="reservas-container">
+    <h1 class="app-header">Ateca-App</h1>
+
+    
+
+    <!-- Selector de fecha -->
+    <div class="filter-date">
+      <label for="fechaFiltro">Filtrar por fecha:</label>
+      <input id="fechaFiltro" type="date" [(ngModel)]="fechaFiltro" (change)="filtrarReservas()" />
+      <button *ngIf="fechaFiltro" (click)="limpiarFiltro()">Limpiar filtro</button>
+    </div>
+
+    <div *ngIf="loading" class="loading">Cargando reservas...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="!loading && !error">
+      <div *ngFor="let group of groupedReservas | keyvalue">
+        <h2 class="fecha-header">{{ group.key | date: 'fullDate' }}</h2>
+
+        <div
+          class="reserva-card"
+          *ngFor="let reserva of group.value"
+          (click)="toggleExpand(reserva.id)"
+          [class.expanded]="expandedIndexMap[reserva.id]"
+        >
+          <div class="reserva-summary">
+            <div class="reserva-time">{{ reserva.franjaHoraria.horaInicio }} - {{ reserva.franjaHoraria.horaFin }}</div>
+            <div class="reserva-profesor">{{ reserva.profesor.nombre }}</div>
+            <div class="reserva-grupo">{{ reserva.grupoClase.nombre }}</div>
+          </div>
+
+          <div class="reserva-details" *ngIf="expandedIndexMap[reserva.id]">
+            <div><strong>Estado:</strong> {{ reserva.estado }}</div>
+            <div><strong>Fecha de solicitud:</strong> {{ reserva.fechaSolicitud | date:'short' }}</div>
+            <div *ngIf="reserva.fechaResolucion"><strong>Fecha de resolución:</strong> {{ reserva.fechaResolucion | date:'short' }}</div>
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

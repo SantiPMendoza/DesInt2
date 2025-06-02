@@ -1,0 +1,23 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Registro</h1>
+    <p>Introduce tu nombre para completar el registro</p>
+
+    <form (ngSubmit)="submit()" style="margin-top: 1.5rem;">
+      <input
+        [(ngModel)]="nombre"
+        name="nombre"
+        type="text"
+        placeholder="Tu nombre completo"
+        required
+        class="input-field"
+      />
+
+      <button type="submit" class="submit-button">
+        Registrarse
+      </button>
+    </form>
+
+    <p class="note" style="margin-top: 1rem;">Tu cuenta será vinculada automáticamente</p>
+  </div>
+</div>
