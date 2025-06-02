@@ -58,6 +58,23 @@ namespace AtecaAPI.Repository
             return await _context.Profesores.FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<Profesor?> GetByGoogleIdAsync(string googleId)
+        {
+            return await _context.Profesores.FirstOrDefaultAsync(p => p.GoogleId == googleId);
+        }
+
+        public async Task<bool> CreateIfNotExistsAsync(Profesor profesor)
+        {
+            var exists = await _context.Profesores.AnyAsync(p => p.GoogleId == profesor.GoogleId || p.Email == profesor.Email);
+            if (exists) return false;
+
+            await _context.Profesores.AddAsync(profesor);
+            return await Save();
+        }
+
+
+
+
         public async Task<bool> ExistsAsync(int id)
         {
             return await _context.Profesores.AnyAsync(c => c.Id == id);

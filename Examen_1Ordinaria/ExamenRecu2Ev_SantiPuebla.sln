@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamenRecu2Ev_SantiPuebla", "ExamenRecu2Ev_SantiPuebla\ExamenRecu2Ev_SantiPuebla.csproj", "{AD5F4E88-8C47-4C4B-892E-BEDAB04E8115}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamenApi", "ExamenApi\ExamenApi.csproj", "{13B36A45-16EF-46B5-9120-39CBD676E91F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD5F4E88-8C47-4C4B-892E-BEDAB04E8115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD5F4E88-8C47-4C4B-892E-BEDAB04E8115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD5F4E88-8C47-4C4B-892E-BEDAB04E8115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD5F4E88-8C47-4C4B-892E-BEDAB04E8115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13B36A45-16EF-46B5-9120-39CBD676E91F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13B36A45-16EF-46B5-9120-39CBD676E91F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13B36A45-16EF-46B5-9120-39CBD676E91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13B36A45-16EF-46B5-9120-39CBD676E91F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03CC265C-8EAA-4DC8-9CCA-83777FDA09DE}
+	EndGlobalSection
+EndGlobal

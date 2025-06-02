@@ -1,0 +1,9 @@
+<nav>
+  <button (click)="seleccionarPestania('partidas')">Partidas</button>
+  <button (click)="seleccionarPestania('ranking')">Ranking</button>
+</nav>
+
+<div [ngSwitch]="pestaniaSeleccionada">
+  <app-partidas *ngSwitchCase="'partidas'"></app-partidas>
+  <app-ranking *ngSwitchCase="'ranking'"></app-ranking>
+</div>

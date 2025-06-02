@@ -76,6 +76,16 @@ namespace AtecaAPI.Repository
                 .Where(r => r.Estado == "Pendiente")
                 .ToListAsync();
 
+        public async Task<ICollection<Reserva>> GetAprobadasAsync()   
+            => await _context.Reservas
+                .Include(r => r.Profesor)
+                .Include(r => r.GrupoClase)
+                .Include(r => r.FranjaHoraria)
+                .Where(r => r.Estado == "Aprobada")
+                .ToListAsync();
+        
+
+
         public async Task<bool> ExistsAsync(int id)
             => await _context.Reservas.AnyAsync(r => r.Id == id);
 
@@ -96,7 +106,7 @@ namespace AtecaAPI.Repository
             var reserva = await GetAsync(id);
             if (reserva == null) return false;
 
-            reserva.Estado = "Aceptada";
+            reserva.Estado = "Aprobada";
             reserva.FechaResolucion = DateTime.Now;
             return await UpdateAsync(reserva);
         }

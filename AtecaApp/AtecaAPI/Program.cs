@@ -90,11 +90,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // CORS configuration
-builder.Services.AddCors(p => p.AddPolicy("CorsPolicy", build =>
+var allowedOrigins = builder.Environment.IsDevelopment()
+    ? new[] { "http://localhost:4200" }
+    : new[] { "https://reservasaulas.com" }; // cambia por tu dominio real
+
+builder.Services.AddCors(options =>
 {
-    //modify URL with required domain of the front-end app
-    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.WithOrigins(allowedOrigins)
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 
 var app = builder.Build();
 

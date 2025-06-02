@@ -1,0 +1,16 @@
+<table>
+  <thead>
+    <tr>
+      <th>Posición</th>
+      <th>Usuario</th>
+      <th>Resultado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let partida of ranking; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ partida.name }}</td>
+      <td>{{ partida.resultado }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -33,6 +33,15 @@ namespace AtecaAPI.Controllers
             return NoContent();
         }
 
+        [HttpGet("aprobadas")]
+        public async Task<IActionResult> GetAprobadas()
+        {
+            var reservasAprobadas = await _reservaRepository.GetAprobadasAsync();
+            var reservasDto = _mapper.Map<IEnumerable<ReservaDTO>>(reservasAprobadas);
+            return Ok(reservasDto);
+        }
+
+
         [HttpPut("{id}/rechazar")]
         public async Task<IActionResult> RechazarReserva(int id)
         {

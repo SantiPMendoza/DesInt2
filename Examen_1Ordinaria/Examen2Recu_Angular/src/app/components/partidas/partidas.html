@@ -1,0 +1,25 @@
+<div class="filter-container">
+  <input
+    type="text"
+    placeholder="Filtrar por usuario"
+    [(ngModel)]="filtroUsuario"
+    (input)="filtrarPorUsuario()"
+  />
+  <button (click)="toggleMostrar()">{{ toggleTexto }}</button>
+</div>
+
+<div class="grid-container">
+  <div class="grid-header">Usuario</div>
+  <div class="grid-header">Puntuación</div>
+  <div class="grid-header">Fecha Inicio</div>
+  <div class="grid-header">Estado</div>
+
+  <ng-container *ngFor="let partida of partidas">
+    <div>{{ partida.name }}</div>
+    <div>{{ partida.resultado | number: '1.0-2' }}</div>
+    <div>{{ partida.fecha_Inicio | date: 'short' }}</div>
+    <div>
+      {{ partida.fecha_Fin === partida.fecha_Inicio ? 'Activa' : 'Finalizada' }}
+    </div>
+  </ng-container>
+</div>

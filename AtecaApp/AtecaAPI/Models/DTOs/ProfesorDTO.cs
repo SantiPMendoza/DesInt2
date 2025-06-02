@@ -6,12 +6,14 @@ namespace AtecaAPI.Models.DTOs
     public class ProfesorDTO : CreateProfesorDTO
     {
         public int Id { get; set; }
-        public string Nombre { get; set; } = null!;
-        public string Email { get; set; } = null!; // Solo correos @iescomercio.com
-        public string GoogleId { get; set; } = null!;
 
-        //public ICollection<ReservaDTO> Reservas { get; set; } = [];
     }
 
-    public class CreateProfesorDTO { }
+    public class CreateProfesorDTO
+    {
+        public string Nombre { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string GoogleId { get; set; } = null!;
+    }
+
 }

@@ -114,12 +114,34 @@ namespace AtecaAPI.Data
 
                 var reservasEjemplo = new List<Reserva>
                 {
-                    new() { Fecha = fechas[0], FranjaHorariaId = franja16.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Pendiente", FechaSolicitud = DateTime.UtcNow },
-                    new() { Fecha = fechas[1], FranjaHorariaId = franja17.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Aprobada", FechaSolicitud = DateTime.UtcNow.AddDays(-2), FechaResolucion = DateTime.UtcNow.AddDays(-1) },
-                    new() { Fecha = fechas[2], FranjaHorariaId = franja18.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Rechazada", FechaSolicitud = DateTime.UtcNow.AddDays(-3), FechaResolucion = DateTime.UtcNow.AddDays(-2) },
-                    new() { Fecha = fechas[3], FranjaHorariaId = franja16.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Pendiente", FechaSolicitud = DateTime.UtcNow },
-                    new() { Fecha = fechas[4], FranjaHorariaId = franja17.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Cancelada", FechaSolicitud = DateTime.UtcNow.AddDays(-5), FechaResolucion = DateTime.UtcNow.AddDays(-4) }
+                    new() { Fecha = fechas[0], FranjaHorariaId = franja16.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Pendiente", FechaSolicitud = DateTime.Now },
+                    new() { Fecha = fechas[1], FranjaHorariaId = franja17.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Aprobada", FechaSolicitud = DateTime.Now.AddDays(-2), FechaResolucion = DateTime.UtcNow.AddDays(-1) },
+                    new() { Fecha = fechas[2], FranjaHorariaId = franja18.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Rechazada", FechaSolicitud = DateTime.Now.AddDays(-3), FechaResolucion = DateTime.UtcNow.AddDays(-2) },
+                    new() { Fecha = fechas[3], FranjaHorariaId = franja16.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Pendiente", FechaSolicitud = DateTime.Now },
+                    new() { Fecha = fechas[4], FranjaHorariaId = franja17.Id, ProfesorId = profesor.Id, GrupoClaseId = grupo.Id, Estado = "Cancelada", FechaSolicitud = DateTime.Now.AddDays(-5), FechaResolucion = DateTime.UtcNow.AddDays(-4) }
+
+
+                    
+
                 };
+
+                // Generar 10 reservas aprobadas adicionales, sin duplicados en (Fecha, FranjaHorariaId, ProfesorId)
+                var franjasParaUsar = new[] { franja16.Id, franja17.Id, franja18.Id };
+                var fechasParaUsar = Enumerable.Range(6, 10).Select(d => hoy.AddDays(d)).ToList();
+
+                for (int i = 0; i < 10; i++)
+                {
+                    reservasEjemplo.Add(new Reserva
+                    {
+                        Fecha = fechasParaUsar[i],
+                        FranjaHorariaId = franjasParaUsar[i % franjasParaUsar.Length],
+                        ProfesorId = profesor.Id,
+                        GrupoClaseId = grupo.Id,
+                        Estado = "Aprobada",
+                        FechaSolicitud = DateTime.Now.AddDays(-i - 1),
+                        FechaResolucion = DateTime.Now.AddDays(-i)
+                    });
+                }
 
                 context.Reservas.AddRange(reservasEjemplo);
                 await context.SaveChangesAsync();
