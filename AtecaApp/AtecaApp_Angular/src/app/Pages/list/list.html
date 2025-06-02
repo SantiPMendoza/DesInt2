@@ -2,11 +2,17 @@
   <div class="reservas-container">
     <h1 class="app-header">Ateca-App</h1>
 
-    <!-- Filtro y botón de nueva reserva -->
+    <!-- Filtro, checkbox y botón de nueva reserva -->
     <div class="filter-date">
       <label for="fechaFiltro">Filtrar por fecha:</label>
       <input id="fechaFiltro" type="date" [(ngModel)]="fechaFiltro" (change)="filtrarReservas()" />
       <button *ngIf="fechaFiltro" (click)="limpiarFiltro()">Limpiar filtro</button>
+
+      <!-- Checkbox "Solo mis reservas" -->
+      <label class="checkbox-misreservas">
+        <input type="checkbox" [(ngModel)]="soloMisReservas" (change)="filtrarReservas()" />
+        Solo mis reservas
+      </label>
 
       <!-- Botón Nueva Reserva -->
       <button class="nueva-reserva-btn" (click)="showModal = true">
@@ -75,6 +81,11 @@
         <div class="modal-actions">
           <button type="button" (click)="showModal = false">Cancelar</button>
           <button type="submit" class="guardar-btn">Guardar</button>
+        </div>
+
+        <!-- Mensaje de la nueva reserva -->
+        <div *ngIf="mensajeExito" class="mensaje-exito">
+          <p>{{ mensajeExito }}</p>
         </div>
       </form>
     </div>

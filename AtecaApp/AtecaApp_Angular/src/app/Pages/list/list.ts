@@ -7,7 +7,7 @@ import { GrupoClaseService } from '../../services/grupoclase.service';
 import { Reserva } from '../../models/reserva';
 import { FranjaHoraria } from '../../models/franjaHoraria';
 import { GrupoClase } from '../../models/grupoClase';
-import { AuthService } from '../../services/auth.service'; // ⬅️ Para obtener el profesor actual
+import { AuthService } from '../../services/auth.service'; // Para obtener el profesor actual
 
 @Component({
   selector: 'app-list',
@@ -21,9 +21,16 @@ export class ListComponent implements OnInit {
   reservasFiltradas: Reserva[] = [];
   groupedReservas: { [fecha: string]: Reserva[] } = {};
   expandedIndexMap: { [id: number]: boolean } = {};
+
   loading = true;
   error = '';
   fechaFiltro: string = '';
+  reservaResumen: any = null;
+  mensajeExito: string = '';
+
+  soloMisReservas: boolean = false;
+  profesorIdActual: number | null = null;
+
 
   // Modal
   showModal = false;
@@ -42,6 +49,7 @@ export class ListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.profesorIdActual = this.authService.getProfesorId();
     this.cargarReservas();
     this.cargarFranjasYGrupos();
   }
@@ -50,8 +58,7 @@ export class ListComponent implements OnInit {
     this.reservaService.getReservasAprobadas().subscribe({
       next: (data) => {
         this.reservas = data;
-        this.reservasFiltradas = data;
-        this.groupedReservas = this.groupByFecha(this.reservasFiltradas);
+        this.filtrarReservas(); // Aplica filtros desde el principio
         this.loading = false;
       },
       error: () => {
@@ -61,24 +68,23 @@ export class ListComponent implements OnInit {
     });
   }
 
-cargarFranjasYGrupos() {
-  this.franjaService.getFranjasHorarias().subscribe({
-    next: (data) => {
-      console.log('Franjas horarias recibidas:', data);
-      this.franjasHorarias = data;
-    },
-    error: (err) => console.error('Error cargando franjas:', err)
-  });
+  cargarFranjasYGrupos() {
+    this.franjaService.getFranjasHorarias().subscribe({
+      next: (data) => {
+        console.log('Franjas horarias recibidas:', data);
+        this.franjasHorarias = data;
+      },
+      error: (err) => console.error('Error cargando franjas:', err)
+    });
 
-  this.grupoService.getGrupos().subscribe({
-    next: (data) => {
-      console.log('Grupos recibidos:', data);
-      this.grupos = data;
-    },
-    error: (err) => console.error('Error cargando grupos:', err)
-  });
-}
-
+    this.grupoService.getGrupos().subscribe({
+      next: (data) => {
+        console.log('Grupos recibidos:', data);
+        this.grupos = data;
+      },
+      error: (err) => console.error('Error cargando grupos:', err)
+    });
+  }
 
   groupByFecha(reservas: Reserva[]): { [fecha: string]: Reserva[] } {
     return reservas.reduce((acc, reserva) => {
@@ -94,9 +100,12 @@ cargarFranjasYGrupos() {
   }
 
   filtrarReservas() {
-    this.reservasFiltradas = this.fechaFiltro
-      ? this.reservas.filter(r => r.fecha.startsWith(this.fechaFiltro))
-      : [...this.reservas];
+    this.reservasFiltradas = this.reservas.filter(r => {
+      const coincideFecha = this.fechaFiltro ? r.fecha.startsWith(this.fechaFiltro) : true;
+      const esDelProfesor = this.soloMisReservas ? r.profesor.id === this.profesorIdActual : true;
+      return coincideFecha && esDelProfesor;
+    });
+
     this.groupedReservas = this.groupByFecha(this.reservasFiltradas);
   }
 
@@ -117,7 +126,7 @@ cargarFranjasYGrupos() {
   }
 
   crearReserva() {
-    const profesorId = this.authService.getProfesorId(); // ⬅️ Obtenido desde AuthService
+    const profesorId = this.authService.getProfesorId();
 
     if (!this.fechaNuevaReserva || !this.selectedFranjaId || !this.selectedGrupoId) {
       alert('Completa todos los campos.');
@@ -133,8 +142,8 @@ cargarFranjasYGrupos() {
 
     this.reservaService.createReserva(nuevaReserva).subscribe({
       next: () => {
-        this.cerrarModal();
-        this.cargarReservas();
+        this.mensajeExito = 'Reserva creada con éxito. A la espera de aprobación.';
+        this.cargarReservas(); // Recarga la lista para mostrar la nueva reserva
       },
       error: () => alert('Error al crear la reserva.')
     });
