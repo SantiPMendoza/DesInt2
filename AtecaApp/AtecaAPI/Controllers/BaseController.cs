@@ -22,7 +22,7 @@ namespace AtecaAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public virtual async Task<IActionResult> GetAll()
         {
@@ -40,7 +40,7 @@ namespace AtecaAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name = "[controller]_GetEntity")]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<IActionResult> Get(int id)
@@ -62,7 +62,7 @@ namespace AtecaAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public virtual async Task<IActionResult> Create([FromBody] TCreateDto createDto)
@@ -88,7 +88,7 @@ namespace AtecaAPI.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<IActionResult> Update(int id, [FromBody] TDto dto)
@@ -117,7 +117,7 @@ namespace AtecaAPI.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<IActionResult> Delete(int id)

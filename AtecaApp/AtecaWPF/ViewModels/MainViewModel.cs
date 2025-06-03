@@ -52,7 +52,7 @@ namespace AtecaWPF.ViewModels
 
                 new NavigationViewItem()
                 {
-                    Content = "Configuración",
+                    Content = "Configuración de\ndatos",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.Clock12 },
                     TargetPageType = typeof(ConfigView)
                 },

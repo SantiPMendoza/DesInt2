@@ -1,6 +1,7 @@
 import { Component, NgZone, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import {AuthService} from '../../services/auth.service'
 
 declare const google: any; // Declaración de la API de Google
 
@@ -12,7 +13,7 @@ declare const google: any; // Declaración de la API de Google
 })
 export class LoginComponent implements AfterViewInit {
 
- constructor(private ngZone: NgZone, private router: Router, private http: HttpClient) {}
+ constructor(private ngZone: NgZone, private router: Router, private http: HttpClient, private authService: AuthService ) {}
 
   // Se ejecuta después de que la vista está completamente cargada
   ngAfterViewInit() {
@@ -57,36 +58,24 @@ export class LoginComponent implements AfterViewInit {
 
   // Maneja el token recibido tras el login con Google
   handleCredentialResponse(response: any) {
-    const token = response.credential;
+  const token = response.credential;
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  const email = payload.email;
+  const googleId = payload.sub;
 
-    // Extrae el payload (información del usuario)
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const email = payload.email;
-    const googleId = payload.sub; // ID único del usuario en Google
-
-    // Solo se permiten cuentas institucionales o la cuenta personal del admin
-    if (email.endsWith('@iescomercio.com') || email === '14santi3c@gmail.com') {
-      // Guarda datos en localStorage
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('userEmail', email);
-      localStorage.setItem('googleId', googleId);
-
-      // Verifica si el profesor ya existe en la base de datos
-      this.checkProfesorExistence(googleId);
-    } else {
-      alert('Solo se permiten cuentas institucionales de iescomercio.com');
-    }
+  if (email.endsWith('@iescomercio.com') || email === '14santi3c@gmail.com') {
+    this.authService.setSessionData(token, email, googleId);
+    this.checkProfesorExistence(googleId);
+  } else {
+    alert('Solo se permiten cuentas institucionales de iescomercio.com');
   }
+}
 
-  // Llama a la API para verificar si el profesor ya está registrado
 checkProfesorExistence(googleId: string) {
-  const token = localStorage.getItem('authToken');
-  console.log('Token en checkProfesorExistence:', token);
-
-  this.http.get(`https://localhost:7228/api/Profesor/google/${googleId}`)
+  this.authService.checkProfesorExistence(googleId)
     .subscribe({
       next: (profesor: any) => {
-        localStorage.setItem('profesorId', profesor.id);
+        this.authService.setProfesorId(profesor.id);
         this.ngZone.run(() => this.router.navigate(['/list']));
       },
       error: () => {
@@ -94,6 +83,8 @@ checkProfesorExistence(googleId: string) {
       }
     });
 }
+
+
 
 }
 

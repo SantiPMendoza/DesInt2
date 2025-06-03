@@ -35,8 +35,7 @@
                    Grid.Row="1"
                    Visibility="{Binding NavigationVisibility}"
                    FooterMenuItemsSource="{Binding NavigationFooter, Mode=OneWay}"
-                   MenuItemsSource="{Binding NavigationItems, Mode=OneWay}"
-                           OpenPaneLength="170">
+                   MenuItemsSource="{Binding NavigationItems, Mode=OneWay}">
 
         </ui:NavigationView>
     </Grid>

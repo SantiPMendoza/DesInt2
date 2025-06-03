@@ -31,10 +31,34 @@ namespace AtecaWPF.Views
             InitializeComponent();
 
             navigationService.SetNavigationControl(RootNavigation);
+
+            SetPaneControl();
         }
 
 
+        public void SetPaneControl()
+        {
 
+            RootNavigation.Navigated += (s, e) =>
+            {
+
+
+                var currentPage = e.Page;
+
+                if (currentPage is LoginView)
+                {
+                    RootNavigation.IsPaneVisible = false;
+                    RootNavigation.OpenPaneLength = 0;
+                    RootNavigation.CompactPaneLength = 0;
+
+                }
+                else
+                {
+                    RootNavigation.OpenPaneLength = 180;
+                    RootNavigation.CompactPaneLength = double.NaN;
+                }
+            };
+        }
         public INavigationView GetNavigation() => RootNavigation;
 
         public bool Navigate(Type pageType) => RootNavigation.Navigate(pageType);
