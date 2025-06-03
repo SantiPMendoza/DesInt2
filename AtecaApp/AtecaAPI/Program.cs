@@ -10,6 +10,7 @@ using AtecaAPI.Repository.IRepository;
 using AtecaAPI.Repository;
 using AtecaAPI.AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using AtecaAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,8 @@ builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IGrupoClaseRepository, GrupoClaseRepository>();
 builder.Services.AddScoped<IFranjaHorariaRepository, FranjaHorariaRepository>();
 builder.Services.AddScoped<IDiaNoLectivoRepository, DiaNoLectivoRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Configurar autenticación con JWT y Google
