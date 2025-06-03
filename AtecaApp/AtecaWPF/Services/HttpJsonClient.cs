@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace AtecaWPF.Services
 {
@@ -39,7 +36,7 @@ namespace AtecaWPF.Services
                 var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
                 return parsed != null && parsed.TryGetValue("mensaje", out var mensaje)
                     ? mensaje
-                    : json; // fallback: return raw JSON
+                    : json; 
             }
             catch
             {

@@ -15,7 +15,7 @@
       </label>
 
       <!-- Botón Nueva Reserva -->
-      <button class="nueva-reserva-btn" (click)="showModal = true">
+      <button class="nueva-reserva-btn" (click)="abrirModal()">
         ➕ Nueva Reserva
       </button>
     </div>
@@ -59,19 +59,19 @@
       <form (ngSubmit)="crearReserva()">
         <!-- Fecha -->
         <label for="fechaNueva">Fecha:</label>
-        <input id="fechaNueva" type="date" [(ngModel)]="fechaNuevaReserva" name="fechaNueva" required />
+        <input id="fechaNueva" type="date" [(ngModel)]="fechaNuevaReserva" name="fechaNueva" required (change)="limpiarMensajes()"/>
 
         <!-- Franja Horaria -->
         <label for="franja">Franja Horaria:</label>
-        <select id="franja" [(ngModel)]="selectedFranjaId" name="franja" required>
+        <select id="franja" [(ngModel)]="selectedFranjaId" name="franja" required (change)="limpiarMensajes()">
           <option *ngFor="let franja of franjasHorarias" [value]="franja.id">
-            {{ franja.horaInicio }} - {{ franja.horaFin }}
+            {{ franja.horaInicio }} - {{ franja.horaFin }} 
           </option>
         </select>
 
         <!-- Grupo -->
         <label for="grupo">Grupo:</label>
-        <select id="grupo" [(ngModel)]="selectedGrupoId" name="grupo" required>
+        <select id="grupo" [(ngModel)]="selectedGrupoId" name="grupo" required (change)="limpiarMensajes()">
           <option *ngFor="let grupo of grupos" [value]="grupo.id">
             {{ grupo.nombre }}
           </option>
@@ -87,6 +87,10 @@
         <div *ngIf="mensajeExito" class="mensaje-exito">
           <p>{{ mensajeExito }}</p>
         </div>
+        <div *ngIf="mensajeError" class="mensaje-error">
+  {{ mensajeError }}
+</div>
+
       </form>
     </div>
   </div>

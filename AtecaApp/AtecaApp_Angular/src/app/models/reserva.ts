@@ -12,6 +12,6 @@ export interface Reserva {
   fecha: string;
   franjaHoraria: FranjaHoraria;
   estado: string;
-  fechaSolicitud: string;   // ISO date string, puedes parsear a Date en TS si quieres
+  fechaSolicitud: string; 
   fechaResolucion?: string | null;
 }

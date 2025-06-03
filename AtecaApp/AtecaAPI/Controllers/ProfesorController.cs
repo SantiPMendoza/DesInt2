@@ -19,6 +19,8 @@ namespace AtecaAPI.Controllers
             _profesorRepository = profesorRepository;
         }
 
+
+        // Obtiene un profesor por su GoogleId
         [HttpGet("google/{googleId}")]
         public async Task<ActionResult<ProfesorDTO>> GetByGoogleId(string googleId)
         {
@@ -30,6 +32,8 @@ namespace AtecaAPI.Controllers
         }
 
 
+
+        // Crea un profesor si no existe ya con ese GoogleId o Email
         [AllowAnonymous]
         [HttpPost("create-if-not-exists")]
         public async Task<IActionResult> CreateIfNotExists([FromBody] CreateProfesorDTO dto)

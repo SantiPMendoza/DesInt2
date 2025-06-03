@@ -17,27 +17,42 @@ import { AuthService } from '../../services/auth.service'; // Para obtener el pr
   styleUrls: ['./list.css']
 })
 export class ListComponent implements OnInit {
+  // Listado total de reservas cargadas
   reservas: Reserva[] = [];
+
+  // Reservas tras aplicar filtros
   reservasFiltradas: Reserva[] = [];
+
+  // Reservas agrupadas por fecha
   groupedReservas: { [fecha: string]: Reserva[] } = {};
+
+  // Control de tarjetas expandidas por ID de reserva
   expandedIndexMap: { [id: number]: boolean } = {};
 
+  // Estado de carga y errores
   loading = true;
   error = '';
-  fechaFiltro: string = '';
-  reservaResumen: any = null;
-  mensajeExito: string = '';
 
+  // Filtro de fecha para la búsqueda
+  fechaFiltro: string = '';
+
+  // Mensajes de éxito/error de creación de reserva
+  mensajeExito: string = '';
+  mensajeError: string = '';
+
+  // Filtro para mostrar solo reservas del usuario actual
   soloMisReservas: boolean = false;
+
+  // ID del profesor autenticado
   profesorIdActual: number | null = null;
 
-
-  // Modal
+  // Estado y datos del modal de nueva reserva
   showModal = false;
   fechaNuevaReserva: string = '';
   selectedFranjaId: number | null = null;
   selectedGrupoId: number | null = null;
 
+  // Listados para los selectores del formulario
   franjasHorarias: FranjaHoraria[] = [];
   grupos: GrupoClase[] = [];
 
@@ -49,16 +64,18 @@ export class ListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Obtiene el ID del profesor logueado y carga datos iniciales
     this.profesorIdActual = this.authService.getProfesorId();
     this.cargarReservas();
     this.cargarFranjasYGrupos();
   }
 
+  // Carga todas las reservas aprobadas
   cargarReservas() {
     this.reservaService.getReservasAprobadas().subscribe({
       next: (data) => {
         this.reservas = data;
-        this.filtrarReservas(); // Aplica filtros desde el principio
+        this.filtrarReservas(); // Aplica filtros iniciales
         this.loading = false;
       },
       error: () => {
@@ -68,10 +85,10 @@ export class ListComponent implements OnInit {
     });
   }
 
+  // Carga franjas horarias y grupos de clase
   cargarFranjasYGrupos() {
     this.franjaService.getFranjasHorarias().subscribe({
       next: (data) => {
-        console.log('Franjas horarias recibidas:', data);
         this.franjasHorarias = data;
       },
       error: (err) => console.error('Error cargando franjas:', err)
@@ -79,13 +96,13 @@ export class ListComponent implements OnInit {
 
     this.grupoService.getGrupos().subscribe({
       next: (data) => {
-        console.log('Grupos recibidos:', data);
         this.grupos = data;
       },
       error: (err) => console.error('Error cargando grupos:', err)
     });
   }
 
+  // Agrupa reservas por fecha (formato YYYY-MM-DD)
   groupByFecha(reservas: Reserva[]): { [fecha: string]: Reserva[] } {
     return reservas.reduce((acc, reserva) => {
       const fecha = reserva.fecha.split('T')[0];
@@ -95,10 +112,12 @@ export class ListComponent implements OnInit {
     }, {} as { [fecha: string]: Reserva[] });
   }
 
+  // Alterna el estado expandido de una reserva
   toggleExpand(id: number) {
     this.expandedIndexMap[id] = !this.expandedIndexMap[id];
   }
 
+  // Aplica filtros por fecha y por profesor actual
   filtrarReservas() {
     this.reservasFiltradas = this.reservas.filter(r => {
       const coincideFecha = this.fechaFiltro ? r.fecha.startsWith(this.fechaFiltro) : true;
@@ -109,15 +128,25 @@ export class ListComponent implements OnInit {
     this.groupedReservas = this.groupByFecha(this.reservasFiltradas);
   }
 
+  // Limpia el filtro de fecha
   limpiarFiltro() {
     this.fechaFiltro = '';
     this.filtrarReservas();
   }
 
+  // Abre el modal de nueva reserva y limpia mensajes
   abrirModal() {
     this.showModal = true;
+    this.limpiarMensajes();
   }
 
+  // Limpia mensajes de éxito y error
+  limpiarMensajes() {
+    this.mensajeExito = '';
+    this.mensajeError = '';
+  }
+
+  // Cierra el modal y limpia campos del formulario
   cerrarModal() {
     this.showModal = false;
     this.fechaNuevaReserva = '';
@@ -125,6 +154,7 @@ export class ListComponent implements OnInit {
     this.selectedGrupoId = null;
   }
 
+  // Envía nueva reserva al servidor
   crearReserva() {
     const profesorId = this.authService.getProfesorId();
 
@@ -143,9 +173,17 @@ export class ListComponent implements OnInit {
     this.reservaService.createReserva(nuevaReserva).subscribe({
       next: () => {
         this.mensajeExito = 'Reserva creada con éxito. A la espera de aprobación.';
-        this.cargarReservas(); // Recarga la lista para mostrar la nueva reserva
+        this.mensajeError = '';
+        this.cargarReservas(); // Refresca lista
       },
-      error: () => alert('Error al crear la reserva.')
+      error: (err) => {
+        this.mensajeExito = '';
+        if (err.status === 409 && err.error?.mensaje) {
+          this.mensajeError = err.error.mensaje;
+        } else {
+          this.mensajeError = 'Error al crear la reserva.';
+        }
+      }
     });
   }
 }

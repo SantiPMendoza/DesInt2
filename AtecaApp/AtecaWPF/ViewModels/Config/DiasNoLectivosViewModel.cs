@@ -1,5 +1,4 @@
-﻿using AtecaWPF.Services;
-using System.Collections.ObjectModel;
+﻿
 
 public partial class DiasNoLectivosViewModel : ViewModel
 {

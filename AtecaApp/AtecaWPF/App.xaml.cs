@@ -1,14 +1,9 @@
-﻿using AtecaWPF.Services;
+﻿
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.IO;
-using System.Net.Http;
-using System.Windows;
 using System.Windows.Threading;
 using Wpf.Ui.DependencyInjection;
-using Wpf.Ui;
 using AtecaWPF.ViewModels.Config;
 
 namespace AtecaWPF

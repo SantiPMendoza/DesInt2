@@ -63,6 +63,8 @@ namespace AtecaAPI.Repository
             return await _context.Profesores.FirstOrDefaultAsync(p => p.GoogleId == googleId);
         }
 
+
+        // Crea un nuevo profesor solo si no existe otro con mismo GoogleId o Email
         public async Task<bool> CreateIfNotExistsAsync(Profesor profesor)
         {
             var exists = await _context.Profesores.AnyAsync(p => p.GoogleId == profesor.GoogleId || p.Email == profesor.Email);

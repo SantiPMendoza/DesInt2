@@ -1,23 +1,13 @@
-﻿using System;
-using System.Windows.Input;
-using Wpf.Ui;
-using Wpf.Ui.Abstractions;
+﻿
 
-using Wpf.Ui.Controls;
-using AtecaWPF.Views.Pages;
-using System.Windows.Navigation;
-using System.Net.Http;
-using System.Net.Http.Json;
 using AtecaWPF.Models.UserDTO;
 
 namespace AtecaWPF.ViewModels
 {
     public partial class LoginViewModel : ViewModel
     {
-
         private readonly IAuthService _authService;
         private readonly INavigationService _navigationService;
-
 
         public LoginViewModel(IAuthService authService, INavigationService navigationService)
         {
@@ -25,15 +15,18 @@ namespace AtecaWPF.ViewModels
             _navigationService = navigationService;
         }
 
+        // Campos de entrada del usuario
         [ObservableProperty]
         private string _username = string.Empty;
 
         [ObservableProperty]
         private string _password = string.Empty;
 
+        // Habilita o deshabilita el botón de login
         [ObservableProperty]
         private bool _isLoginEnabled = false;
 
+        // Comando para intentar iniciar sesión
         [RelayCommand]
         private async Task CheckLogin()
         {
@@ -70,19 +63,15 @@ namespace AtecaWPF.ViewModels
             }
         }
 
-
-
-
+        // Detecta cambios en el usuario o contraseña para habilitar el login
         partial void OnUsernameChanged(string value) => ValidateLogin();
         partial void OnPasswordChanged(string value) => ValidateLogin();
 
+        // Valida si se puede habilitar el botón de login
         private void ValidateLogin()
         {
             IsLoginEnabled = !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password);
         }
-
     }
-
-
 }
 
