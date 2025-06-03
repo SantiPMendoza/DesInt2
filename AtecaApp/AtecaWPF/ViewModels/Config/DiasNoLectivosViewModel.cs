@@ -1,4 +1,7 @@
-﻿
+﻿using CsvHelper;
+using System.Globalization;
+using System.IO;
+
 
 public partial class DiasNoLectivosViewModel : ViewModel
 {
@@ -93,4 +96,52 @@ public partial class DiasNoLectivosViewModel : ViewModel
             MessageBox.Show($"Error eliminando día no lectivo: {ex.Message}");
         }
     }
+
+    [RelayCommand]
+    public async Task ImportarDesdeCsvAsync()
+    {
+        var openFileDialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Filter = "CSV Files (*.csv)|*.csv",
+            Title = "Selecciona un archivo CSV"
+        };
+
+        if (openFileDialog.ShowDialog() == true)
+        {
+            try
+            {
+                using var reader = new StreamReader(openFileDialog.FileName);
+                using var csv = new CsvHelper.CsvReader(reader, CultureInfo.InvariantCulture);
+
+                // Línea para leer la cabecera
+                await csv.ReadAsync();
+                csv.ReadHeader();
+
+                var registros = new List<CreateDiaNoLectivoDTO>();
+
+                while (await csv.ReadAsync())
+                {
+                    var fechaTexto = csv.GetField("Fecha");
+                    if (DateOnly.TryParse(fechaTexto, out var fecha))
+                    {
+                        registros.Add(new CreateDiaNoLectivoDTO { Fecha = fecha });
+                    }
+                }
+
+                foreach (var registro in registros)
+                {
+                    await GuardarDiaNoLectivoAsync(new DiaNoLectivoDTO { Fecha = registro.Fecha });
+                }
+
+                MessageBox.Show("Importación completada correctamente.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al importar CSV: {ex.Message}");
+            }
+        }
+    }
+
+
+
 }

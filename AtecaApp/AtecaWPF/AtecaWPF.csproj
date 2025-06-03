@@ -12,6 +12,7 @@
     <None Remove="Assets\logo.jpg" />
   </ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="CsvHelper" Version="33.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
 		<PackageReference Include="WPF-UI" Version="3.0.5" />
 		<PackageReference Include="WPF-UI.Tray" Version="3.0.4" />
