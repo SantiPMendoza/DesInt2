@@ -1,0 +1,50 @@
+Esquema para la BBDD de las entidades:
+
+
+CREATE TABLE Administrador (
+    Id INT PRIMARY KEY IDENTITY,
+    Nombre NVARCHAR(255) NOT NULL,
+    AppUserId NVARCHAR(450) NOT NULL,
+    CONSTRAINT FK_Administrador_AppUser FOREIGN KEY (AppUserId) REFERENCES AspNetUsers(Id)
+);
+
+CREATE TABLE DiaNoLectivo (
+    Id INT PRIMARY KEY IDENTITY,
+    Fecha DATE NOT NULL
+);
+
+CREATE TABLE FranjaHoraria (
+    Id INT PRIMARY KEY IDENTITY,
+    HoraInicio TIME NOT NULL,
+    HoraFin TIME NOT NULL,
+    Activo BIT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE GrupoClase (
+    Id INT PRIMARY KEY IDENTITY,
+    Nombre NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Profesor (
+    Id INT PRIMARY KEY IDENTITY,
+    Nombre NVARCHAR(255) NOT NULL,
+    Email NVARCHAR(255) NOT NULL,
+    GoogleId NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Reserva (
+    Id INT PRIMARY KEY IDENTITY,
+    Fecha DATE NOT NULL,
+
+    FranjaHorariaId INT NOT NULL,
+    ProfesorId INT NOT NULL,
+    GrupoClaseId INT NOT NULL,
+
+    Estado NVARCHAR(50) NOT NULL DEFAULT 'Pendiente',
+    FechaSolicitud DATETIME NOT NULL DEFAULT GETDATE(),
+    FechaResolucion DATETIME NULL,
+
+    CONSTRAINT FK_Reserva_FranjaHoraria FOREIGN KEY (FranjaHorariaId) REFERENCES FranjaHoraria(Id),
+    CONSTRAINT FK_Reserva_Profesor FOREIGN KEY (ProfesorId) REFERENCES Profesor(Id),
+    CONSTRAINT FK_Reserva_GrupoClase FOREIGN KEY (GrupoClaseId) REFERENCES GrupoClase(Id)
+);

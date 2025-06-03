@@ -9,26 +9,32 @@ namespace AtecaAPI.Repository
 {
     public class ReservaRepository : IReservaRepository
     {
+        // Variables de Reserva
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly string ReservaCacheKey = "ReservaCacheKey";
         private readonly int CacheExpirationTime = 3600;
         private readonly IDiaNoLectivoRepository _diaNoLectivoRepository;
-        private readonly INotificationService _notificationService; // NUEVO
+        private readonly INotificationService _notificationService;
 
+        /// <summary>
+        /// Constructor de ReservaRepository.
+        /// </summary>
         public ReservaRepository(
             ApplicationDbContext context,
             IMemoryCache cache,
             IDiaNoLectivoRepository diaNoLectivoRepository,
-            INotificationService notificacionService) // NUEVO
+            INotificationService notificacionService)
         {
             _context = context;
             _cache = cache;
             _diaNoLectivoRepository = diaNoLectivoRepository;
-            _notificationService = notificacionService; // NUEVO
+            _notificationService = notificacionService;
         }
 
-        // Obtener todas las reservas (con cache)
+        /// <summary>
+        /// Obtiene todas las reservas, utilizando caché para mejorar rendimiento.
+        /// </summary>
         public async Task<ICollection<Reserva>> GetAllAsync()
         {
             if (_cache.TryGetValue(ReservaCacheKey, out ICollection<Reserva> reservasCached))
@@ -47,7 +53,9 @@ namespace AtecaAPI.Repository
             return reservasFromDb;
         }
 
-        // Obtener una reserva por ID (consulta directa o desde caché)
+        /// <summary>
+        /// Obtiene una reserva por su Id, buscando primero en caché.
+        /// </summary>
         public async Task<Reserva> GetAsync(int id)
         {
             if (_cache.TryGetValue(ReservaCacheKey, out ICollection<Reserva> reservasCached))
@@ -64,7 +72,9 @@ namespace AtecaAPI.Repository
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        // Obtener reservas de un profesor
+        /// <summary>
+        /// Obtiene todas las reservas de un profesor por su Id.
+        /// </summary>
         public async Task<ICollection<Reserva>> GetByProfesorIdAsync(int profesorId) =>
             await _context.Reservas
                 .Include(r => r.Profesor)
@@ -73,7 +83,9 @@ namespace AtecaAPI.Repository
                 .Where(r => r.ProfesorId == profesorId)
                 .ToListAsync();
 
-        // Obtener reservas pendientes
+        /// <summary>
+        /// Obtiene todas las reservas con estado "Pendiente".
+        /// </summary>
         public async Task<ICollection<Reserva>> GetPendientesAsync() =>
             await _context.Reservas
                 .Include(r => r.Profesor)
@@ -82,7 +94,9 @@ namespace AtecaAPI.Repository
                 .Where(r => r.Estado == "Pendiente")
                 .ToListAsync();
 
-        // Obtener reservas aprobadas
+        /// <summary>
+        /// Obtiene todas las reservas con estado "Aprobada".
+        /// </summary>
         public async Task<ICollection<Reserva>> GetAprobadasAsync() =>
             await _context.Reservas
                 .Include(r => r.Profesor)
@@ -91,25 +105,33 @@ namespace AtecaAPI.Repository
                 .Where(r => r.Estado == "Aprobada")
                 .ToListAsync();
 
-        // Verificar si existe una reserva por ID
+        /// <summary>
+        /// Verifica si existe una reserva con un Id dado.
+        /// </summary>
         public async Task<bool> ExistsAsync(int id) =>
             await _context.Reservas.AnyAsync(r => r.Id == id);
 
-        // Crear una reserva
+        /// <summary>
+        /// Crea una nueva reserva.
+        /// </summary>
         public async Task<bool> CreateAsync(Reserva reserva)
         {
             await _context.Reservas.AddAsync(reserva);
             return await Save();
         }
 
-        // Actualizar una reserva
+        /// <summary>
+        /// Actualiza una reserva existente.
+        /// </summary>
         public async Task<bool> UpdateAsync(Reserva reserva)
         {
             _context.Reservas.Update(reserva);
             return await Save();
         }
 
-        // Acepta una reserva, cambia estado y notifica por correo
+        /// <summary>
+        /// Acepta una reserva, cambia su estado a aprobada y notifica al profesor.
+        /// </summary>
         public async Task<bool> AceptarReservaAsync(int id)
         {
             var reserva = await GetAsync(id);
@@ -129,7 +151,9 @@ namespace AtecaAPI.Repository
             return result;
         }
 
-        // Rechaza una reserva y notifica por correo
+        /// <summary>
+        /// Rechaza una reserva, cambia su estado y notifica al profesor.
+        /// </summary>
         public async Task<bool> RechazarReservaAsync(int id)
         {
             var reserva = await GetAsync(id);
@@ -149,7 +173,9 @@ namespace AtecaAPI.Repository
             return result;
         }
 
-        // Eliminar una reserva
+        /// <summary>
+        /// Elimina una reserva por su Id.
+        /// </summary>
         public async Task<bool> DeleteAsync(int id)
         {
             var reserva = await GetAsync(id);
@@ -159,7 +185,9 @@ namespace AtecaAPI.Repository
             return await Save();
         }
 
-        // Guardar cambios y limpiar caché
+        /// <summary>
+        /// Guarda los cambios en la base de datos y limpia la caché.
+        /// </summary>
         public async Task<bool> Save()
         {
             var result = await _context.SaveChangesAsync() >= 0;
@@ -168,7 +196,9 @@ namespace AtecaAPI.Repository
             return result;
         }
 
-        // Validar condiciones para permitir una reserva
+        /// <summary>
+        /// Valida condiciones para permitir una nueva reserva.
+        /// </summary>
         public async Task<string?> ValidarReservaAsync(Reserva reserva)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -199,7 +229,9 @@ namespace AtecaAPI.Repository
             return null;
         }
 
-        // Limpiar caché de reservas
+        /// <summary>
+        /// Limpia la caché de reservas.
+        /// </summary>
         public void ClearCache()
         {
             _cache.Remove(ReservaCacheKey);

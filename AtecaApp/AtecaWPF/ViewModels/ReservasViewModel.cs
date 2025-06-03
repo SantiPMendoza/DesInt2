@@ -1,5 +1,4 @@
-﻿
-using System.Net;
+﻿using System.Net;
 
 namespace AtecaWPF.ViewModels
 {
@@ -8,11 +7,10 @@ namespace AtecaWPF.ViewModels
         private readonly HttpJsonClient _httpJsonClient;
         private readonly INavigationService _navigationService;
 
-        // Este es el DateOnly que se usa para filtrar realmente
+        // Variables de Reserva: propiedades para manejar filtros y listas de reservas
         [ObservableProperty]
         private DateOnly? fechaSeleccionada;
 
-        // Este es el que el DatePicker coge
         [ObservableProperty]
         private DateTime? fechaSeleccionadaDateTime;
 
@@ -22,15 +20,12 @@ namespace AtecaWPF.ViewModels
         [ObservableProperty]
         private ObservableCollection<string> estadosDisponibles = new(["Pendiente", "Aceptada", "Rechazada"]);
 
-
         [ObservableProperty]
         private ObservableCollection<ReservaDTO> _reservas = [];
 
         private List<ReservaDTO> todasLasReservas = [];
 
-
-        // Propiedades FlyOut NuevaReserva:
-
+        // Variables para controlar el Flyout y los datos relacionados con la creación de reservas
         [ObservableProperty] private bool isFlyoutOpen;
         [ObservableProperty] private DateTime? nuevaReservaFecha = DateTime.Today;
 
@@ -48,12 +43,18 @@ namespace AtecaWPF.ViewModels
             _navigationService = navigationService;
         }
 
-        // Cuando cambia la fecha seleccionada en el DatePicker
+        /// <summary>
+        /// Actualiza la propiedad FechaSeleccionada al cambiar el valor del DatePicker.
+        /// </summary>
+        /// <param name="value">Nuevo valor de fecha seleccionado como DateTime.</param>
         partial void OnFechaSeleccionadaDateTimeChanged(DateTime? value)
         {
             FechaSeleccionada = value.HasValue ? DateOnly.FromDateTime(value.Value.Date) : null;
         }
 
+        /// <summary>
+        /// Carga la lista de reservas desde el servidor.
+        /// </summary>
         [RelayCommand]
         private async Task CargarReservas()
         {
@@ -70,6 +71,9 @@ namespace AtecaWPF.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aplica filtros a la lista de reservas basándose en la fecha y estado seleccionados.
+        /// </summary>
         [RelayCommand]
         private void Filtrar()
         {
@@ -93,15 +97,10 @@ namespace AtecaWPF.ViewModels
             Reservas = new ObservableCollection<ReservaDTO>(lista);
         }
 
-        [RelayCommand]
-        private void LimpiarFiltros()
-        {
-            FechaSeleccionadaDateTime = null;
-            EstadoSeleccionado = null;
-            Reservas = new ObservableCollection<ReservaDTO>(todasLasReservas);
-        }
-
-
+        /// <summary>
+        /// Acepta una reserva y recarga la lista actualizada.
+        /// </summary>
+        /// <param name="reserva">Reserva a aceptar.</param>
         [RelayCommand]
         private async Task AceptarReserva(ReservaDTO reserva)
         {
@@ -116,6 +115,10 @@ namespace AtecaWPF.ViewModels
             }
         }
 
+        /// <summary>
+        /// Rechaza una reserva y recarga la lista actualizada.
+        /// </summary>
+        /// <param name="reserva">Reserva a rechazar.</param>
         [RelayCommand]
         private async Task RechazarReserva(ReservaDTO reserva)
         {
@@ -130,6 +133,9 @@ namespace AtecaWPF.ViewModels
             }
         }
 
+        /// <summary>
+        /// Abre el Flyout para crear una nueva reserva, cargando los datos necesarios.
+        /// </summary>
         [RelayCommand]
         private async Task AbrirFlyout()
         {
@@ -137,6 +143,9 @@ namespace AtecaWPF.ViewModels
             IsFlyoutOpen = true;
         }
 
+        /// <summary>
+        /// Carga datos necesarios para el formulario de creación de reservas.
+        /// </summary>
         private async Task CargarDatosParaFormulario()
         {
             Franjas = new(await _httpJsonClient.GetListAsync<FranjaHorariaDTO>("api/FranjaHoraria"));
@@ -144,7 +153,9 @@ namespace AtecaWPF.ViewModels
             Grupos = new(await _httpJsonClient.GetListAsync<GrupoClaseDTO>("api/GrupoClase"));
         }
 
-
+        /// <summary>
+        /// Valida y guarda una nueva reserva.
+        /// </summary>
         [RelayCommand]
         private async Task GuardarReserva()
         {
@@ -179,19 +190,24 @@ namespace AtecaWPF.ViewModels
             {
                 MessageBox.Show($"Error inesperado: {ex.Message}");
             }
-
-
         }
 
+        /// <summary>
+        /// Cierra el Flyout de creación de reserva.
+        /// </summary>
         [RelayCommand]
         private void CerrarFlyout()
         {
             IsFlyoutOpen = false;
         }
 
+        /// <summary>
+        /// Método que se llama al cargar la página para iniciar la carga de reservas.
+        /// </summary>
         public void OnPageLoaded()
         {
             _ = CargarReservas();
         }
     }
+
 }

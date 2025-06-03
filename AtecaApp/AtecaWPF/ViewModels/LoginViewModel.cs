@@ -1,6 +1,4 @@
-﻿
-
-using AtecaWPF.Models.UserDTO;
+﻿using AtecaWPF.Models.UserDTO;
 
 namespace AtecaWPF.ViewModels
 {
@@ -9,6 +7,11 @@ namespace AtecaWPF.ViewModels
         private readonly IAuthService _authService;
         private readonly INavigationService _navigationService;
 
+        /// <summary>
+        /// Inicializa una nueva instancia de <see cref="LoginViewModel"/>.
+        /// </summary>
+        /// <param name="authService">Servicio de autenticación.</param>
+        /// <param name="navigationService">Servicio de navegación.</param>
         public LoginViewModel(IAuthService authService, INavigationService navigationService)
         {
             _authService = authService;
@@ -26,7 +29,9 @@ namespace AtecaWPF.ViewModels
         [ObservableProperty]
         private bool _isLoginEnabled = false;
 
-        // Comando para intentar iniciar sesión
+        /// <summary>
+        /// Comando que intenta iniciar sesión con las credenciales ingresadas.
+        /// </summary>
         [RelayCommand]
         private async Task CheckLogin()
         {
@@ -63,15 +68,24 @@ namespace AtecaWPF.ViewModels
             }
         }
 
-        // Detecta cambios en el usuario o contraseña para habilitar el login
+        /// <summary>
+        /// Detecta cambios en el nombre de usuario para validar el inicio de sesión.
+        /// </summary>
+        /// <param name="value">Nuevo valor del nombre de usuario.</param>
         partial void OnUsernameChanged(string value) => ValidateLogin();
+
+        /// <summary>
+        /// Detecta cambios en la contraseña para validar el inicio de sesión.
+        /// </summary>
+        /// <param name="value">Nuevo valor de la contraseña.</param>
         partial void OnPasswordChanged(string value) => ValidateLogin();
 
-        // Valida si se puede habilitar el botón de login
+        /// <summary>
+        /// Valida si el botón de inicio de sesión debe estar habilitado.
+        /// </summary>
         private void ValidateLogin()
         {
             IsLoginEnabled = !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password);
         }
     }
 }
-

@@ -1,6 +1,4 @@
-﻿
-using Wpf.Ui.Controls;
-
+﻿using Wpf.Ui.Controls;
 
 namespace AtecaWPF.ViewModels
 {
@@ -9,6 +7,7 @@ namespace AtecaWPF.ViewModels
         private readonly INavigationService _navigationService;
         private bool _isInitialized = false;
 
+        // Variables de navegación
         [ObservableProperty]
         private string _applicationTitle = "AtecApp";
 
@@ -21,6 +20,10 @@ namespace AtecaWPF.ViewModels
         [ObservableProperty]
         private Visibility navigationVisibility = Visibility.Hidden;
 
+        /// <summary>
+        /// Inicializa una nueva instancia de <see cref="MainViewModel"/>.
+        /// </summary>
+        /// <param name="navigationService">Servicio de navegación.</param>
         public MainViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
@@ -33,6 +36,9 @@ namespace AtecaWPF.ViewModels
             }
         }
 
+        /// <summary>
+        /// Inicializa los elementos de navegación y pie de navegación.
+        /// </summary>
         private void InitializeViewModel()
         {
             NavigationItems =
@@ -49,35 +55,35 @@ namespace AtecaWPF.ViewModels
                     Icon = new SymbolIcon { Symbol = SymbolRegular.Album20 },
                     TargetPageType = typeof(CalendarView)
                 },
-
                 new NavigationViewItem()
                 {
                     Content = "Configuración de\ndatos",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.Clock12 },
                     TargetPageType = typeof(ConfigView)
                 },
-
             ];
 
             NavigationFooter =
-[
+            [
                 new NavigationViewItem()
                 {
                     Content = "Logout",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.ArrowExit20 },
                     //TargetPageType = typeof(ConfigView)
                 },
-        ];
+            ];
 
             _isInitialized = true;
-            
         }
 
+        /// <summary>
+        /// Muestra la navegación tras un retraso para mejorar la experiencia visual.
+        /// </summary>
+        /// <returns>Una tarea que representa la operación asincrónica.</returns>
         public async Task ShowNavigationAfterDelay()
         {
             await Task.Delay(750);
             NavigationVisibility = Visibility.Visible;
         }
-
     }
 }
