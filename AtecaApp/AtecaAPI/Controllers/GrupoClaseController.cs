@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AtecaAPI.Controllers
 {
-    [AllowAnonymous] // Cambiar cuando eso bro
+    [Authorize] // Cambiar cuando eso bro
     [Route("api/[controller]")]
     [ApiController]
     public class GrupoClaseController : BaseController<GrupoClase, GrupoClaseDTO, CreateGrupoClaseDTO>

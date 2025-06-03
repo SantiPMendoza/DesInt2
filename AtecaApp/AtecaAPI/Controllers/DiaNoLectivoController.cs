@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AtecaAPI.Controllers
 {
-    [AllowAnonymous] // Cambiar cuando eso bro
+    [Authorize] // Cambiar cuando eso bro
     [Route("api/[controller]")]
     [ApiController]
     public class DiaNoLectivoController : BaseController<DiaNoLectivo, DiaNoLectivoDTO, CreateDiaNoLectivoDTO>

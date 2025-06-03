@@ -1,5 +1,6 @@
 import { Component, NgZone, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 declare const google: any; // Declaración de la API de Google
 
@@ -11,7 +12,7 @@ declare const google: any; // Declaración de la API de Google
 })
 export class LoginComponent implements AfterViewInit {
 
-  constructor(private ngZone: NgZone, private router: Router) {}
+ constructor(private ngZone: NgZone, private router: Router, private http: HttpClient) {}
 
   // Se ejecuta después de que la vista está completamente cargada
   ngAfterViewInit() {
@@ -78,24 +79,22 @@ export class LoginComponent implements AfterViewInit {
   }
 
   // Llama a la API para verificar si el profesor ya está registrado
-  checkProfesorExistence(googleId: string) {
-    fetch(`https://localhost:7228/api/Profesor/google/${googleId}`)
-      .then(async res => {
-        if (res.ok) {
-          const profesor = await res.json();
-          localStorage.setItem('profesorId', profesor.id);
+checkProfesorExistence(googleId: string) {
+  const token = localStorage.getItem('authToken');
+  console.log('Token en checkProfesorExistence:', token);
 
-          // Navega a la pantalla principal usando NgZone para que Angular detecte el cambio
-          this.ngZone.run(() => this.router.navigate(['/list']));
-        } else {
-          // Si no existe, redirige al registro
-          this.ngZone.run(() => this.router.navigate(['/register']));
-        }
-      })
-      .catch(err => {
-        console.error('Error consultando al API:', err);
-        alert('Hubo un error consultando tu perfil. Inténtalo más tarde.');
-      });
-  }
+  this.http.get(`https://localhost:7228/api/Profesor/google/${googleId}`)
+    .subscribe({
+      next: (profesor: any) => {
+        localStorage.setItem('profesorId', profesor.id);
+        this.ngZone.run(() => this.router.navigate(['/list']));
+      },
+      error: () => {
+        this.ngZone.run(() => this.router.navigate(['/register']));
+      }
+    });
+}
 
 }
+
+

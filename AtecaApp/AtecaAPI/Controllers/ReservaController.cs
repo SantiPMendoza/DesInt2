@@ -11,7 +11,7 @@ namespace AtecaAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous] // Cambiar cuando eso mi pana
+    [Authorize] // Cambiar cuando eso mi pana
 
     public class ReservaController : BaseController<Reserva, ReservaDTO, CreateReservaDTO>
     {
@@ -24,6 +24,7 @@ namespace AtecaAPI.Controllers
         }
 
         [HttpPut("{id}/aceptar")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> AceptarReserva(int id)
         {
             var result = await _reservaRepository.AceptarReservaAsync(id);
@@ -43,6 +44,7 @@ namespace AtecaAPI.Controllers
 
 
         [HttpPut("{id}/rechazar")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RechazarReserva(int id)
         {
             var result = await _reservaRepository.RechazarReservaAsync(id);

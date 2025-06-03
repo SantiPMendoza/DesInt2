@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using AtecaAPI.Repository.IRepository;
 using AtecaAPI.Repository;
 using AtecaAPI.AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +36,49 @@ builder.Services.AddScoped<IFranjaHorariaRepository, FranjaHorariaRepository>();
 builder.Services.AddScoped<IDiaNoLectivoRepository, DiaNoLectivoRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Configurar autenticación con JWT
+// Configurar autenticación con JWT y Google
 var key = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
+var googleClientId = builder.Configuration.GetValue<string>("Google:ClientId"); // Configura en appsettings.json
+
+builder.Services.AddAuthentication()
+    // JWT con clave propia (WPF, login tradicional)
+    .AddJwtBearer("JwtOwn", options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    })
+    // JWT Google (Angular)
+    .AddJwtBearer("JwtGoogle", options =>
+    {
+        options.Authority = "https://accounts.google.com";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "https://accounts.google.com",
+            ValidateAudience = true,
+            ValidAudience = googleClientId,
+            ValidateLifetime = true
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+        .AddAuthenticationSchemes("JwtOwn", "JwtGoogle")
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+/** 
+ * Comentado para evitar conflictos con la autenticación de Google.
+ * Si decides usar JWT propio, descomenta esta sección y elimina la configuración de Google.
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,7 +96,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false
     };
 });
-
+*/
 
 //Swagger Configuration
 builder.Services.AddSwaggerGen(options =>

@@ -10,7 +10,7 @@ namespace AtecaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous] // Cambiar a [Authorize(Roles = "admin")] cuando eso mi pana
+    [Authorize(Roles = "admin")] // Cambiar a [Authorize(Roles = "admin")] cuando eso mi pana
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;

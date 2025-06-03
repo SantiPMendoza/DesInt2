@@ -9,7 +9,7 @@ namespace AtecaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous] // Cambiar cuando eso mi pana
+    [Authorize(Roles = "admin")] // Cambiar cuando eso mi pana
     public class AdministradorController : BaseController<Administrador, AdministradorDTO, CreateAdministradorDTO>
     {
         public AdministradorController(IAdministradorRepository repo, IMapper mapper, ILogger<AdministradorController> logger)

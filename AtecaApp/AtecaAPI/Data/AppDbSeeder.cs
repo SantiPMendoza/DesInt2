@@ -16,7 +16,7 @@ namespace AtecaAPI.Data
 
             await context.Database.MigrateAsync();
 
-            const string adminRole = "Administrador";
+            const string adminRole = "admin";
             const string adminEmail = "admin@ateca.com";
             const string adminPassword = "Abcd123!";
 
