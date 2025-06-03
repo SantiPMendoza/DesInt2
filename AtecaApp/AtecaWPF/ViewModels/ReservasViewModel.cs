@@ -93,6 +93,14 @@ namespace AtecaWPF.ViewModels
             Reservas = new ObservableCollection<ReservaDTO>(lista);
         }
 
+        [RelayCommand]
+        private void LimpiarFiltros()
+        {
+            FechaSeleccionadaDateTime = null;
+            EstadoSeleccionado = null;
+            Reservas = new ObservableCollection<ReservaDTO>(todasLasReservas);
+        }
+
 
         [RelayCommand]
         private async Task AceptarReserva(ReservaDTO reserva)

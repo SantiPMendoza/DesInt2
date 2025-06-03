@@ -14,29 +14,31 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <!-- Para botón Añadir Reserva -->
         </Grid.RowDefinitions>
 
         <!-- Filtros y botón recargar arriba -->
         <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="0">
             <Button Content="Recargar Reservas"
-                    Command="{Binding CargarReservasCommand}" Margin="0,0,20,0" />
+            Command="{Binding CargarReservasCommand}" Margin="0,0,20,0" />
 
             <Label Content="Fecha:" VerticalAlignment="Center" Margin="10,0,0,0"/>
-
             <DatePicker SelectedDate="{Binding FechaSeleccionadaDateTime, Mode=TwoWay}"
-                        Width="150" Margin="10,0" />
+                Width="150" Margin="10,0" />
 
             <Label Content="Estado:" VerticalAlignment="Center" Margin="10,0,0,0"/>
-
             <ComboBox Width="150" Margin="10,0"
-                      ItemsSource="{Binding EstadosDisponibles}"
-                      SelectedItem="{Binding EstadoSeleccionado, Mode=TwoWay}" Text="Estado"/>
+              ItemsSource="{Binding EstadosDisponibles}"
+              SelectedItem="{Binding EstadoSeleccionado, Mode=TwoWay}" Text="Estado"/>
 
             <Button Content="Filtrar"
-                    Command="{Binding FiltrarCommand}"
-                    Width="100" Margin="10,0"/>
+            Command="{Binding FiltrarCommand}"
+            Width="100" Margin="10,0"/>
+
+            <Button Content="Limpiar Filtros"
+            Command="{Binding LimpiarFiltrosCommand}"
+            Width="120" Margin="10,0"/>
         </StackPanel>
+
 
         <!-- ListView con reservas -->
         <ListView Grid.Row="1"
@@ -79,7 +81,7 @@
             </ListView.View>
         </ListView>
 
-        <!-- Botón Añadir Reserva debajo del ListView -->
+        <!-- Botón Añadir Reserva -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10">
             <Button Content="Añadir Reserva"
                     Command="{Binding AbrirFlyoutCommand}"
@@ -91,7 +93,6 @@
        Placement="Center"
        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
             <Grid Background="#80000000">
-                <!-- Fondo semitransparente -->
                 <Border Background="White" BorderBrush="Gray" BorderThickness="1" Padding="20" Width="400" MinHeight="350" CornerRadius="5" >
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
