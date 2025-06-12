@@ -26,7 +26,7 @@ namespace ExamenWPF
                 _ = services.AddNavigationViewPageProvider();
 
                 // API Service
-                services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://localhost:7228/") }); //localhost cambiar puerto
+                services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://localhost:7042/") }); //localhost cambiar puerto
 
 
                 // App Host

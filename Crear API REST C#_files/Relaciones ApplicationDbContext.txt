@@ -1,10 +1,15 @@
-Relaciones ApplicationDbContext:
+🗺️ Relaciones en ApplicationDbContext (EF Core)
 
-Uno a Muchos (One-to-Many):
+---
 
-Un registro en una tabla se relaciona con múltiples registros en otra tabla.
-Ejemplo: Un Usuario puede tener muchos Pedido.
-Esquema:
+🔹 1. Uno a Muchos (One-to-Many)
+
+📌 Descripción: Un registro en una tabla se relaciona con múltiples registros en otra.
+
+📦 Ejemplo: Un Usuario puede tener muchos Pedidos.
+
+📊 Esquema:
+
 Usuarios
 --------
 Id (PK)
@@ -16,21 +21,24 @@ Id (PK)
 UsuarioId (FK)
 Fecha
 
+⚙️ Configuración EF Core:
 
 modelBuilder.Entity<Usuario>()
     .HasMany(u => u.Pedidos)
     .WithOne(p => p.Usuario)
-    .HasForeignKey(p => p.UsuarioId);
+    .HasForeignKey(p => p.UsuarioId)
+    .OnDelete(DeleteBehavior.Cascade); // 💡 Sugerido: Elimina los pedidos al borrar un usuario
 
+---
 
+🔸 2. Uno a Uno (One-to-One)
 
+📌 Descripción: Un registro en una tabla se relaciona con exactamente un registro en otra.
 
+📦 Ejemplo: Un Usuario tiene un Perfil.
 
-Uno a Uno (One-to-One):
+📊 Esquema:
 
-Un registro en una tabla se relaciona con exactamente un registro en otra tabla.
-Ejemplo: Un Usuario puede tener un Perfil.
-Esquema:
 Usuarios
 --------
 Id (PK)
@@ -41,21 +49,32 @@ Perfiles
 UsuarioId (PK, FK)
 Dirección
 
+⚙️ Configuración EF Core:
 
 modelBuilder.Entity<Usuario>()
     .HasOne(u => u.Perfil)
     .WithOne(p => p.Usuario)
-    .HasForeignKey<Perfil>(p => p.UsuarioId);
+    .HasForeignKey<Perfil>(p => p.UsuarioId)
+    .OnDelete(DeleteBehavior.Cascade); // 💡 Borra el perfil al eliminar el usuario
 
+🔸 Nota: EF Core requiere que la clave primaria del dependiente (Perfil) sea también la FK.
 
+---
 
+🔶 3. Muchos a Muchos (Many-to-Many)
 
-Muchos a Muchos (Many-to-Many):
+📌 Descripción: Múltiples registros en una tabla se relacionan con múltiples registros en otra.
 
-Múltiples registros en una tabla se relacionan con múltiples registros en otra tabla.
-Ejemplo: Un Pedido puede tener muchos Productos, y un Producto puede estar en muchos Pedido.
-Esquema:
-Para modelar está relación se necesita una tabla intermedia.
+📦 Ejemplo: Un Pedido puede tener muchos Productos y un Producto puede estar en muchos Pedidos.
+
+---
+
+✅ Opción 1: Implícita (sin entidad intermedia)
+
+🧱 Solo relaciones, sin campos adicionales (como cantidad, precio, etc.)
+
+📊 Esquema:
+
 Pedidos
 -------
 Id (PK)
@@ -66,19 +85,63 @@ Productos
 Id (PK)
 Nombre
 
-PedidoProductos (Tabla de unión)
+PedidoProductos (Tabla de unión implícita)
 ---------------
 PedidoId (PK, FK)
 ProductoId (PK, FK)
 
-
-
+⚙️ Configuración EF Core:
 
 modelBuilder.Entity<Pedido>()
     .HasMany(p => p.Productos)
     .WithMany(pr => pr.Pedidos)
     .UsingEntity<Dictionary<string, object>>(
-        "PedidoProductos",
+        "PedidoProductos", // Nombre tabla intermedia
         j => j.HasOne<Producto>().WithMany().HasForeignKey("ProductoId"),
         j => j.HasOne<Pedido>().WithMany().HasForeignKey("PedidoId"),
-        j => j.HasKey("PedidoId", "ProductoId"));
+        j => j.HasKey("PedidoId", "ProductoId")
+    );
+
+💡 Útil cuando no necesitas campos extra en la tabla de relación.
+
+---
+
+✅ Opción 2: Explícita (con clase intermedia)
+
+🧱 Permite agregar campos adicionales (cantidad, precio unitario, etc.)
+
+📊 Esquema:
+
+public class PedidoProducto
+{
+    public int PedidoId { get; set; }
+    public Pedido Pedido { get; set; }
+
+    public int ProductoId { get; set; }
+    public Producto Producto { get; set; }
+
+    public int Cantidad { get; set; } // ✅ Campo adicional
+}
+
+⚙️ Configuración EF Core:
+
+modelBuilder.Entity<PedidoProducto>()
+    .HasKey(pp => new { pp.PedidoId, pp.ProductoId });
+
+modelBuilder.Entity<PedidoProducto>()
+    .HasOne(pp => pp.Pedido)
+    .WithMany(p => p.PedidoProductos)
+    .HasForeignKey(pp => pp.PedidoId);
+
+modelBuilder.Entity<PedidoProducto>()
+    .HasOne(pp => pp.Producto)
+    .WithMany(p => p.PedidoProductos)
+    .HasForeignKey(pp => pp.ProductoId);
+
+📝 En Pedido y Producto:
+
+public ICollection<PedidoProducto> PedidoProductos { get; set; } = new List<PedidoProducto>();
+
+🔎 Cuándo usar esta opción:
+- Necesitas campos como Cantidad, PrecioUnitario, FechaAsignación.
+- Qu

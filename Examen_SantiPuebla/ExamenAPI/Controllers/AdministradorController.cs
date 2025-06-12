@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AtecaAPI.Models.DTOs;
-using AtecaAPI.Models.Entity;
-using AtecaAPI.Repository.IRepository;
+using ExamenAPI.Models.DTOs;
+using ExamenAPI.Models.Entity;
+using ExamenAPI.Repository.IRepository;
 
-namespace AtecaAPI.Controllers
+namespace ExamenAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

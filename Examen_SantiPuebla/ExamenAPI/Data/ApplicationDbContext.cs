@@ -12,7 +12,7 @@ namespace ExamenAPI.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         //public DbSet<Profesor> Profesores { get; set; }
-        //public DbSet<Administrador> Administradores { get; set; }
+        public DbSet<Administrador> Administradores { get; set; }
         //public DbSet<GrupoClase> GruposClase { get; set; }
 
         public DbSet<AppUser> AppUsers { get; set; }
@@ -23,14 +23,14 @@ namespace ExamenAPI.Data
 
             /**
              * Configuración de las relaciones entre entidades
-             * 
+             * */
             // Admin ↔ AppUser relación uno a uno
             modelBuilder.Entity<Administrador>()
                 .HasOne(a => a.AppUser)
                 .WithOne()
                 .HasForeignKey<Administrador>(a => a.AppUserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            /**
             // Reserva ↔ Profesor: un profesor puede tener varias reservas
             modelBuilder.Entity<Reserva>()
                 .HasOne(r => r.Profesor)

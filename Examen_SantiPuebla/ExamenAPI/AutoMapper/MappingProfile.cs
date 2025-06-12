@@ -11,10 +11,10 @@ namespace AtecaAPI.AutoMapper
         public MappingProfile()
         {
 
-            /**
+            
             CreateMap<Administrador, AdministradorDTO>().ReverseMap();
             CreateMap<Administrador, CreateAdministradorDTO>().ReverseMap();
-
+            /**
             // Profesor
             CreateMap<Profesor, ProfesorDTO>();
             CreateMap<CreateProfesorDTO, Profesor>();
