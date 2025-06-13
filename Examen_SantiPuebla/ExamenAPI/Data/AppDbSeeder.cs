@@ -46,6 +46,37 @@ namespace ExamenAPI.Data
                 });
                 await context.SaveChangesAsync();
             }
+
+            if (!context.Students.Any() && !context.Courses.Any() && !context.Teachers.Any())
+            {
+                // Crear estudiantes
+                var student1 = new Student { Name = "Juan Perez" };
+                var student2 = new Student { Name = "Ana Gómez" };
+
+                // Crear profesores
+                var teacher1 = new Teacher { Name = "Profesor Martínez" };
+                var teacher2 = new Teacher { Name = "Profesora Díaz" };
+
+                // Crear cursos
+                var course1 = new Course { Title = "Matemáticas" };
+                var course2 = new Course { Title = "Historia" };
+
+                // Relacionar estudiantes y cursos
+                student1.Courses.Add(course1);
+                student2.Courses.Add(course1);
+                student2.Courses.Add(course2);
+
+                // Relacionar profesores y cursos
+                teacher1.Courses.Add(course1);
+                teacher2.Courses.Add(course2);
+
+                // Agregar a contexto
+                await context.Students.AddRangeAsync(student1, student2);
+                await context.Teachers.AddRangeAsync(teacher1, teacher2);
+                await context.Courses.AddRangeAsync(course1, course2);
+
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

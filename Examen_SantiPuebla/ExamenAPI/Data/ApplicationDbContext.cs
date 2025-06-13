@@ -11,9 +11,12 @@ namespace ExamenAPI.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        //public DbSet<Profesor> Profesores { get; set; }
+
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Administrador> Administradores { get; set; }
-        //public DbSet<GrupoClase> GruposClase { get; set; }
+
 
         public DbSet<AppUser> AppUsers { get; set; }
 
@@ -30,6 +33,29 @@ namespace ExamenAPI.Data
                 .WithOne()
                 .HasForeignKey<Administrador>(a => a.AppUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            // Configurar tabla intermedia StudentCourse
+            modelBuilder.Entity<Student>()
+                .HasMany(s => s.Courses)
+                .WithMany(c => c.Students)
+                .UsingEntity<Dictionary<string, object>>(
+                    "StudentCourse",  // nombre tabla intermedia
+                    j => j.HasOne<Course>().WithMany().HasForeignKey("CourseId"),
+                    j => j.HasOne<Student>().WithMany().HasForeignKey("StudentId"),
+                    j => j.HasKey("StudentId", "CourseId")
+                );
+
+            // Configurar tabla intermedia TeacherCourse
+            modelBuilder.Entity<Teacher>()
+                .HasMany(t => t.Courses)
+                .WithMany(c => c.Teachers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "TeacherCourse",  // nombre tabla intermedia
+                    j => j.HasOne<Course>().WithMany().HasForeignKey("CourseId"),
+                    j => j.HasOne<Teacher>().WithMany().HasForeignKey("TeacherId"),
+                    j => j.HasKey("TeacherId", "CourseId")
+                );
             /**
             // Reserva ↔ Profesor: un profesor puede tener varias reservas
             modelBuilder.Entity<Reserva>()
@@ -66,6 +92,8 @@ namespace ExamenAPI.Data
             modelBuilder.Entity<DiaNoLectivo>()
                 .HasIndex(d => d.Fecha)
                 .IsUnique();*/
+
+
         }
     }
 

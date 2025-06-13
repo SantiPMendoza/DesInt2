@@ -55,7 +55,7 @@ namespace ExamenWPF.ViewModels
                 {
                     var user = _authService.GetCurrentUser();
                     System.Windows.MessageBox.Show($"Bienvenido {user?.Name}");
-                    _navigationService.Navigate(typeof(MainWindow));
+                    _navigationService.Navigate(typeof(CoursesView));
                 }
                 else
                 {

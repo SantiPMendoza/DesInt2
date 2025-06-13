@@ -1,4 +1,4 @@
-using AtecaAPI.AutoMapper;
+using ExamenAPI.AutoMapper;
 using ExamenAPI.Data;
 using ExamenAPI.Models.Entity;
 using ExamenAPI.Repository.IRepository;
@@ -28,6 +28,11 @@ builder.Services.AddMemoryCache();
 // Add services to the container.
 builder.Services.AddScoped<IAdministradorRepository, AdministradorRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<IAdministradorRepository, AdministradorRepository>();
+
 
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

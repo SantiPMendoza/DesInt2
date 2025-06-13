@@ -3,7 +3,7 @@ using ExamenAPI.Models.Entity;
 using ExamenAPI.Models.DTOs;
 
 
-namespace AtecaAPI.AutoMapper
+namespace ExamenAPI.AutoMapper
 {
 
     public class MappingProfile : Profile
@@ -14,6 +14,18 @@ namespace AtecaAPI.AutoMapper
             
             CreateMap<Administrador, AdministradorDTO>().ReverseMap();
             CreateMap<Administrador, CreateAdministradorDTO>().ReverseMap();
+
+            // Student
+            CreateMap<Student, StudentDTO>().ReverseMap();
+            CreateMap<Student, CreateStudentDTO>().ReverseMap();
+
+            // Course
+            CreateMap<Course, CourseDTO>().ReverseMap();
+            CreateMap<Course, CreateCourseDTO>().ReverseMap();
+
+            // Teacher
+            CreateMap<Teacher, TeacherDTO>().ReverseMap();
+            CreateMap<Teacher, CreateTeacherDTO>().ReverseMap();
             /**
             // Profesor
             CreateMap<Profesor, ProfesorDTO>();

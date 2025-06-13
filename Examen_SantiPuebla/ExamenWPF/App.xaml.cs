@@ -49,12 +49,13 @@ namespace ExamenWPF
 
                 // ViewModels
                 _ = services.AddSingleton<LoginViewModel>();
+                _ = services.AddSingleton<CoursesViewModel>();
 
 
 
                 // Views
                 _ = services.AddSingleton<LoginView>();
-
+                _ = services.AddSingleton<CoursesView>();
 
                 //_ = services.AddSingleton<Views.SplashScreen>();
 
