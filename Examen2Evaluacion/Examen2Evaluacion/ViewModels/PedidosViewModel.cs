@@ -42,12 +42,15 @@ namespace Examen2Evaluacion.ViewModels
             {
                 var pedidosList = await _httpJsonClient.GetListAsync<PedidoDTO>("api/Pedido");
                 Pedidos = new ObservableCollection<PedidoDTO>(pedidosList);
+
+                MessageBox.Show($"Se cargaron {Pedidos.Count} pedidos");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error cargando pedidos: {ex.Message}");
             }
         }
+
 
         [RelayCommand]
         private async Task CargarProductos()

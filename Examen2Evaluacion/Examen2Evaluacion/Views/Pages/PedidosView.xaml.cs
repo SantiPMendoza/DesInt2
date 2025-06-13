@@ -24,7 +24,7 @@ namespace Examen2Evaluacion.Views.Pages
         public PedidosView(PedidosViewModel viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = viewModel;
 
             InitializeComponent();
         }

@@ -24,7 +24,7 @@ namespace Examen2Evaluacion_API.AutoMapper
             CreateMap<Pedido, PedidoDTO>()
                 .ForMember(dest => dest.Productos, opt => opt.MapFrom(src => src.PedidoProductos.Select(pp => pp.Producto)))
                 .ForMember(dest => dest.ProductosId, opt => opt.MapFrom(src => src.PedidoProductos.Select(pp => pp.ProductoId)))
-                .ForMember(dest => dest.Usuario, opt => opt.MapFrom(src => src.Usuario)); // <-- IMPORTANTE
+                .ForMember(dest => dest.Usuario, opt => opt.MapFrom(src => src.Usuario));
 
 
             CreateMap<CreatePedidoDTO, Pedido>()
