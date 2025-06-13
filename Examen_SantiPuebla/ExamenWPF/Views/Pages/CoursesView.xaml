@@ -36,24 +36,81 @@
                   Margin="10"
                   HorizontalContentAlignment="Stretch"
                   MaxHeight="600"
-                  ItemsSource="{Binding Cursos}">
+                  ItemsSource="{Binding Cursos}"
+                  SelectedItem="{Binding CursoSeleccionado, Mode=TwoWay}">
+
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Id}" />
                     <GridViewColumn Header="Título" Width="200" DisplayMemberBinding="{Binding Title}" />
                     <GridViewColumn Header="Estudiantes" DisplayMemberBinding="{Binding StudentIdsDisplay}" />
                     <GridViewColumn Header="Profesores" DisplayMemberBinding="{Binding TeacherIdsDisplay}" />
-
-
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <!-- Botón Añadir Curso -->
+        <!-- Botones inferiores -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10">
             <Button Content="Añadir Curso"
                     Command="{Binding AbrirFlyoutCommand}"
-                    Width="120" />
+                    Width="120" Margin="0,0,10,0"/>
+            <Button Content="Eliminar Seleccionado"
+                    Command="{Binding EliminarCursoCommand}"
+                    Width="150" />
         </StackPanel>
+
+        <!-- Flyout / Popup para añadir curso -->
+        <Popup IsOpen="{Binding IsFlyoutOpen}" StaysOpen="False" AllowsTransparency="True"
+               Placement="Center"
+               PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+            <Grid Background="#80000000">
+                <Border Background="White" BorderBrush="Gray" BorderThickness="1" Padding="20" Width="400" MinHeight="350" CornerRadius="5">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="Añadir Nuevo Curso" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
+
+                            <Label Content="Título:"/>
+                            <TextBox Text="{Binding NuevoTitulo, Mode=TwoWay}" Width="200"/>
+
+                            <!-- Estudiante -->
+                            <Label Content="Estudiante:" Margin="0,10,0,0"/>
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox ItemsSource="{Binding EstudiantesDisponibles}"
+                                          SelectedItem="{Binding EstudianteSeleccionado}"
+                                          DisplayMemberPath="Nombre"
+                                          Width="200"/>
+                                <Button Content="Añadir"
+                                        Command="{Binding AñadirEstudianteCommand}"
+                                        Width="60" Margin="10,0,0,0"/>
+                            </StackPanel>
+
+                            <ListBox ItemsSource="{Binding EstudiantesSeleccionados}"
+                                     DisplayMemberPath="Nombre" Height="100"/>
+
+                            <!-- Profesor -->
+                            <Label Content="Profesor:" Margin="0,10,0,0"/>
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox ItemsSource="{Binding ProfesoresDisponibles}"
+                                          SelectedItem="{Binding ProfesorSeleccionado}"
+                                          DisplayMemberPath="Nombre"
+                                          Width="200"/>
+                                <Button Content="Añadir"
+                                        Command="{Binding AñadirProfesorCommand}"
+                                        Width="60" Margin="10,0,0,0"/>
+                            </StackPanel>
+
+                            <ListBox ItemsSource="{Binding ProfesoresSeleccionados}"
+                                     DisplayMemberPath="Nombre" Height="100"/>
+
+                            <!-- Botones de acción -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                                <Button Content="Cancelar" Command="{Binding CerrarFlyoutCommand}" Width="80" Margin="0,0,10,0"/>
+                                <Button Content="Guardar" Command="{Binding GuardarCursoCommand}" Width="80"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Popup>
     </Grid>
 </Page>

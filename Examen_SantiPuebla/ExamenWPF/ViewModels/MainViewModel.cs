@@ -47,7 +47,7 @@ namespace ExamenWPF.ViewModels
                 {
                     Content = "Reservas",
                     Icon = new SymbolIcon { Symbol = SymbolRegular.Add16 },
-                    //TargetPageType = typeof(ReservasView)
+                    TargetPageType = typeof(CoursesView)
                 },
                 new NavigationViewItem()
                 {

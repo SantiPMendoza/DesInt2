@@ -32,7 +32,7 @@ namespace ExamenWPF.Views
 
             navigationService.SetNavigationControl(RootNavigation);
 
-            SetPaneControl();
+            //SetPaneControl();
         }
 
 
